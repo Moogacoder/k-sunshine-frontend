@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, UploadCloud, AlertCircle, FileText, LogOut, Database } from 'lucide-react';
+import { LayoutDashboard, UploadCloud, AlertCircle, FileText, LogOut, Database, Shield, Sparkles } from 'lucide-react';
 import { useAuth } from './AuthContext';
 
 const Sidebar = () => {
@@ -41,6 +41,16 @@ const Sidebar = () => {
         <NavLink to="/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <Database size={20} />
           <span>Data Explorer</span>
+        </NavLink>
+
+        <NavLink to="/audit" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <Shield size={20} />
+          <span>Audit Trail</span>
+        </NavLink>
+
+        <NavLink to="/assistant" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <Sparkles size={20} />
+          <span>AI Assistant</span>
         </NavLink>
       </nav>
 

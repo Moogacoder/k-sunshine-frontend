@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FileSpreadsheet } from 'lucide-react';
+import { FileSpreadsheet, Download, Clock, User } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 interface Transaction {
@@ -20,28 +20,70 @@ interface Transaction {
   }
 }
 
+interface ArchivedReport {
+  id: string;
+  templateName: string;
+  reportYear: string;
+  generatedBy: string;
+  payload: string;
+  status: string;
+  createdAt: string;
+}
+
 const Reporting = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [archivedReports, setArchivedReports] = useState<ArchivedReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/reports/transactions');
-        if (response.ok) {
-          const data = await response.json();
-          setTransactions(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch reports data:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchTransactions();
+    fetchData();
   }, []);
 
-  const exportTemplate = (templateNumber: number) => {
+  const fetchData = async () => {
+    try {
+      const [txRes, archiveRes] = await Promise.all([
+        fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/reports/transactions'),
+        fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/reports/archive')
+      ]);
+      
+      if (txRes.ok) {
+        const data = await txRes.json();
+        setTransactions(data);
+      }
+      if (archiveRes.ok) {
+        const data = await archiveRes.json();
+        setArchivedReports(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch data:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const archiveReport = async (templateName: string, dataToExport: any[]) => {
+    try {
+      const currentYear = new Date().getFullYear().toString();
+      const response = await fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/reports/archive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          templateName,
+          reportYear: currentYear,
+          payload: dataToExport,
+          generatedBy: 'ADMIN' // Can be tied to AuthContext later
+        })
+      });
+      if (response.ok) {
+        const newReport = await response.json();
+        setArchivedReports(prev => [newReport, ...prev]);
+      }
+    } catch (err) {
+      console.error("Failed to archive report:", err);
+    }
+  };
+
+  const exportTemplate = async (templateNumber: number, title: string) => {
     let dataToExport: any[] = [];
     let filename = "";
 
@@ -210,6 +252,22 @@ const Reporting = () => {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
     XLSX.writeFile(workbook, filename, { bookType: 'csv' });
+
+    // Save to the archive database
+    await archiveReport(title, dataToExport);
+  };
+
+  const reDownloadArchive = (report: ArchivedReport) => {
+    try {
+      const dataToExport = JSON.parse(report.payload);
+      const filename = `Archived_${report.templateName.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date(report.createdAt).toISOString().split('T')[0]}.csv`;
+      const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+      XLSX.writeFile(workbook, filename, { bookType: 'csv' });
+    } catch (err) {
+      console.error("Failed to parse and download archive payload:", err);
+    }
   };
 
   const templates = [
@@ -223,28 +281,92 @@ const Reporting = () => {
   ];
 
   return (
-    <div>
+    <div style={{ paddingBottom: '40px' }}>
       <h1 className="page-title">Compliance Reports (MOHW Templates)</h1>
       <p className="page-subtitle">Export official statutory reports exactly matching the 7 templates required by the South Korean Ministry of Health and Welfare.</p>
 
       {isLoading ? (
         <p style={{ color: 'var(--text-secondary)' }}>Loading report data...</p>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
-          {templates.map(tpl => (
-            <div key={tpl.id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <h3 style={{ marginBottom: '12px' }}>{tpl.title}</h3>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.9rem' }}>{tpl.desc}</p>
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '40px' }}>
+            {templates.map(tpl => (
+              <div key={tpl.id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <h3 style={{ marginBottom: '12px' }}>{tpl.title}</h3>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.9rem' }}>{tpl.desc}</p>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
+                  <button className="btn btn-primary" onClick={() => exportTemplate(tpl.id, tpl.title)} style={{ width: '100%', justifyContent: 'center' }}>
+                    <FileSpreadsheet size={18} /> Export MOHW CSV
+                  </button>
+                </div>
               </div>
-              <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
-                <button className="btn btn-primary" onClick={() => exportTemplate(tpl.id)} style={{ width: '100%', justifyContent: 'center' }}>
-                  <FileSpreadsheet size={18} /> Export MOHW CSV
-                </button>
-              </div>
+            ))}
+          </div>
+
+          <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: '40px 0' }} />
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600 }}>Report Archive (5-Year Retention)</h2>
+          </div>
+          <p className="page-subtitle" style={{ marginBottom: '24px' }}>Historical ledger of all generated statutory reports. Preserved exactly as they were at the time of export.</p>
+
+          <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div className="table-container" style={{ margin: 0 }}>
+              <table style={{ margin: 0 }}>
+                <thead>
+                  <tr>
+                    <th style={{ width: '180px' }}>Generated At</th>
+                    <th>Template Name</th>
+                    <th>Report Year</th>
+                    <th>Generated By</th>
+                    <th>Status</th>
+                    <th style={{ width: '140px', textAlign: 'center' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {archivedReports.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                        No reports have been generated yet.
+                      </td>
+                    </tr>
+                  ) : (
+                    archivedReports.map(report => (
+                      <tr key={report.id}>
+                        <td style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                          <Clock size={12} style={{ marginRight: '6px', display: 'inline', verticalAlign: 'middle' }} />
+                          {new Date(report.createdAt).toLocaleString()}
+                        </td>
+                        <td style={{ fontWeight: 500 }}>{report.templateName}</td>
+                        <td>{report.reportYear}</td>
+                        <td>
+                          <User size={12} style={{ marginRight: '6px', display: 'inline', verticalAlign: 'middle', color: 'var(--text-secondary)' }} />
+                          {report.generatedBy}
+                        </td>
+                        <td>
+                          <span className="badge badge-success" style={{ fontSize: '0.75rem' }}>
+                            {report.status}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <button 
+                            className="btn btn-primary" 
+                            onClick={() => reDownloadArchive(report)}
+                            style={{ padding: '4px 8px', fontSize: '0.8rem' }}
+                          >
+                            <Download size={14} /> Re-Download
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
-          ))}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );
