@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Ingestion from './pages/Ingestion';
 import Remediation from './pages/Remediation';
 import Reporting from './pages/Reporting';
+import DataExplorer from './pages/DataExplorer';
 import Login from './pages/Login';
 import { AuthProvider } from './components/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -21,6 +22,7 @@ const AppLayout = () => {
           <Route path="/ingestion" element={<Ingestion />} />
           <Route path="/remediation" element={<Remediation />} />
           <Route path="/reporting" element={<Reporting />} />
+          <Route path="/data" element={<DataExplorer />} />
         </Routes>
       </main>
       <AgentWidget />

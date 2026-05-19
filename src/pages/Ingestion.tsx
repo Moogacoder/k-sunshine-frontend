@@ -54,7 +54,10 @@ const Ingestion = () => {
       const response = await fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/ingest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(mappedData)
+        body: JSON.stringify({ 
+          sourceFile: file.name,
+          records: mappedData 
+        })
       });
 
       if (!response.ok) {
@@ -126,15 +129,36 @@ const Ingestion = () => {
             <h3 style={{ marginBottom: '8px' }}>Drag & Drop Files Here</h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Supports CSV, Excel (XLSX), or JSON structured payload.</p>
             
-            <label className="btn btn-primary" style={{ cursor: 'pointer' }}>
-              Select Files to Upload
-              <input 
-                type="file" 
-                accept=".xlsx, .xls, .csv" 
-                style={{ display: 'none' }} 
-                onChange={handleFileInput} 
-              />
-            </label>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <label className="btn btn-primary" style={{ cursor: 'pointer' }}>
+                Select Files to Upload
+                <input 
+                  type="file" 
+                  accept=".xlsx, .xls, .csv" 
+                  style={{ display: 'none' }} 
+                  onChange={handleFileInput} 
+                />
+              </label>
+              
+              <a 
+                href="/K_Sunshine_Upload_Template.csv" 
+                download 
+                className="btn btn-secondary" 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  textDecoration: 'none', 
+                  background: 'rgba(255, 255, 255, 0.1)', 
+                  border: '1px solid var(--border-color)', 
+                  color: 'var(--text-primary)', 
+                  padding: '10px 20px', 
+                  borderRadius: '6px', 
+                  fontWeight: '600' 
+                }}
+              >
+                Download CSV Template
+              </a>
+            </div>
           </>
         )}
       </div>
