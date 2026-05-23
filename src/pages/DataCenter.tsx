@@ -1104,7 +1104,10 @@ const DataCenter: React.FC = () => {
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px' }}>
                 <button 
                   className="btn" 
-                  onClick={() => setShowReviewModal(false)}
+                  onClick={() => {
+                    setShowReviewModal(false);
+                    setActiveTab('transactions');
+                  }}
                   style={{ background: 'rgba(0,0,0,0.05)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '10px 20px' }}
                 >
                   Cancel & Review Grid
