@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import type { DragEvent, ChangeEvent } from 'react';
 import { UploadCloud, FileSpreadsheet, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { APIGateway } from '../datacenter/api_gateway';
 
 interface UploadResult {
   filename: string;
@@ -50,28 +51,20 @@ const Ingestion = () => {
         details: row['Details'] || ''
       }));
 
-      // Send to Cloud Run Backend
-      const response = await fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/ingest', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          sourceFile: file.name,
-          records: mappedData 
-        })
-      });
+      // Ingest via the Central Data Center's South Korea stream feeds
+      const currentYear = new Date().getFullYear();
+      const result = APIGateway.ingestData('KR', currentYear, file.name, mappedData);
 
-      if (!response.ok) {
+      if (result.success) {
+        setRecentUploads(prev => [{
+          filename: file.name,
+          date: new Date().toLocaleDateString(),
+          ingested: result.ingested,
+          flagged: result.flagged
+        }, ...prev]);
+      } else {
         throw new Error('Failed to ingest data');
       }
-
-      const result = await response.json();
-
-      setRecentUploads(prev => [{
-        filename: file.name,
-        date: new Date().toLocaleDateString(),
-        ingested: result.ingested,
-        flagged: result.flagged
-      }, ...prev]);
 
     } catch (error) {
       console.error('Error uploading file:', error);

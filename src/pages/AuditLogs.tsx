@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Clock, Database } from 'lucide-react';
+import { APIGateway } from '../datacenter/api_gateway';
 
 interface AuditLog {
   id: string;
@@ -23,11 +24,8 @@ const AuditLogs = () => {
 
   const fetchLogs = async () => {
     try {
-      const response = await fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/audit');
-      if (response.ok) {
-        const data = await response.json();
-        setLogs(data);
-      }
+      const data = APIGateway.getAuditLogs();
+      setLogs(data);
     } catch (err) {
       console.error("Failed to fetch audit logs:", err);
     } finally {

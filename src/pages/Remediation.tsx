@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AlertCircle, CheckCircle } from 'lucide-react';
+import { APIGateway } from '../datacenter/api_gateway';
 
 interface RemediationFlag {
   id: string;
@@ -27,11 +28,26 @@ const Remediation = () => {
 
   const fetchFlags = async () => {
     try {
-      const response = await fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/remediation');
-      if (response.ok) {
-        const data = await response.json();
-        setFlags(data);
-      }
+      const krSpend = APIGateway.getTransactions('KR');
+      const flaggedTransactions = krSpend.filter(t => t.remediationStatus === 'PENDING_REVIEW' || t.remediationStatus === 'RESOLVED' || t.remediationStatus === 'REJECTED');
+      
+      const mappedFlags = flaggedTransactions.map(t => ({
+        id: `FLAG-${t.id}`,
+        status: t.remediationStatus === 'PENDING_REVIEW' ? 'PENDING' : t.remediationStatus,
+        reason: t.amountOriginal > 500000 
+          ? 'Exceeds South Korean individual spend limit policy threshold (₩500,000)'
+          : 'Advisory Panel Board Session - Pending Fair Market Value (FMV) assessment verification',
+        createdAt: t.dateOfProvision,
+        transaction: {
+          id: t.id,
+          amountKRW: t.amountOriginal,
+          currency: t.currencyOriginal,
+          entity: {
+            recipientName: t.recipientName
+          }
+        }
+      }));
+      setFlags(mappedFlags);
     } catch (err) {
       console.error("Failed to fetch remediation flags:", err);
     } finally {
@@ -42,20 +58,10 @@ const Remediation = () => {
   const handleResolve = async (id: string, status: 'RESOLVED' | 'REJECTED') => {
     setIsProcessing(id);
     try {
-      const response = await fetch(`https://k-sunshine-backend-381662135057.us-central1.run.app/api/remediation/${id}/resolve`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          status,
-          comments: `Manually marked as ${status} by user.`
-        })
-      });
-
-      if (response.ok) {
-        // Update local state to reflect the change immediately
-        setFlags(flags.map(f => f.id === id ? { ...f, status } : f));
+      const txId = id.replace('FLAG-', '');
+      const success = APIGateway.updateTransactionStatus(txId, status);
+      if (success) {
+        setFlags(prev => prev.map(f => f.id === id ? { ...f, status } : f));
       }
     } catch (err) {
       console.error(`Failed to mark flag as ${status}:`, err);

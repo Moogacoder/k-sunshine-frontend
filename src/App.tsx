@@ -10,6 +10,7 @@ import DataExplorer from './pages/DataExplorer';
 import AuditLogs from './pages/AuditLogs';
 import AIAssistant from './pages/AIAssistant';
 import Login from './pages/Login';
+import DataCenter from './pages/DataCenter';
 import { AuthProvider } from './components/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
@@ -20,7 +21,8 @@ const AppLayout = () => {
       <Sidebar />
       <main className="main-content animate-fade-in">
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<Navigate to="/datacenter" replace />} />
+          <Route path="/datacenter" element={<DataCenter />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/source-files" element={<SourceFiles />} />
           <Route path="/ingestion" element={<Ingestion />} />

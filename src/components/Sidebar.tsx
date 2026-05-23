@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, UploadCloud, AlertCircle, FileText, LogOut, Database, Shield, Sparkles, FileUp } from 'lucide-react';
+import { LayoutDashboard, UploadCloud, AlertCircle, FileText, LogOut, Database, Shield, Sparkles, FileUp, Globe } from 'lucide-react';
 import { useAuth } from './AuthContext';
 
 const Sidebar = () => {
@@ -18,9 +18,16 @@ const Sidebar = () => {
       </div>
 
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <NavLink to="/datacenter" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ borderLeft: '3px solid var(--secondary-accent)', background: 'rgba(124, 58, 237, 0.05)', fontWeight: 'bold' }}>
+          <Globe size={20} color="var(--primary-glow)" />
+          <span style={{ color: 'var(--primary-glow)' }}>Global Data Center</span>
+        </NavLink>
+
+        <div style={{ margin: '8px 0', borderTop: '1px solid var(--border-color)', opacity: 0.5 }}></div>
+
         <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <LayoutDashboard size={20} />
-          <span>Dashboard</span>
+          <span>Dashboard (Korea)</span>
         </NavLink>
         
         <NavLink to="/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
@@ -40,12 +47,12 @@ const Sidebar = () => {
 
         <NavLink to="/ingestion" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <UploadCloud size={20} />
-          <span>Data Ingestion</span>
+          <span>Local Ingestion</span>
         </NavLink>
         
         <NavLink to="/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <FileText size={20} />
-          <span>Compliance Reports</span>
+          <span>MOHW Reports</span>
         </NavLink>
 
         <NavLink to="/audit" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>

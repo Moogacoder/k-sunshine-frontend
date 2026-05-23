@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Search, Filter, SlidersHorizontal, AlertCircle, Edit2, Save, X, ArrowUp, ArrowDown } from 'lucide-react';
+import { APIGateway } from '../datacenter/api_gateway';
 
 interface Transaction {
   id: string;
@@ -34,11 +35,31 @@ const DataExplorer = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/reports/transactions');
-      if (response.ok) {
-        const data = await response.json();
-        setTransactions(data);
-      }
+      const krSpend = APIGateway.getTransactions('KR');
+      const batches = APIGateway.getBatches();
+      
+      const mappedTx = krSpend.map(t => {
+        const batch = batches.find(b => b.batchId === t.batchId);
+        return {
+          id: t.id,
+          categoryOfBenefit: t.spendCategory,
+          dateOfProvision: t.dateOfProvision,
+          placeOfProvision: t.placeOfProvision,
+          purposeOfBenefit: t.purposeOfBenefit,
+          amountKRW: t.amountOriginal,
+          currency: t.currencyOriginal,
+          details: t.details,
+          sourceFile: batch ? batch.sourceFileName : 'KR_Sunshine_Transactions_Q1.xlsx',
+          entity: {
+            recipientType: t.recipientType,
+            recipientName: t.recipientName,
+            licenseNumber: t.licenseNumber,
+            workplaceInstitution: t.workplaceInstitution,
+            specialtyDepartment: t.specialtyDepartment
+          }
+        };
+      });
+      setTransactions(mappedTx);
     } catch (err) {
       console.error("Failed to fetch reports data:", err);
     } finally {
@@ -73,15 +94,20 @@ const DataExplorer = () => {
 
   const handleSaveEdit = async (id: string) => {
     try {
-      const response = await fetch(`https://k-sunshine-backend-381662135057.us-central1.run.app/api/reports/transactions/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editFormData)
-      });
+      // Map editFormData back onto central universal schema properties
+      const updatedValues = {
+        dateOfProvision: editFormData.dateOfProvision ? new Date(editFormData.dateOfProvision).toISOString() : undefined,
+        amountOriginal: editFormData.amountKRW ? Number(editFormData.amountKRW) : undefined,
+        spendCategory: editFormData.categoryOfBenefit,
+        placeOfProvision: editFormData.placeOfProvision,
+        purposeOfBenefit: editFormData.purposeOfBenefit,
+        details: editFormData.details
+      };
+
+      const success = APIGateway.updateTransaction(id, updatedValues);
       
-      if (response.ok) {
-        const updatedTx = await response.json();
-        setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...updatedTx } : t));
+      if (success) {
+        fetchTransactions();
         setEditingId(null);
         setEditFormData({});
       } else {

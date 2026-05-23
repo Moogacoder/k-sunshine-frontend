@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FileText, Database, Calendar } from 'lucide-react';
+import { APIGateway } from '../datacenter/api_gateway';
 
 interface FileStat {
   filename: string;
@@ -41,11 +42,21 @@ const SourceFiles = () => {
 
   const fetchFiles = async () => {
     try {
-      const response = await fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/source-files');
-      if (response.ok) {
-        const data = await response.json();
-        setFiles(data);
-      }
+      const krBatches = APIGateway.getBatches().filter(b => b.countryCode === 'KR');
+      const krTransactions = APIGateway.getTransactions('KR');
+      
+      const mappedFiles: FileStat[] = krBatches.map(b => {
+        const batchTx = krTransactions.filter(t => t.batchId === b.batchId);
+        const totalAmount = batchTx.reduce((sum, t) => sum + t.amountOriginal, 0);
+        return {
+          filename: b.sourceFileName,
+          recordCount: b.totalRecords,
+          totalAmountKRW: totalAmount,
+          earliestDate: b.uploadTimestamp,
+          latestDate: b.uploadTimestamp
+        };
+      });
+      setFiles(mappedFiles);
     } catch (err) {
       console.error("Failed to fetch source files:", err);
     } finally {
@@ -59,10 +70,32 @@ const SourceFiles = () => {
     setRecords([]);
     
     try {
-      const response = await fetch(`https://k-sunshine-backend-381662135057.us-central1.run.app/api/source-files/${filename}/records`);
-      if (response.ok) {
-        const data = await response.json();
-        setRecords(data);
+      const krBatches = APIGateway.getBatches().filter(b => b.countryCode === 'KR');
+      const targetBatch = krBatches.find(b => b.sourceFileName === filename);
+      
+      if (targetBatch) {
+        const krTransactions = APIGateway.getTransactions('KR');
+        const batchTx = krTransactions.filter(t => t.batchId === targetBatch.batchId);
+        
+        const mappedTx = batchTx.map(t => ({
+          id: t.id,
+          categoryOfBenefit: t.spendCategory,
+          dateOfProvision: t.dateOfProvision,
+          placeOfProvision: t.placeOfProvision,
+          purposeOfBenefit: t.purposeOfBenefit,
+          amountKRW: t.amountOriginal,
+          currency: t.currencyOriginal,
+          details: t.details,
+          sourceFile: filename,
+          entity: {
+            recipientType: t.recipientType,
+            recipientName: t.recipientName,
+            licenseNumber: t.licenseNumber,
+            workplaceInstitution: t.workplaceInstitution,
+            specialtyDepartment: t.specialtyDepartment
+          }
+        }));
+        setRecords(mappedTx);
       }
     } catch (err) {
       console.error("Failed to fetch records for file:", err);

@@ -3,6 +3,7 @@ import { FileSpreadsheet, Download, Clock, User, Eye, X, Loader2 } from 'lucide-
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { APIGateway } from '../datacenter/api_gateway';
 
 
 interface Transaction {
@@ -47,18 +48,45 @@ const Reporting = () => {
 
   const fetchData = async () => {
     try {
-      const [txRes, archiveRes] = await Promise.all([
-        fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/reports/transactions'),
-        fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/reports/archive')
-      ]);
-      
-      if (txRes.ok) {
-        const data = await txRes.json();
-        setTransactions(data);
-      }
-      if (archiveRes.ok) {
-        const data = await archiveRes.json();
-        setArchivedReports(data);
+      // 1. Fetch transactions from the Central Data Center's South Korea stream feeds
+      const krSpend = APIGateway.getTransactions('KR');
+      const mappedTx = krSpend.map(t => ({
+        id: t.id,
+        categoryOfBenefit: t.spendCategory,
+        dateOfProvision: t.dateOfProvision,
+        placeOfProvision: t.placeOfProvision,
+        purposeOfBenefit: t.purposeOfBenefit,
+        amountKRW: t.amountOriginal,
+        currency: t.currencyOriginal,
+        details: t.details,
+        entity: {
+          recipientType: t.recipientType,
+          recipientName: t.recipientName,
+          licenseNumber: t.licenseNumber,
+          workplaceInstitution: t.workplaceInstitution,
+          specialtyDepartment: t.specialtyDepartment
+        }
+      }));
+      setTransactions(mappedTx);
+
+      // 2. Fetch reports from local storage
+      const cached = localStorage.getItem('k_sunshine_archived_reports');
+      if (cached) {
+        setArchivedReports(JSON.parse(cached));
+      } else {
+        const seedArchives: ArchivedReport[] = [
+          {
+            id: 'ARC-SEED-001',
+            templateName: 'Template 4: Product Presentations',
+            reportYear: '2026',
+            generatedBy: 'SYSTEM',
+            payload: JSON.stringify([]),
+            status: 'COMPLIANT',
+            createdAt: new Date().toISOString()
+          }
+        ];
+        setArchivedReports(seedArchives);
+        localStorage.setItem('k_sunshine_archived_reports', JSON.stringify(seedArchives));
       }
     } catch (err) {
       console.error("Failed to fetch data:", err);
@@ -74,20 +102,19 @@ const Reporting = () => {
   const archiveReport = async (templateName: string, dataToExport: any[]) => {
     try {
       const currentYear = new Date().getFullYear().toString();
-      const response = await fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/reports/archive', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          templateName,
-          reportYear: currentYear,
-          payload: dataToExport,
-          generatedBy: 'ADMIN' // Can be tied to AuthContext later
-        })
-      });
-      if (response.ok) {
-        const newReport = await response.json();
-        setArchivedReports(prev => [newReport, ...prev]);
-      }
+      const newReport: ArchivedReport = {
+        id: `ARC-${Date.now()}`,
+        templateName,
+        reportYear: currentYear,
+        generatedBy: 'ADMIN',
+        payload: JSON.stringify(dataToExport),
+        status: 'COMPLIANT',
+        createdAt: new Date().toISOString()
+      };
+      
+      const updated = [newReport, ...archivedReports];
+      setArchivedReports(updated);
+      localStorage.setItem('k_sunshine_archived_reports', JSON.stringify(updated));
     } catch (err) {
       console.error("Failed to archive report:", err);
     }

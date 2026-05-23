@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { APIGateway } from '../datacenter/api_gateway';
 
 interface Transaction {
   id: string;
@@ -24,15 +25,31 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = () => {
       try {
-        const [txRes, flagsRes] = await Promise.all([
-          fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/reports/transactions'),
-          fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/remediation')
-        ]);
+        // Query the Central Data Center's South Korea stream feeds
+        const krSpend = APIGateway.getTransactions('KR');
         
-        if (txRes.ok) setTransactions(await txRes.json());
-        if (flagsRes.ok) setRemediationFlags(await flagsRes.json());
+        // Map central spend items back onto South Korea local dashboard columns
+        const mappedTx = krSpend.map(t => ({
+          id: t.id,
+          categoryOfBenefit: t.spendCategory,
+          dateOfProvision: t.dateOfProvision,
+          amountKRW: t.amountOriginal,
+          entity: {
+            recipientName: t.recipientName,
+            workplaceInstitution: t.workplaceInstitution
+          }
+        }));
+
+        const mockFlags = krSpend.map(t => ({
+          id: `FLAG-${t.id}`,
+          status: t.remediationStatus === 'PENDING_REVIEW' ? 'PENDING' : 'RESOLVED',
+          transactionId: t.id
+        }));
+
+        setTransactions(mappedTx);
+        setRemediationFlags(mockFlags);
       } catch (err) {
         console.error("Failed to fetch dashboard data:", err);
       } finally {
