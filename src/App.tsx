@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import AgentWidget from './components/AgentWidget';
 import Dashboard from './pages/Dashboard';
 import Ingestion from './pages/Ingestion';
+import SourceFiles from './pages/SourceFiles';
 import Remediation from './pages/Remediation';
 import Reporting from './pages/Reporting';
 import DataExplorer from './pages/DataExplorer';
@@ -21,6 +22,7 @@ const AppLayout = () => {
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/source-files" element={<SourceFiles />} />
           <Route path="/ingestion" element={<Ingestion />} />
           <Route path="/remediation" element={<Remediation />} />
           <Route path="/reporting" element={<Reporting />} />

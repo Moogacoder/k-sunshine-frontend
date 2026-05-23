@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, UploadCloud, AlertCircle, FileText, LogOut, Database, Shield, Sparkles } from 'lucide-react';
+import { LayoutDashboard, UploadCloud, AlertCircle, FileText, LogOut, Database, Shield, Sparkles, FileUp } from 'lucide-react';
 import { useAuth } from './AuthContext';
 
 const Sidebar = () => {
@@ -23,6 +23,11 @@ const Sidebar = () => {
           <span>Dashboard</span>
         </NavLink>
         
+        <NavLink to="/source-files" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <FileUp size={20} />
+          <span>Source Files</span>
+        </NavLink>
+
         <NavLink to="/ingestion" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <UploadCloud size={20} />
           <span>Data Ingestion</span>

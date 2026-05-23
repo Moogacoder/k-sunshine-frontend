@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, SlidersHorizontal, AlertCircle, Edit2, Save, X } from 'lucide-react';
+import { Search, Filter, SlidersHorizontal, AlertCircle, Edit2, Save, X, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface Transaction {
   id: string;
@@ -24,7 +24,7 @@ const DataExplorer = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState<{ key: keyof Transaction | 'recipientName', direction: 'asc' | 'desc' } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<Transaction>>({});
 
@@ -46,7 +46,7 @@ const DataExplorer = () => {
     }
   };
 
-  const handleSort = (key: keyof Transaction | 'recipientName') => {
+  const handleSort = (key: string) => {
     let direction: 'asc' | 'desc' = 'desc';
     if (sortConfig && sortConfig.key === key && sortConfig.direction === 'desc') {
       direction = 'asc';
@@ -57,6 +57,7 @@ const DataExplorer = () => {
   const handleEditClick = (tx: Transaction) => {
     setEditingId(tx.id);
     setEditFormData({
+      dateOfProvision: tx.dateOfProvision.split('T')[0], // Extract just the date part for the input
       amountKRW: tx.amountKRW,
       categoryOfBenefit: tx.categoryOfBenefit,
       placeOfProvision: tx.placeOfProvision,
@@ -112,13 +113,23 @@ const DataExplorer = () => {
 
     if (sortConfig) {
       result.sort((a, b) => {
-        let valA: any = sortConfig.key === 'recipientName' ? a.entity.recipientName : a[sortConfig.key as keyof Transaction];
-        let valB: any = sortConfig.key === 'recipientName' ? b.entity.recipientName : b[sortConfig.key as keyof Transaction];
+        let valA: any;
+        let valB: any;
+        
+        if (sortConfig.key === 'recipientName') { valA = a.entity.recipientName; valB = b.entity.recipientName; }
+        else if (sortConfig.key === 'licenseNumber') { valA = a.entity.licenseNumber; valB = b.entity.licenseNumber; }
+        else if (sortConfig.key === 'workplaceInstitution') { valA = a.entity.workplaceInstitution; valB = b.entity.workplaceInstitution; }
+        else if (sortConfig.key === 'specialtyDepartment') { valA = a.entity.specialtyDepartment; valB = b.entity.specialtyDepartment; }
+        else { valA = a[sortConfig.key as keyof Transaction]; valB = b[sortConfig.key as keyof Transaction]; }
         
         if (sortConfig.key === 'dateOfProvision') {
           valA = new Date(valA).getTime();
           valB = new Date(valB).getTime();
         }
+        
+        // Handle nulls/undefined safely
+        if (valA == null) valA = '';
+        if (valB == null) valB = '';
         
         if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
         if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -128,6 +139,33 @@ const DataExplorer = () => {
 
     return result;
   }, [transactions, searchTerm, sortConfig]);
+
+  const renderSortableHeader = (label: string, sortKey: string, minWidth: string = '120px') => {
+    return (
+      <th 
+        onClick={() => handleSort(sortKey)} 
+        style={{ 
+          cursor: 'pointer', 
+          resize: 'horizontal', 
+          overflow: 'hidden',
+          minWidth: minWidth,
+          paddingRight: '24px', // Space for sort icon
+          position: 'relative'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</span>
+          <div style={{ flexShrink: 0 }}>
+            {sortConfig?.key === sortKey ? (
+              sortConfig.direction === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />
+            ) : (
+              <SlidersHorizontal size={12} style={{ opacity: 0.3 }} />
+            )}
+          </div>
+        </div>
+      </th>
+    );
+  };
 
   return (
     <div>
@@ -148,26 +186,26 @@ const DataExplorer = () => {
         <button className="btn" style={{ border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-primary)' }}><Filter size={18} /> Filters</button>
       </div>
 
-      <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
+      <div className="card" style={{ padding: '0' }}>
         {isLoading ? (
           <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading records...</div>
         ) : (
-          <div className="table-container" style={{ margin: 0, overflowX: 'auto' }}>
-            <table style={{ margin: 0, width: 'max-content', minWidth: '100%' }}>
+          <div className="table-container" style={{ margin: 0, overflowX: 'auto', display: 'block', maxWidth: '100%' }}>
+            <table style={{ margin: 0, width: 'max-content', minWidth: '100%', tableLayout: 'auto' }}>
               <thead>
                 <tr>
-                  <th onClick={() => handleSort('dateOfProvision')} style={{ cursor: 'pointer' }}>Date <SlidersHorizontal size={12} style={{ marginLeft: '4px', display: 'inline' }} /></th>
-                  <th onClick={() => handleSort('recipientName')} style={{ cursor: 'pointer' }}>Recipient Name <SlidersHorizontal size={12} style={{ marginLeft: '4px', display: 'inline' }} /></th>
-                  <th>License Number</th>
-                  <th>Institution</th>
-                  <th>Specialty</th>
-                  <th onClick={() => handleSort('categoryOfBenefit')} style={{ cursor: 'pointer' }}>Category <SlidersHorizontal size={12} style={{ marginLeft: '4px', display: 'inline' }} /></th>
-                  <th>Place</th>
-                  <th>Purpose</th>
-                  <th>Details</th>
-                  <th onClick={() => handleSort('amountKRW')} style={{ cursor: 'pointer' }}>Amount (KRW) <SlidersHorizontal size={12} style={{ marginLeft: '4px', display: 'inline' }} /></th>
-                  <th>Source File (Lineage)</th>
-                  <th>Actions</th>
+                  {renderSortableHeader('Date', 'dateOfProvision')}
+                  {renderSortableHeader('Recipient Name', 'recipientName', '150px')}
+                  {renderSortableHeader('License Number', 'licenseNumber')}
+                  {renderSortableHeader('Institution', 'workplaceInstitution', '180px')}
+                  {renderSortableHeader('Specialty', 'specialtyDepartment', '150px')}
+                  {renderSortableHeader('Category', 'categoryOfBenefit', '150px')}
+                  {renderSortableHeader('Place', 'placeOfProvision')}
+                  {renderSortableHeader('Purpose', 'purposeOfBenefit', '150px')}
+                  {renderSortableHeader('Details', 'details', '200px')}
+                  {renderSortableHeader('Amount (KRW)', 'amountKRW')}
+                  {renderSortableHeader('Source File', 'sourceFile', '180px')}
+                  <th style={{ minWidth: '100px' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -181,14 +219,13 @@ const DataExplorer = () => {
                 ) : (
                   filteredAndSortedTransactions.slice(0, 100).map((tx) => (
                     <tr key={tx.id}>
-                      <td>{new Date(tx.dateOfProvision).toLocaleDateString()}</td>
-                      <td style={{ fontWeight: 500 }}>{tx.entity.recipientName}</td>
-                      <td style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{tx.entity.licenseNumber}</td>
-                      <td>{tx.entity.workplaceInstitution || '-'}</td>
-                      <td>{tx.entity.specialtyDepartment || '-'}</td>
-                      
                       {editingId === tx.id ? (
                         <>
+                          <td><input type="date" value={editFormData.dateOfProvision || ''} onChange={(e) => handleChange(e, 'dateOfProvision')} style={{ padding: '4px' }} /></td>
+                          <td style={{ fontWeight: 500 }}>{tx.entity.recipientName}</td>
+                          <td style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{tx.entity.licenseNumber}</td>
+                          <td>{tx.entity.workplaceInstitution || '-'}</td>
+                          <td>{tx.entity.specialtyDepartment || '-'}</td>
                           <td><input value={editFormData.categoryOfBenefit || ''} onChange={(e) => handleChange(e, 'categoryOfBenefit')} style={{ padding: '4px' }} /></td>
                           <td><input value={editFormData.placeOfProvision || ''} onChange={(e) => handleChange(e, 'placeOfProvision')} style={{ padding: '4px' }} /></td>
                           <td><input value={editFormData.purposeOfBenefit || ''} onChange={(e) => handleChange(e, 'purposeOfBenefit')} style={{ padding: '4px' }} /></td>
@@ -197,6 +234,11 @@ const DataExplorer = () => {
                         </>
                       ) : (
                         <>
+                          <td>{new Date(tx.dateOfProvision).toLocaleDateString()}</td>
+                          <td style={{ fontWeight: 500 }}>{tx.entity.recipientName}</td>
+                          <td style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{tx.entity.licenseNumber}</td>
+                          <td>{tx.entity.workplaceInstitution || '-'}</td>
+                          <td>{tx.entity.specialtyDepartment || '-'}</td>
                           <td>{tx.categoryOfBenefit}</td>
                           <td>{tx.placeOfProvision || '-'}</td>
                           <td>{tx.purposeOfBenefit || '-'}</td>
