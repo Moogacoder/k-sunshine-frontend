@@ -23,9 +23,19 @@ const Sidebar = () => {
           <span>Dashboard</span>
         </NavLink>
         
+        <NavLink to="/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <Database size={20} />
+          <span>Data Explorer</span>
+        </NavLink>
+
         <NavLink to="/source-files" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <FileUp size={20} />
           <span>Source Files</span>
+        </NavLink>
+
+        <NavLink to="/remediation" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <AlertCircle size={20} />
+          <span>Remediation</span>
         </NavLink>
 
         <NavLink to="/ingestion" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
@@ -33,19 +43,9 @@ const Sidebar = () => {
           <span>Data Ingestion</span>
         </NavLink>
         
-        <NavLink to="/remediation" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-          <AlertCircle size={20} />
-          <span>Remediation</span>
-        </NavLink>
-        
         <NavLink to="/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <FileText size={20} />
           <span>Compliance Reports</span>
-        </NavLink>
-
-        <NavLink to="/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-          <Database size={20} />
-          <span>Data Explorer</span>
         </NavLink>
 
         <NavLink to="/audit" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
