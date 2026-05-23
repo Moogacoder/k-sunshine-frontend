@@ -419,7 +419,7 @@ const Reporting = () => {
         // 2. Build the PDF layout (Landscape A4: 297mm x 210mm)
         
         // Brand Header Banner
-        doc.setFillColor(15, 23, 42); // slate-900
+        doc.setFillColor(11, 15, 25); // obsidian-950 (matching base bg)
         doc.rect(0, 0, 297, 28, 'F');
         
         // Header Text
@@ -428,12 +428,12 @@ const Reporting = () => {
         doc.setFontSize(15);
         doc.text('K-SUNSHINE STATUTORY AUDIT & COMPLIANCE REPORT', 14, 12);
         
-        doc.setTextColor(56, 189, 248); // sky-400
+        doc.setTextColor(167, 139, 250); // violet-300 (accent light glow)
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8.5);
         doc.text('REPORTS FORMULATED UNDER THE PHARMACEUTICAL AFFAIRS ACT & MINISTRY OF HEALTH AND WELFARE (MOHW) REGULATORY STANDARDS', 14, 18);
 
-        doc.setFillColor(56, 189, 248);
+        doc.setFillColor(124, 58, 237); // purple-600 (primary brand purple)
         doc.rect(0, 26, 297, 2, 'F');
 
         // Executive Summary Container
@@ -455,7 +455,7 @@ const Reporting = () => {
         doc.setTextColor(30, 41, 59); // slate-800
         doc.text(title.toUpperCase(), 60, 42);
         doc.text(new Date().toLocaleString(), 60, 48);
-        doc.setTextColor(16, 185, 129); // emerald-500
+        doc.setTextColor(74, 222, 128); // green-400 (secondary brand green)
         doc.setFont('helvetica', 'bold');
         doc.text('COMPLIANT & SECURE (DE-IDENTIFIED AUDIT FORMAT)', 60, 54);
         doc.setTextColor(30, 41, 59); // slate-800
@@ -467,7 +467,7 @@ const Reporting = () => {
         doc.setTextColor(100, 116, 139); // slate-500
         doc.text('TOTAL REPORTED SPEND', 200, 42);
         
-        doc.setTextColor(14, 165, 233); // primary-accent
+        doc.setTextColor(124, 58, 237); // purple-600 (primary brand purple)
         doc.setFontSize(16);
         doc.text('KRW ₩' + totalAmount.toLocaleString(), 200, 50);
 
@@ -501,7 +501,7 @@ const Reporting = () => {
             body: bodyRows,
             theme: 'striped',
             headStyles: { 
-              fillColor: [30, 41, 59], 
+              fillColor: [17, 24, 39], // charcoal-900 (surface bg)
               textColor: [248, 250, 252], 
               fontStyle: 'bold', 
               fontSize: 8.5,
