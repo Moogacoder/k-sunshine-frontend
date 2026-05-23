@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, Search, Filter } from 'lucide-react';
-import { APIGateway, type UniversalTransaction, type IngestionBatch } from '../datacenter/api_gateway';
+import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, Search, Filter, X, FileText, ArrowRight } from 'lucide-react';
+import { APIGateway, type UniversalTransaction, type IngestionBatch, type AuditLog } from '../datacenter/api_gateway';
 import * as XLSX from 'xlsx';
 
 const DataCenter: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'uploader' | 'transactions'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'uploader' | 'transactions' | 'source_files'>('overview');
   const [countryFilter, setCountryFilter] = useState<string>('GLOBAL');
   const [searchTerm, setSearchTerm] = useState<string>('');
   
   // States holding mock central database feeds
   const [transactions, setTransactions] = useState<UniversalTransaction[]>([]);
   const [batches, setBatches] = useState<IngestionBatch[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
 
   // Ingestion form state
   const [targetCountry, setTargetCountry] = useState<string>('KR');
@@ -18,11 +19,47 @@ const DataCenter: React.FC = () => {
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  // Sorting and advanced filtering states
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+  const [recipientTypeFilter, setRecipientTypeFilter] = useState<string>('ALL');
+  const [remediationFilter, setRemediationFilter] = useState<string>('ALL');
+
+  // Inline row editor states
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editFormData, setEditFormData] = useState<Partial<UniversalTransaction>>({});
+
+  // History audit modal state
+  const [selectedHistoryTxId, setSelectedHistoryTxId] = useState<string | null>(null);
+
+  // Source files snapshot view state
+  const [selectedSourceFileId, setSelectedSourceFileId] = useState<string | null>(null);
+
+  // Committing staging state
+  const [isCommitting, setIsCommitting] = useState<boolean>(false);
+  const [showReviewModal, setShowReviewModal] = useState<boolean>(false);
+  const [isCertified, setIsCertified] = useState<boolean>(false);
+
   useEffect(() => {
-    // Load live central database feed
-    setTransactions(APIGateway.getTransactions(countryFilter));
-    setBatches(APIGateway.getBatches());
+    // Load live central database feed asynchronously
+    const loadData = async () => {
+      const txs = await APIGateway.getTransactions(countryFilter);
+      const bts = await APIGateway.getBatches();
+      setTransactions(txs);
+      setBatches(bts);
+    };
+    loadData();
   }, [countryFilter]);
+
+  // Load audit logs when modal is shown
+  useEffect(() => {
+    const loadLogs = async () => {
+      if (selectedHistoryTxId) {
+        const logs = await APIGateway.getAuditLogs();
+        setAuditLogs(logs);
+      }
+    };
+    loadLogs();
+  }, [selectedHistoryTxId]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -46,25 +83,27 @@ const DataCenter: React.FC = () => {
         const mockRows = json.map((row: any) => ({
           recipientType: row['Recipient Type'] || row['Type'] || 'HCP',
           recipientName: row['Recipient Name'] || row['Nom'] || row['Name'] || 'Dr. Target HCP',
-          licenseNumber: String(row['License Number'] || row['RPPS'] || row['NPI'] || ''),
-          workplaceInstitution: row['Workplace'] || row['Hopital'] || row['Institution'] || '',
-          specialtyDepartment: row['Specialty'] || row['Specialite'] || '',
-          spendCategory: row['Category of Benefit'] || row['Categorie'] || 'PRESENTATION',
-          dateOfProvision: row['Date of Provision'] || row['Date'] || new Date().toISOString(),
-          placeOfProvision: row['Place'] || row['Lieu'] || '',
-          purposeOfBenefit: row['Purpose'] || row['Objet'] || '',
-          details: row['Details'] || '',
+          licenseNumber: String(row['License Number'] || row['RPPS'] || row['NPI'] || row['Codice Fiscale'] || ''),
+          workplaceInstitution: row['Workplace'] || row['Hopital'] || row['Institution'] || row['Struttura'] || '',
+          specialtyDepartment: row['Specialty'] || row['Specialite'] || row['Specializzazione'] || '',
+          spendCategory: row['Category of Benefit'] || row['Categorie'] || row['Tipologia'] || 'PRESENTATION',
+          dateOfProvision: row['Date of Provision'] || row['Date'] || row['Data'] || new Date().toISOString(),
+          placeOfProvision: row['Place'] || row['Lieu'] || row['Lieu'] || '',
+          purposeOfBenefit: row['Purpose'] || row['Objet'] || row['Oggetto'] || '',
+          details: row['Details'] || row['Dettagli'] || '',
           amountKRW: row['Amount (KRW)'] || (targetCountry === 'KR' ? Number(row['Amount']) : 0),
-          amountEUR: row['Amount (EUR)'] || (targetCountry === 'FR' ? Number(row['Amount']) : 0),
+          amountEUR: row['Amount (EUR)'] || (targetCountry === 'FR' || targetCountry === 'IT' ? Number(row['Amount']) : 0),
           amountUSD: row['Amount (USD)'] || (targetCountry === 'US' ? Number(row['Amount']) : 0)
         }));
 
-        const result = APIGateway.ingestData(targetCountry, targetYear, selectedFile.name, mockRows);
+        const result = await APIGateway.ingestData(targetCountry, targetYear, selectedFile.name, mockRows);
         if (result.success) {
           // Reload central ledger
-          setTransactions(APIGateway.getTransactions(countryFilter));
-          setBatches(APIGateway.getBatches());
-          alert(`Successfully ingested ${result.ingested} records. ${result.flagged} records flagged for remediation review.`);
+          const txs = await APIGateway.getTransactions(countryFilter);
+          const bts = await APIGateway.getBatches();
+          setTransactions(txs);
+          setBatches(bts);
+          alert(`Ingestion Completed: Standardized ${result.ingested} records. ${result.flagged} flagged anomalies routed to Remediation.`);
           setActiveTab('overview');
           setSelectedFile(null);
         }
@@ -77,28 +116,189 @@ const DataCenter: React.FC = () => {
     }, 500);
   };
 
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'desc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'desc') {
+      direction = 'asc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const handleEditClick = (tx: UniversalTransaction) => {
+    setEditingId(tx.id);
+    setEditFormData({
+      recipientName: tx.recipientName,
+      workplaceInstitution: tx.workplaceInstitution,
+      specialtyDepartment: tx.specialtyDepartment,
+      spendCategory: tx.spendCategory,
+      dateOfProvision: tx.dateOfProvision.split('T')[0],
+      purposeOfBenefit: tx.purposeOfBenefit,
+      details: tx.details,
+      amountOriginal: tx.amountOriginal
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditFormData({});
+  };
+
+  const handleSaveEdit = async (id: string) => {
+    try {
+      const targetTx = transactions.find(t => t.id === id);
+      if (!targetTx) return;
+
+      const origAmount = editFormData.amountOriginal ? Number(editFormData.amountOriginal) : targetTx.amountOriginal;
+      
+      // Calculate updated normalized USD amount based on country rules
+      let amountUSD = origAmount;
+      if (targetTx.countryCode === 'KR') amountUSD = origAmount / 1300;
+      if (targetTx.countryCode === 'FR' || targetTx.countryCode === 'IT') amountUSD = origAmount * 1.09;
+      
+      // Dynamic Policy Limits Re-evaluation on save
+      const limitExceeded = 
+        (targetTx.countryCode === 'KR' && origAmount > 500000) ||
+        ((targetTx.countryCode === 'FR' || targetTx.countryCode === 'IT') && origAmount > 150) ||
+        (targetTx.countryCode === 'US' && origAmount > 500);
+
+      const updatedValues: Partial<UniversalTransaction> = {
+        recipientName: editFormData.recipientName,
+        workplaceInstitution: editFormData.workplaceInstitution,
+        specialtyDepartment: editFormData.specialtyDepartment,
+        spendCategory: editFormData.spendCategory,
+        dateOfProvision: editFormData.dateOfProvision ? new Date(editFormData.dateOfProvision).toISOString() : undefined,
+        purposeOfBenefit: editFormData.purposeOfBenefit,
+        details: editFormData.details,
+        amountOriginal: origAmount,
+        amountUSD: parseFloat(amountUSD.toFixed(2)),
+        remediationStatus: limitExceeded ? 'PENDING_REVIEW' : 'APPROVED'
+      };
+
+      const success = await APIGateway.updateTransaction(id, updatedValues);
+      if (success) {
+        // Reload transactions from the central source of truth
+        const txs = await APIGateway.getTransactions(countryFilter);
+        setTransactions(txs);
+        setEditingId(null);
+        setEditFormData({});
+      } else {
+        alert("Failed to update transaction in database.");
+      }
+    } catch (err) {
+      console.error("Error saving inline edit in global explorer:", err);
+    }
+  };
+
+  const handleOpenReviewModal = () => {
+    setIsCertified(false);
+    setShowReviewModal(true);
+  };
+
+  const handleConfirmCommit = async () => {
+    if (!isCertified) return;
+    setIsCommitting(true);
+    try {
+      const result = await APIGateway.commitStaging();
+      if (result.success) {
+        const txs = await APIGateway.getTransactions(countryFilter);
+        const bts = await APIGateway.getBatches();
+        setTransactions(txs);
+        setBatches(bts);
+        setShowReviewModal(false);
+        alert(`Successfully committed staging records to the country databases! Routed: Korea: ${result.routed?.KR || 0}, Italy: ${result.routed?.IT || 0}, France: ${result.routed?.FR || 0}, USA: ${result.routed?.US || 0}`);
+      } else {
+        alert("Failed to commit staging records: " + (result.message || "Unknown error"));
+      }
+    } catch (err) {
+      console.error("Error committing staging buffer:", err);
+      alert("Failed to communicate with ETL API service.");
+    } finally {
+      setIsCommitting(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, field: string) => {
+    setEditFormData({ ...editFormData, [field]: e.target.value });
+  };
+
   // Computations
   const globalTotalUSD = transactions.reduce((sum, t) => sum + t.amountUSD, 0);
   const activeAlertsCount = transactions.filter(t => t.remediationStatus === 'PENDING_REVIEW').length;
   
-  const filteredTransactions = transactions.filter(t => {
-    const matchesSearch = 
-      t.recipientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.workplaceInstitution.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.spendCategory.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
-  });
+  // Multi-dimensional filtering and sorting computations
+  const filteredAndSortedTransactions = React.useMemo(() => {
+    let result = [...transactions];
+
+    // 1. Text Search Filter
+    if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
+      result = result.filter(t => 
+        t.recipientName.toLowerCase().includes(lowerSearch) ||
+        t.workplaceInstitution.toLowerCase().includes(lowerSearch) ||
+        t.id.toLowerCase().includes(lowerSearch) ||
+        t.spendCategory.toLowerCase().includes(lowerSearch) ||
+        t.purposeOfBenefit.toLowerCase().includes(lowerSearch)
+      );
+    }
+
+    // 2. Recipient Type Filter
+    if (recipientTypeFilter !== 'ALL') {
+      result = result.filter(t => t.recipientType === recipientTypeFilter);
+    }
+
+    // 3. Compliance Remediation Filter
+    if (remediationFilter !== 'ALL') {
+      result = result.filter(t => t.remediationStatus === remediationFilter);
+    }
+
+    // 4. Sorting logic
+    if (sortConfig) {
+      result.sort((a, b) => {
+        let valA = a[sortConfig.key as keyof UniversalTransaction];
+        let valB = b[sortConfig.key as keyof UniversalTransaction];
+
+        if (sortConfig.key === 'dateOfProvision') {
+          valA = new Date(valA as string).getTime();
+          valB = new Date(valB as string).getTime();
+        }
+
+        if (valA == null) valA = '';
+        if (valB == null) valB = '';
+
+        if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [transactions, searchTerm, sortConfig, recipientTypeFilter, remediationFilter]);
+
+  const renderSortableHeader = (label: string, sortKey: string) => {
+    return (
+      <th 
+        onClick={() => handleSort(sortKey)} 
+        style={{ cursor: 'pointer', userSelect: 'none', padding: '12px 16px', background: 'var(--bg-main)' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'space-between' }}>
+          <span>{label}</span>
+          <span style={{ fontSize: '0.75rem', color: sortConfig?.key === sortKey ? 'var(--primary-glow)' : 'var(--text-secondary)', opacity: sortConfig?.key === sortKey ? 1 : 0.3 }}>
+            {sortConfig?.key === sortKey ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}
+          </span>
+        </div>
+      </th>
+    );
+  };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Globe size={32} color="var(--primary-accent)" />
-          <h1 className="page-title" style={{ margin: 0 }}>Global Pharma Transparency Data Center</h1>
+          <h1 className="page-title" style={{ margin: 0 }}>Intelligent Transparency Data Center</h1>
         </div>
         <p className="page-subtitle" style={{ marginBottom: '16px' }}>
-          Central administrative portal for multi-jurisdiction data ingestion, Universal Data Model matching, and downstream localized feeds.
+          Central administrative portal for multi-jurisdiction spend records, Universal Data Model matching, and downstream localized portals feeds.
         </p>
       </div>
 
@@ -107,29 +307,78 @@ const DataCenter: React.FC = () => {
         <button 
           onClick={() => setActiveTab('overview')}
           className={`btn ${activeTab === 'overview' ? 'btn-primary' : ''}`}
-          style={{ background: activeTab === 'overview' ? '' : 'transparent', color: activeTab === 'overview' ? '' : 'var(--text-secondary)' }}
+          style={{ background: activeTab === 'overview' ? '' : 'transparent', color: activeTab === 'overview' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
         >
           <Database size={18} /> Global Ledger Overview
         </button>
         <button 
           onClick={() => setActiveTab('uploader')}
           className={`btn ${activeTab === 'uploader' ? 'btn-primary' : ''}`}
-          style={{ background: activeTab === 'uploader' ? '' : 'transparent', color: activeTab === 'uploader' ? '' : 'var(--text-secondary)' }}
+          style={{ background: activeTab === 'uploader' ? '' : 'transparent', color: activeTab === 'uploader' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
         >
           <UploadCloud size={18} /> Ingest Multi-Country Data
         </button>
         <button 
           onClick={() => setActiveTab('transactions')}
           className={`btn ${activeTab === 'transactions' ? 'btn-primary' : ''}`}
-          style={{ background: activeTab === 'transactions' ? '' : 'transparent', color: activeTab === 'transactions' ? '' : 'var(--text-secondary)' }}
+          style={{ background: activeTab === 'transactions' ? '' : 'transparent', color: activeTab === 'transactions' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
         >
           <Search size={18} /> Universal Records Grid
+        </button>
+        <button 
+          onClick={() => setActiveTab('source_files')}
+          className={`btn ${activeTab === 'source_files' ? 'btn-primary' : ''}`}
+          style={{ background: activeTab === 'source_files' ? '' : 'transparent', color: activeTab === 'source_files' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
+        >
+          <FileText size={18} /> Source Files Explorer
         </button>
       </div>
 
       {/* Overview Dashboard */}
       {activeTab === 'overview' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {/* Commit Staging Buffer Banner */}
+          {countryFilter === 'GLOBAL' && transactions.length > 0 && (
+            <div className="card" style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(139, 92, 246, 0.15) 100%)',
+              border: '1px solid rgba(124, 58, 237, 0.3)',
+              borderRadius: '12px',
+              padding: '24px 30px',
+              boxShadow: '0 8px 32px 0 rgba(124, 58, 237, 0.05)',
+              backdropFilter: 'blur(8px)'
+            }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--primary-glow)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Database size={20} /> Staging Buffer Registry
+                </h3>
+                <p style={{ margin: '6px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                  There are <strong>{transactions.length} records</strong> currently loaded in the staging buffer. After auditing and remediation, commit them to push data to separate compliance country SQL tables.
+                </p>
+              </div>
+              <button
+                onClick={handleOpenReviewModal}
+                disabled={isCommitting}
+                className="btn btn-primary"
+                style={{
+                  padding: '12px 24px',
+                  fontWeight: 600,
+                  fontSize: '0.95rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)'
+                }}
+              >
+                {isCommitting ? 'Routing & Committing...' : (
+                  <>Commit to Registries <ArrowRight size={18} /></>
+                )}
+              </button>
+            </div>
+          )}
+
           {/* KPI Dashboard */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
             <div className="card">
@@ -150,7 +399,7 @@ const DataCenter: React.FC = () => {
 
             <div className="card">
               <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '8px' }}>PENDING COMPLIANCE REMEDIATIONS</h3>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: activeAlertsCount > 0 ? 'var(--danger)' : 'var(--success)' }}>
+              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: activeAlertsCount > 0 ? 'var(--warning)' : 'var(--success)' }}>
                 {activeAlertsCount} Alerts
               </div>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Awaiting statutory override</p>
@@ -159,9 +408,9 @@ const DataCenter: React.FC = () => {
             <div className="card">
               <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '8px' }}>DOWNSTREAM COUNTRY FEEDS</h3>
               <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--success)' }}>
-                3 Jurisdictions
+                4 Jurisdictions
               </div>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>South Korea [KR] | France [FR] | USA [US]</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Korea [KR] | Italy [IT] | France [FR] | USA [US]</p>
             </div>
           </div>
 
@@ -190,7 +439,7 @@ const DataCenter: React.FC = () => {
                       <td style={{ fontWeight: 'bold' }}>{batch.batchId}</td>
                       <td>
                         <span className="badge" style={{ background: '#f1f5f9', border: '1px solid var(--border-color)', color: '#334155' }}>
-                          {batch.countryCode === 'KR' ? '🇰🇷 South Korea' : batch.countryCode === 'FR' ? '🇫🇷 France' : '🇺🇸 USA'}
+                          {batch.countryCode === 'KR' ? '🇰🇷 South Korea' : batch.countryCode === 'IT' ? '🇮🇹 Italy' : batch.countryCode === 'FR' ? '🇫🇷 France' : '🇺🇸 USA'}
                         </span>
                       </td>
                       <td>{batch.reportingYear}</td>
@@ -242,6 +491,7 @@ const DataCenter: React.FC = () => {
                   style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
                 >
                   <option value="KR">🇰🇷 South Korea (Physician Sunshine Act)</option>
+                  <option value="IT">🇮🇹 Italy (Sanità Trasparente Law 31/2022)</option>
                   <option value="FR">🇫🇷 France (Loi Bertrand transparency)</option>
                   <option value="US">🇺🇸 United States (CMS Open Payments)</option>
                 </select>
@@ -286,96 +536,594 @@ const DataCenter: React.FC = () => {
         </div>
       )}
 
-      {/* Universal Records Grid */}
+      {/* Universal Records Grid / Global Data Explorer */}
       {activeTab === 'transactions' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Filters Bar */}
-          <div className="card" style={{ display: 'flex', gap: '16px', padding: '16px', alignItems: 'center' }}>
-            <div style={{ position: 'relative', flex: 1 }}>
+          {/* Advanced Multi-Dimensional Filtering Bar */}
+          <div className="card" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '16px', padding: '16px', alignItems: 'center' }}>
+            <div style={{ position: 'relative' }}>
               <Search size={18} style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-secondary)' }} />
               <input 
                 type="text" 
-                placeholder="Search across centralized database (HCP Name, Category, Hospital, ID...)" 
+                placeholder="Search globally (Name, Hospital, ID, Specialty...)" 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ width: '100%', padding: '10px 10px 10px 40px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)' }}
+                style={{ width: '100%', padding: '10px 10px 10px 40px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.9rem' }}
               />
             </div>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Filter size={18} color="var(--text-secondary)" />
+              <Filter size={16} color="var(--text-secondary)" />
               <select 
                 value={countryFilter} 
                 onChange={(e) => setCountryFilter(e.target.value)}
-                style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-elevated)', color: 'var(--text-primary)', fontWeight: 500 }}
+                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-elevated)', color: 'var(--text-primary)', fontWeight: 500, fontSize: '0.85rem' }}
               >
-                <option value="GLOBAL">🌍 Global (All Downstream Feeds)</option>
+                <option value="GLOBAL">🌍 All Countries</option>
                 <option value="KR">🇰🇷 South Korea [KR]</option>
+                <option value="IT">🇮🇹 Italy [IT]</option>
                 <option value="FR">🇫🇷 France [FR]</option>
                 <option value="US">🇺🇸 United States [US]</option>
               </select>
             </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <select 
+                value={recipientTypeFilter} 
+                onChange={(e) => setRecipientTypeFilter(e.target.value)}
+                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-elevated)', color: 'var(--text-primary)', fontWeight: 500, fontSize: '0.85rem' }}
+              >
+                <option value="ALL">👤 All Beneficiary Types</option>
+                <option value="HCP">HCP (Clinicians)</option>
+                <option value="INSTITUTION">HCO (Institutions/Hospitals)</option>
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <select 
+                value={remediationFilter} 
+                onChange={(e) => setRemediationFilter(e.target.value)}
+                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-elevated)', color: 'var(--text-primary)', fontWeight: 500, fontSize: '0.85rem' }}
+              >
+                <option value="ALL">🛡️ All Audit Statuses</option>
+                <option value="APPROVED">Compliant (Approved)</option>
+                <option value="PENDING_REVIEW">Flagged (Remediation Required)</option>
+              </select>
+            </div>
           </div>
 
-          {/* Table Ledger */}
+          {/* Interactive Global Explorer Grid */}
           <div className="card" style={{ padding: 0 }}>
-            <div className="table-container" style={{ margin: 0 }}>
-              <table style={{ margin: 0 }}>
+            <div className="table-container" style={{ margin: 0, overflowX: 'auto' }}>
+              <table style={{ margin: 0, width: '100%', tableLayout: 'auto' }}>
                 <thead>
                   <tr>
-                    <th>Record ID</th>
-                    <th>Jurisdiction</th>
-                    <th>Recipient Details</th>
-                    <th>Category</th>
-                    <th>Expenditure Details</th>
-                    <th>Original Amount</th>
-                    <th>Normalized (USD)</th>
-                    <th>Compliance Check</th>
+                    {renderSortableHeader('Record ID', 'id')}
+                    {renderSortableHeader('Country', 'countryCode')}
+                    {renderSortableHeader('Recipient Details', 'recipientName')}
+                    {renderSortableHeader('Category', 'spendCategory')}
+                    {renderSortableHeader('Provision Details', 'purposeOfBenefit')}
+                    {renderSortableHeader('Original Value', 'amountOriginal')}
+                    {renderSortableHeader('Normalized USD', 'amountUSD')}
+                    {renderSortableHeader('Compliance Check', 'remediationStatus')}
+                    <th style={{ padding: '12px 16px', background: 'var(--bg-main)', minWidth: '120px' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredTransactions.length === 0 ? (
+                  {filteredAndSortedTransactions.length === 0 ? (
                     <tr>
-                      <td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '40px' }}>
-                        No records matching the selected country filter or query.
+                      <td colSpan={9} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '40px' }}>
+                        No spend records found matching the active filtering rules.
                       </td>
                     </tr>
                   ) : (
-                    filteredTransactions.map(tx => (
-                      <tr key={tx.id}>
-                        <td style={{ fontWeight: 'bold', fontSize: '0.85rem' }}>{tx.id}</td>
-                        <td>
-                          <span className="badge" style={{ background: '#f1f5f9', border: '1px solid var(--border-color)', color: '#334155' }}>
-                            {tx.countryCode}
-                          </span>
-                        </td>
-                        <td>
-                          <div><strong>{tx.recipientName}</strong></div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                            {tx.licenseNumber} | {tx.workplaceInstitution}
-                          </div>
-                        </td>
-                        <td>{tx.spendCategory}</td>
-                        <td>
-                          <div>{tx.purposeOfBenefit}</div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tx.details}</div>
-                        </td>
-                        <td>
-                          {tx.currencyOriginal} {tx.amountOriginal.toLocaleString()}
-                        </td>
-                        <td style={{ fontWeight: 'bold', color: 'var(--primary-accent)' }}>
-                          ${tx.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                        </td>
-                        <td>
-                          <span className={`badge ${tx.remediationStatus === 'APPROVED' ? 'badge-success' : 'badge-warning'}`}>
-                            {tx.remediationStatus === 'APPROVED' ? 'Compliant' : 'Audit Flag'}
-                          </span>
-                        </td>
+                    filteredAndSortedTransactions.map(tx => (
+                      <tr key={tx.id} style={{ background: editingId === tx.id ? 'rgba(124, 58, 237, 0.03)' : 'transparent', borderBottom: '1px solid var(--border-color)' }}>
+                        {editingId === tx.id ? (
+                          <>
+                            <td style={{ fontWeight: 'bold', padding: '12px 16px' }}>{tx.id}</td>
+                            <td>
+                              <span className="badge" style={{ background: '#f1f5f9', border: '1px solid var(--border-color)', color: '#334155' }}>
+                                {tx.countryCode}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px 16px' }}>
+                              <input 
+                                value={editFormData.recipientName || ''} 
+                                onChange={(e) => handleChange(e, 'recipientName')} 
+                                style={{ padding: '6px 8px', width: '130px', marginBottom: '6px', display: 'block', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)' }} 
+                                placeholder="Recipient Name" 
+                              />
+                              <input 
+                                value={editFormData.workplaceInstitution || ''} 
+                                onChange={(e) => handleChange(e, 'workplaceInstitution')} 
+                                style={{ padding: '4px 8px', width: '130px', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)' }} 
+                                placeholder="Institution" 
+                              />
+                            </td>
+                            <td>
+                              <select 
+                                value={editFormData.spendCategory || ''} 
+                                onChange={(e) => handleChange(e, 'spendCategory')} 
+                                style={{ padding: '6px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)' }}
+                              >
+                                <option value="PRESENTATION">PRESENTATION</option>
+                                <option value="SAMPLES">SAMPLES</option>
+                                <option value="CONSULTANCY">CONSULTANCY</option>
+                                <option value="CONVENZIONI">CONVENZIONI</option>
+                                <option value="DONAZIONI">DONAZIONI</option>
+                                <option value="CONFERENCE_SUPPORT">CONFERENCE_SUPPORT</option>
+                              </select>
+                            </td>
+                            <td style={{ padding: '12px 16px' }}>
+                              <input 
+                                value={editFormData.purposeOfBenefit || ''} 
+                                onChange={(e) => handleChange(e, 'purposeOfBenefit')} 
+                                style={{ padding: '6px 8px', width: '150px', marginBottom: '6px', display: 'block', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)' }} 
+                                placeholder="Purpose" 
+                              />
+                              <input 
+                                value={editFormData.details || ''} 
+                                onChange={(e) => handleChange(e, 'details')} 
+                                style={{ padding: '4px 8px', width: '150px', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)' }} 
+                                placeholder="Details / Reference" 
+                              />
+                            </td>
+                            <td style={{ padding: '12px 16px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{tx.currencyOriginal}</span>
+                                <input 
+                                  type="number" 
+                                  value={editFormData.amountOriginal || ''} 
+                                  onChange={(e) => handleChange(e, 'amountOriginal')} 
+                                  style={{ padding: '6px 8px', width: '80px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', textAlign: 'right' }} 
+                                />
+                              </div>
+                            </td>
+                            <td style={{ fontWeight: 'bold', color: 'var(--primary-accent)', padding: '12px 16px' }}>
+                              ${tx.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            </td>
+                            <td style={{ padding: '12px 16px' }}>
+                              <span className={`badge ${tx.remediationStatus === 'APPROVED' ? 'badge-success' : 'badge-warning'}`}>
+                                {tx.remediationStatus === 'APPROVED' ? 'Compliant' : 'Audit Flag'}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px 16px' }}>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                <button className="btn btn-primary" onClick={() => handleSaveEdit(tx.id)} style={{ padding: '6px 10px', fontSize: '0.75rem', borderRadius: '4px' }}>Save</button>
+                                <button className="btn" onClick={handleCancelEdit} style={{ padding: '6px 10px', fontSize: '0.75rem', borderRadius: '4px', background: 'rgba(0,0,0,0.05)', color: 'var(--text-primary)' }}>Cancel</button>
+                              </div>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td style={{ fontWeight: 'bold', fontSize: '0.85rem', padding: '12px 16px' }}>{tx.id}</td>
+                            <td style={{ padding: '12px 16px' }}>
+                              <span className="badge" style={{ background: '#f1f5f9', border: '1px solid var(--border-color)', color: '#334155' }}>
+                                {tx.countryCode === 'KR' ? '🇰🇷 KR' : tx.countryCode === 'FR' ? '🇫🇷 FR' : tx.countryCode === 'IT' ? '🇮🇹 IT' : '🇺🇸 US'}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px 16px' }}>
+                              <div><strong>{tx.recipientName}</strong></div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                                {tx.licenseNumber} | {tx.workplaceInstitution}
+                              </div>
+                            </td>
+                            <td style={{ padding: '12px 16px' }}>
+                              <span className="badge" style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+                                {tx.spendCategory}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px 16px' }}>
+                              <div>{tx.purposeOfBenefit}</div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tx.details}</div>
+                            </td>
+                            <td style={{ padding: '12px 16px' }}>
+                              {tx.currencyOriginal} {tx.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2 })}
+                            </td>
+                            <td style={{ fontWeight: 'bold', color: 'var(--primary-accent)', padding: '12px 16px' }}>
+                              ${tx.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            </td>
+                            <td style={{ padding: '12px 16px' }}>
+                              <span className={`badge ${tx.remediationStatus === 'APPROVED' ? 'badge-success' : 'badge-warning'}`}>
+                                {tx.remediationStatus === 'APPROVED' ? 'Compliant' : 'Audit Flag'}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px 16px' }}>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                <button className="btn" onClick={() => handleEditClick(tx)} style={{ padding: '6px 10px', fontSize: '0.75rem', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', borderRadius: '4px' }}>Edit</button>
+                                <button className="btn" onClick={() => setSelectedHistoryTxId(tx.id)} style={{ padding: '6px 10px', fontSize: '0.75rem', background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px' }}>History</button>
+                              </div>
+                            </td>
+                          </>
+                        )}
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Source Files Explorer Tab */}
+      {activeTab === 'source_files' && (
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'stretch', minHeight: '500px' }}>
+          {/* Left Pane: Files List */}
+          <div className="card" style={{ width: '350px', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' }}>
+            <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Database size={18} className="text-primary" /> Uploaded Source Files
+              </h3>
+              <p style={{ margin: '6px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                Select a file to inspect its raw, immutable record snapshot.
+              </p>
+            </div>
+            
+            <div style={{ overflowY: 'auto', flex: 1, maxHeight: '600px' }}>
+              {batches.length === 0 ? (
+                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                  No source files uploaded yet.
+                </div>
+              ) : (
+                batches.map(batch => {
+                  const isSelected = selectedSourceFileId === batch.batchId;
+                  const totalOriginalVal = batch.originalTransactions?.reduce((sum, t) => sum + t.amountOriginal, 0) || 0;
+                  const originalCurrency = batch.originalTransactions?.[0]?.currencyOriginal || 'USD';
+                  
+                  return (
+                    <div 
+                      key={batch.batchId}
+                      onClick={() => setSelectedSourceFileId(batch.batchId)}
+                      style={{
+                        padding: '16px 20px',
+                        borderBottom: '1px solid var(--border-color)',
+                        cursor: 'pointer',
+                        background: isSelected ? 'rgba(124, 58, 237, 0.04)' : 'transparent',
+                        borderLeft: isSelected ? '3px solid var(--primary-color)' : '3px solid transparent',
+                        transition: 'background 0.2s'
+                      }}
+                    >
+                      <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <FileText size={16} /> {batch.sourceFileName}
+                        </span>
+                        <span className="badge" style={{ fontSize: '0.7rem', padding: '2px 6px', background: '#f1f5f9', color: '#334155' }}>
+                          {batch.countryCode}
+                        </span>
+                      </div>
+                      
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        <span>{batch.totalRecords} records</span>
+                        <span>
+                          {originalCurrency} {totalOriginalVal.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </span>
+                      </div>
+                      
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '6px' }}>
+                        Uploaded: {new Date(batch.uploadTimestamp).toLocaleDateString()}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          {/* Right Pane: Immutable Raw Records Grid */}
+          <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' }}>
+            {selectedSourceFileId ? (
+              (() => {
+                const targetBatch = batches.find(b => b.batchId === selectedSourceFileId);
+                if (!targetBatch) return null;
+                const rawRows = targetBatch.originalTransactions || [];
+                
+                return (
+                  <>
+                    <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <h3 style={{ margin: 0, fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+                          <FileText size={20} className="text-primary" /> {targetBatch.sourceFileName}
+                        </h3>
+                        <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                          Viewing immutable raw records as they existed at upload time ({new Date(targetBatch.uploadTimestamp).toLocaleString()}).
+                        </p>
+                      </div>
+                      <div className="badge badge-success" style={{ padding: '6px 12px' }}>
+                        {rawRows.length} Original Records
+                      </div>
+                    </div>
+
+                    <div style={{ overflow: 'auto', flex: 1, margin: 0 }} className="table-container">
+                      {rawRows.length === 0 ? (
+                        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                          No snapshots available for this batch.
+                        </div>
+                      ) : (
+                        <table style={{ margin: 0, width: '100%', tableLayout: 'auto' }}>
+                          <thead>
+                            <tr>
+                              <th>Record ID</th>
+                              <th>Recipient Details</th>
+                              <th>Category</th>
+                              <th>Provision Details</th>
+                              <th>Original Value</th>
+                              <th>Normalized USD</th>
+                              <th>Initial Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {rawRows.map(tx => (
+                              <tr key={tx.id}>
+                                <td style={{ fontWeight: 'bold', fontSize: '0.8rem' }}>{tx.id}</td>
+                                <td>
+                                  <div><strong>{tx.recipientName}</strong></div>
+                                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                                    {tx.licenseNumber} | {tx.workplaceInstitution}
+                                  </div>
+                                </td>
+                                <td>
+                                  <span className="badge" style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+                                    {tx.spendCategory}
+                                  </span>
+                                </td>
+                                <td>
+                                  <div>{tx.purposeOfBenefit}</div>
+                                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tx.details}</div>
+                                </td>
+                                <td>
+                                  {tx.currencyOriginal} {tx.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2 })}
+                                </td>
+                                <td style={{ fontWeight: 'bold', color: 'var(--primary-accent)' }}>
+                                  ${tx.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </td>
+                                <td>
+                                  <span className={`badge ${tx.remediationStatus === 'APPROVED' ? 'badge-success' : 'badge-warning'}`}>
+                                    {tx.remediationStatus === 'APPROVED' ? 'Compliant' : 'Audit Flag'}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+                  </>
+                );
+              })()
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '350px', color: 'var(--text-secondary)' }}>
+                <Database size={48} style={{ opacity: 0.15, marginBottom: '16px' }} />
+                <h3 style={{ margin: 0 }}>Select a Source File</h3>
+                <p style={{ margin: '6px 0 0 0', fontSize: '0.9rem' }}>Choose a file from the left pane to view its raw uploaded data snapshot.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Cryptographic Traceability History Modal */}
+      {selectedHistoryTxId && (
+        <div className="pdf-modal-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="pdf-modal-container" style={{ maxWidth: '650px', height: 'auto', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+            <div className="pdf-toolbar" style={{ borderBottom: '1px solid var(--border-color)', padding: '16px 20px' }}>
+              <div className="pdf-toolbar-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+                <Clock size={20} color="var(--primary-glow)" />
+                <span>Cryptographic Audit Logs - Transaction {selectedHistoryTxId}</span>
+              </div>
+              <button 
+                className="btn" 
+                onClick={() => setSelectedHistoryTxId(null)}
+                style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            
+            <div style={{ padding: '24px', overflowY: 'auto', flex: 1, color: 'var(--text-primary)' }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>
+                Below is the tamper-evident cryptographic history ledger recording all state mutations and updates executed on this spend transaction record.
+              </p>
+              
+              {auditLogs.filter(log => log.entityId === selectedHistoryTxId).length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-secondary)' }}>
+                  No historical mutations recorded for this transaction. It is currently in its initial ingested state.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {auditLogs.filter(log => log.entityId === selectedHistoryTxId).map(log => {
+                    let prevObj: any = {};
+                    let nextObj: any = {};
+                    try { if (log.previousValues) prevObj = JSON.parse(log.previousValues); } catch(e){}
+                    try { if (log.newValues) nextObj = JSON.parse(log.newValues); } catch(e){}
+
+                    const changedKeys = Array.from(new Set([...Object.keys(prevObj), ...Object.keys(nextObj)]))
+                      .filter(key => JSON.stringify(prevObj[key]) !== JSON.stringify(nextObj[key]))
+                      .filter(key => key !== 'amountUSD' && key !== 'remediationStatus'); // filter operational props
+
+                    return (
+                      <div key={log.id} style={{ border: '1px solid var(--border-color)', borderRadius: '8px', padding: '16px', background: 'var(--bg-main)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.85rem' }}>
+                          <span style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span className="badge badge-warning" style={{ fontSize: '0.7rem', textTransform: 'uppercase' }}>MUTATION_{log.action}</span>
+                            <span>Operator: {log.userId}</span>
+                          </span>
+                          <span style={{ color: 'var(--text-muted)' }}>{new Date(log.timestamp).toLocaleString()}</span>
+                        </div>
+                        
+                        {changedKeys.length === 0 ? (
+                          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                            Initial record creation. Transferred value successfully loaded and normalized.
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {changedKeys.map(key => (
+                              <div key={key} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', fontSize: '0.85rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '6px' }}>
+                                <span style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>{key}</span>
+                                <span style={{ color: 'var(--danger)', textDecoration: 'line-through' }}>{prevObj[key] === undefined ? '-' : String(prevObj[key])}</span>
+                                <span style={{ color: 'var(--success)' }}>{nextObj[key] === undefined ? '-' : String(nextObj[key])}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Staging Pre-Commit Validation & Review Modal */}
+      {showReviewModal && (
+        <div className="pdf-modal-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div className="pdf-modal-container" style={{ maxWidth: '750px', height: 'auto', maxHeight: '90vh', display: 'flex', flexDirection: 'column', padding: 0 }}>
+            <div className="pdf-toolbar" style={{ borderBottom: '1px solid var(--border-color)', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="pdf-toolbar-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+                <ShieldAlert size={20} color="var(--primary-glow)" />
+                <span>Staging Registry Validation & Pre-Commit Review</span>
+              </div>
+              <button 
+                className="btn" 
+                onClick={() => setShowReviewModal(false)}
+                style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            
+            <div style={{ padding: '24px', overflowY: 'auto', flex: 1, color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div>
+                <h3 style={{ margin: '0 0 6px 0', fontSize: '1.1rem' }}>Data Integrity & Policy Auditing</h3>
+                <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.4 }}>
+                  Please review the summary metrics and validation alerts below. Once records are committed, they will be pushed to isolated country SQL repositories and removed from the staging buffer.
+                </p>
+              </div>
+
+              {/* Summary Stats Table */}
+              <div className="table-container" style={{ margin: 0 }}>
+                <table style={{ margin: 0, width: '100%' }}>
+                  <thead>
+                    <tr>
+                      <th>Jurisdiction</th>
+                      <th style={{ textAlign: 'center' }}>Compliant Records</th>
+                      <th style={{ textAlign: 'center' }}>Flagged Anomalies</th>
+                      <th style={{ textAlign: 'right' }}>Total Value (USD)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {['KR', 'IT', 'FR', 'US'].map(code => {
+                      const countryTxs = transactions.filter(t => t.countryCode === code);
+                      if (countryTxs.length === 0) return null;
+
+                      const compliantCount = countryTxs.filter(t => t.remediationStatus === 'APPROVED').length;
+                      const flaggedCount = countryTxs.filter(t => t.remediationStatus === 'PENDING_REVIEW').length;
+                      const totalUSDVal = countryTxs.reduce((sum, t) => sum + t.amountUSD, 0);
+
+                      return (
+                        <tr key={code}>
+                          <td style={{ fontWeight: 'bold' }}>
+                            {code === 'KR' ? '🇰🇷 South Korea [KR]' : code === 'IT' ? '🇮🇹 Italy [IT]' : code === 'FR' ? '🇫🇷 France [FR]' : '🇺🇸 USA [US]'}
+                          </td>
+                          <td style={{ textAlign: 'center', color: 'var(--success)' }}>{compliantCount} Approved</td>
+                          <td style={{ textAlign: 'center', color: flaggedCount > 0 ? 'var(--warning)' : 'var(--text-muted)', fontWeight: flaggedCount > 0 ? 'bold' : 'normal' }}>
+                            {flaggedCount} Flags
+                          </td>
+                          <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                            ${totalUSDVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Warning box if there are flagged records */}
+              {transactions.some(t => t.remediationStatus === 'PENDING_REVIEW') ? (
+                <div style={{
+                  padding: '16px 20px',
+                  borderRadius: '8px',
+                  background: 'rgba(245, 158, 11, 0.08)',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--warning)', fontWeight: 'bold', fontSize: '0.95rem' }}>
+                    <ShieldAlert size={18} />
+                    <span>Compliance Action Required: Unresolved Policy Flags Detected</span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                    There are currently <strong>{transactions.filter(t => t.remediationStatus === 'PENDING_REVIEW').length} records</strong> that violate transparency policy limits (such as dinner limits or advisory caps). We highly recommend remediating these items in the **Universal Records Grid** first.
+                  </p>
+                </div>
+              ) : (
+                <div style={{
+                  padding: '16px 20px',
+                  borderRadius: '8px',
+                  background: 'rgba(16, 185, 129, 0.08)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'var(--success)',
+                  fontWeight: 'bold',
+                  fontSize: '0.95rem'
+                }}>
+                  <CheckCircle size={18} />
+                  <span>All Staging Records are Fully Compliant & Approved</span>
+                </div>
+              )}
+
+              {/* Certification Checklist */}
+              <div style={{
+                padding: '16px 20px',
+                borderRadius: '8px',
+                background: 'var(--bg-main)',
+                border: '1px solid var(--border-color)',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '12px'
+              }}>
+                <input 
+                  type="checkbox" 
+                  id="certify-checkbox"
+                  checked={isCertified}
+                  onChange={(e) => setIsCertified(e.target.checked)}
+                  style={{ marginTop: '4px', cursor: 'pointer', width: '16px', height: '16px' }}
+                />
+                <label htmlFor="certify-checkbox" style={{ fontSize: '0.88rem', color: 'var(--text-primary)', lineHeight: 1.4, cursor: 'pointer', userSelect: 'none' }}>
+                  <strong>I certify that I have reviewed the staging transactions.</strong> I confirm that all listed value transfers represent fair market value (FMV), are correctly attributed to the specified HCP/HCO beneficiaries, and conform to the transparency guidelines of their respective jurisdictions.
+                </label>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px' }}>
+                <button 
+                  className="btn" 
+                  onClick={() => setShowReviewModal(false)}
+                  style={{ background: 'rgba(0,0,0,0.05)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '10px 20px' }}
+                >
+                  Cancel & Review Grid
+                </button>
+                <button 
+                  className="btn btn-primary" 
+                  onClick={handleConfirmCommit}
+                  disabled={!isCertified || isCommitting}
+                  style={{
+                    padding: '10px 24px',
+                    fontWeight: 600,
+                    opacity: isCertified ? 1 : 0.5,
+                    cursor: isCertified ? 'pointer' : 'not-allowed',
+                    boxShadow: isCertified ? '0 4px 12px rgba(124, 58, 237, 0.2)' : 'none'
+                  }}
+                >
+                  {isCommitting ? 'Committing & Routing...' : 'Confirm & Route to Country Registries'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

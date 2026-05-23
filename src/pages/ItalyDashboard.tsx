@@ -6,7 +6,7 @@ interface Transaction {
   id: string;
   categoryOfBenefit: string;
   dateOfProvision: string;
-  amountKRW: number;
+  amountEUR: number;
   entity: {
     recipientName: string;
     workplaceInstitution: string;
@@ -19,7 +19,7 @@ interface RemediationFlag {
   transactionId: string;
 }
 
-const Dashboard = () => {
+const ItalyDashboard = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [remediationFlags, setRemediationFlags] = useState<RemediationFlag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,22 +27,22 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Query the Central Data Center's South Korea stream feeds
-        const krSpend = await APIGateway.getTransactions('KR');
+        // Query the Central Data Center's Italy stream feeds
+        const itSpend = await APIGateway.getTransactions('IT');
         
-        // Map central spend items back onto South Korea local dashboard columns
-        const mappedTx = krSpend.map(t => ({
+        // Map central spend items back onto Italy local dashboard columns
+        const mappedTx = itSpend.map(t => ({
           id: t.id,
           categoryOfBenefit: t.spendCategory,
           dateOfProvision: t.dateOfProvision,
-          amountKRW: t.amountOriginal,
+          amountEUR: t.amountOriginal,
           entity: {
             recipientName: t.recipientName,
             workplaceInstitution: t.workplaceInstitution
           }
         }));
 
-        const mockFlags = krSpend.map(t => ({
+        const mockFlags = itSpend.map(t => ({
           id: `FLAG-${t.id}`,
           status: t.remediationStatus === 'PENDING_REVIEW' ? 'PENDING' : 'RESOLVED',
           transactionId: t.id
@@ -51,7 +51,7 @@ const Dashboard = () => {
         setTransactions(mappedTx);
         setRemediationFlags(mockFlags);
       } catch (err) {
-        console.error("Failed to fetch dashboard data:", err);
+        console.error("Failed to fetch Italy dashboard data:", err);
       } finally {
         setIsLoading(false);
       }
@@ -59,11 +59,11 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  // Compute Total YTD Spend
+  // Compute Total YTD Spend in EUR
   const currentYear = new Date().getFullYear();
   const ytdSpend = transactions
     .filter(t => new Date(t.dateOfProvision).getFullYear() === currentYear)
-    .reduce((sum, t) => sum + t.amountKRW, 0);
+    .reduce((sum, t) => sum + t.amountEUR, 0);
 
   // Compute Pending Remediation
   const pendingCount = remediationFlags.filter(f => f.status === 'PENDING').length;
@@ -71,18 +71,18 @@ const Dashboard = () => {
   // Compute Category Spend for Chart
   const categoryMap: Record<string, number> = {};
   transactions.forEach(t => {
-    categoryMap[t.categoryOfBenefit] = (categoryMap[t.categoryOfBenefit] || 0) + t.amountKRW;
+    categoryMap[t.categoryOfBenefit] = (categoryMap[t.categoryOfBenefit] || 0) + t.amountEUR;
   });
   
   const chartData = Object.keys(categoryMap).map(key => ({
-    name: key,
+    name: key === 'CONVENZIONI' ? 'Conventions' : key === 'DONAZIONI' ? 'Donations' : key,
     amount: categoryMap[key]
-  })).sort((a, b) => b.amount - a.amount); // Sort descending
+  })).sort((a, b) => b.amount - a.amount);
 
-  const formatKRW = (value: number) => {
-    if (value >= 1000000) return `₩${(value / 1000000).toFixed(1)}M`;
-    if (value >= 1000) return `₩${(value / 1000).toFixed(0)}K`;
-    return `₩${value}`;
+  const formatEUR = (value: number) => {
+    if (value >= 1000000) return `€${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `€${(value / 1000).toFixed(0)}K`;
+    return `€${value}`;
   };
 
   const getStatusBadge = (txId: string) => {
@@ -95,28 +95,28 @@ const Dashboard = () => {
 
   return (
     <div>
-      <h1 className="page-title">Compliance Overview</h1>
-      <p className="page-subtitle">High-level summary of South Korean spend data and remediation status.</p>
+      <h1 className="page-title">Sanità Trasparente Overview</h1>
+      <p className="page-subtitle">Summary of Italian pharma transparency disclosures under Law 31/2022 (Loi Sanità Trasparente).</p>
 
       {isLoading ? (
-        <p style={{ color: 'var(--text-secondary)' }}>Syncing live data...</p>
+        <p style={{ color: 'var(--text-secondary)' }}>Syncing live Italian records...</p>
       ) : (
         <>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '32px' }}>
             <div className="card">
-              <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>Total YTD Spend (KRW)</h3>
+              <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>Total YTD Disclosures (€ EUR)</h3>
               <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--primary-glow)' }}>
-                ₩{ytdSpend.toLocaleString()}
+                €{ytdSpend.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
             </div>
             <div className="card">
-              <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>Pending Remediation</h3>
+              <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>Pending Auditor Reviews</h3>
               <div style={{ fontSize: '2rem', fontWeight: 700, color: pendingCount > 0 ? 'var(--warning)' : 'var(--success)' }}>
-                {pendingCount} Records
+                {pendingCount} Alerts
               </div>
             </div>
             <div className="card">
-              <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>Reporting Status</h3>
+              <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>Ministry Submission Status</h3>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--success)' }}>On Track</div>
                 <span className="badge badge-success">Ready</span>
@@ -126,17 +126,17 @@ const Dashboard = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
             <div className="card">
-              <h3 style={{ marginBottom: '20px' }}>Spend by Category</h3>
+              <h3 style={{ marginBottom: '20px' }}>Spend by Category (EUR)</h3>
               <div style={{ height: '300px' }}>
                 {chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 30, left: 0, bottom: 0 }}>
-                      <XAxis type="number" tickFormatter={formatKRW} stroke="var(--text-secondary)" fontSize={12} />
-                      <YAxis dataKey="name" type="category" width={120} stroke="var(--text-secondary)" fontSize={12} tick={{fill: 'var(--text-secondary)'}} />
+                      <XAxis type="number" tickFormatter={formatEUR} stroke="var(--text-secondary)" fontSize={12} />
+                      <YAxis dataKey="name" type="category" width={100} stroke="var(--text-secondary)" fontSize={12} tick={{fill: 'var(--text-secondary)'}} />
                       <Tooltip 
-                        formatter={(value: any) => [`₩${Number(value).toLocaleString()}`, 'Amount']}
-                        contentStyle={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
-                        itemStyle={{ color: 'var(--primary-glow)' }}
+                         formatter={(value: any) => [`€${Number(value).toLocaleString()}`, 'Amount']}
+                         contentStyle={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
+                         itemStyle={{ color: 'var(--primary-glow)' }}
                       />
                       <Bar dataKey="amount" radius={[0, 4, 4, 0]}>
                         {chartData.map((_, index) => (
@@ -154,30 +154,34 @@ const Dashboard = () => {
             </div>
 
             <div className="card">
-              <h3 style={{ marginBottom: '20px' }}>Recent Activity</h3>
+              <h3 style={{ marginBottom: '20px' }}>Recent Italian Value Transfers</h3>
               <div className="table-container" style={{ margin: 0 }}>
                 <table style={{ margin: 0 }}>
                   <thead>
                     <tr>
-                      <th>HCP Name</th>
-                      <th>Institution</th>
-                      <th>Activity Type</th>
-                      <th>Amount (KRW)</th>
+                      <th>Recipient Name</th>
+                      <th>Workplace / Institution</th>
+                      <th>Disclosure Category</th>
+                      <th>Amount (EUR)</th>
                       <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {transactions.length === 0 ? (
                       <tr>
-                        <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '20px' }}>No activity yet</td>
+                        <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '20px' }}>No transfers registered yet</td>
                       </tr>
                     ) : (
                       transactions.slice(0, 5).map(tx => (
                         <tr key={tx.id}>
                           <td style={{ fontWeight: 500 }}>{tx.entity.recipientName}</td>
                           <td style={{ color: 'var(--text-secondary)' }}>{tx.entity.workplaceInstitution || "N/A"}</td>
-                          <td>{tx.categoryOfBenefit}</td>
-                          <td style={{ fontWeight: 500 }}>₩{tx.amountKRW.toLocaleString()}</td>
+                          <td>
+                            <span className="badge" style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+                              {tx.categoryOfBenefit}
+                            </span>
+                          </td>
+                          <td style={{ fontWeight: 500 }}>€{tx.amountEUR.toLocaleString()}</td>
                           <td>{getStatusBadge(tx.id)}</td>
                         </tr>
                       ))
@@ -193,4 +197,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ItalyDashboard;

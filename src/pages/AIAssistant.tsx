@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, Send, User, Sparkles } from 'lucide-react';
+import { APIGateway } from '../datacenter/api_gateway';
 
 interface Message {
   id: string;
@@ -44,24 +45,18 @@ const AIAssistant = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://k-sunshine-backend-381662135057.us-central1.run.app/api/agent/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage.text })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const botMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          sender: 'bot',
-          text: data.reply,
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, botMessage]);
-      } else {
+      const reply = await APIGateway.sendChatQuery(userMessage.text);
+      if (reply.startsWith("I am currently offline")) {
         throw new Error('Fallback to offline intelligence');
       }
+      
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        sender: 'bot',
+        text: reply,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.warn("Using high-performance local compliance rules-engine:", error);
       

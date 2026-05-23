@@ -28,7 +28,7 @@ const Remediation = () => {
 
   const fetchFlags = async () => {
     try {
-      const krSpend = APIGateway.getTransactions('KR');
+      const krSpend = await APIGateway.getTransactions('KR');
       const flaggedTransactions = krSpend.filter(t => t.remediationStatus === 'PENDING_REVIEW' || t.remediationStatus === 'RESOLVED' || t.remediationStatus === 'REJECTED');
       
       const mappedFlags = flaggedTransactions.map(t => ({
@@ -59,7 +59,7 @@ const Remediation = () => {
     setIsProcessing(id);
     try {
       const txId = id.replace('FLAG-', '');
-      const success = APIGateway.updateTransactionStatus(txId, status);
+      const success = await APIGateway.updateTransactionStatus(txId, status);
       if (success) {
         setFlags(prev => prev.map(f => f.id === id ? { ...f, status } : f));
       }

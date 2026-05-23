@@ -49,7 +49,7 @@ const Reporting = () => {
   const fetchData = async () => {
     try {
       // 1. Fetch transactions from the Central Data Center's South Korea stream feeds
-      const krSpend = APIGateway.getTransactions('KR');
+      const krSpend = await APIGateway.getTransactions('KR');
       const mappedTx = krSpend.map(t => ({
         id: t.id,
         categoryOfBenefit: t.spendCategory,

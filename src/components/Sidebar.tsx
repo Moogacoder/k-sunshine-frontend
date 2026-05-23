@@ -17,14 +17,28 @@ const Sidebar = () => {
         <img src="/qordata_logo.png" alt="Qordata" style={{ height: '32px' }} />
       </div>
 
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', overflowY: 'auto', maxHeight: 'calc(100vh - 200px)', paddingRight: '4px' }}>
+        {/* Administrative Control Hub */}
+        <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.05em', margin: '8px 0 4px 12px', fontWeight: 'bold', opacity: 0.8 }}>Administrative Hub</div>
         <NavLink to="/datacenter" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ borderLeft: '3px solid var(--secondary-accent)', background: 'rgba(124, 58, 237, 0.05)', fontWeight: 'bold' }}>
           <Globe size={20} color="var(--primary-glow)" />
           <span style={{ color: 'var(--primary-glow)' }}>Global Data Center</span>
         </NavLink>
 
-        <div style={{ margin: '8px 0', borderTop: '1px solid var(--border-color)', opacity: 0.5 }}></div>
+        <NavLink to="/audit" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <Shield size={20} />
+          <span>Audit Trail</span>
+        </NavLink>
 
+        <NavLink to="/assistant" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <Sparkles size={20} />
+          <span>AI Assistant</span>
+        </NavLink>
+
+        <div style={{ margin: '6px 0', borderTop: '1px solid var(--border-color)', opacity: 0.3 }}></div>
+
+        {/* South Korea Portal */}
+        <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.05em', margin: '6px 0 4px 12px', fontWeight: 'bold', opacity: 0.8 }}>🇰🇷 South Korea Sunshine</div>
         <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <LayoutDashboard size={20} />
           <span>Dashboard (Korea)</span>
@@ -55,14 +69,18 @@ const Sidebar = () => {
           <span>MOHW Reports</span>
         </NavLink>
 
-        <NavLink to="/audit" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-          <Shield size={20} />
-          <span>Audit Trail</span>
+        <div style={{ margin: '6px 0', borderTop: '1px solid var(--border-color)', opacity: 0.3 }}></div>
+
+        {/* Italy Portal */}
+        <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.05em', margin: '6px 0 4px 12px', fontWeight: 'bold', opacity: 0.8 }}>🇮🇹 Italy Sanità Trasparente</div>
+        <NavLink to="/italy/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <LayoutDashboard size={20} />
+          <span>Dashboard (Italy)</span>
         </NavLink>
 
-        <NavLink to="/assistant" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-          <Sparkles size={20} />
-          <span>AI Assistant</span>
+        <NavLink to="/italy/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <FileText size={20} />
+          <span>Statutory Disclosures</span>
         </NavLink>
       </nav>
 

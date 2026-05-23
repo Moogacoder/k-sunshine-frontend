@@ -42,8 +42,8 @@ const SourceFiles = () => {
 
   const fetchFiles = async () => {
     try {
-      const krBatches = APIGateway.getBatches().filter(b => b.countryCode === 'KR');
-      const krTransactions = APIGateway.getTransactions('KR');
+      const krBatches = (await APIGateway.getBatches()).filter(b => b.countryCode === 'KR');
+      const krTransactions = await APIGateway.getTransactions('KR');
       
       const mappedFiles: FileStat[] = krBatches.map(b => {
         const batchTx = krTransactions.filter(t => t.batchId === b.batchId);
@@ -70,11 +70,11 @@ const SourceFiles = () => {
     setRecords([]);
     
     try {
-      const krBatches = APIGateway.getBatches().filter(b => b.countryCode === 'KR');
+      const krBatches = (await APIGateway.getBatches()).filter(b => b.countryCode === 'KR');
       const targetBatch = krBatches.find(b => b.sourceFileName === filename);
       
       if (targetBatch) {
-        const krTransactions = APIGateway.getTransactions('KR');
+        const krTransactions = await APIGateway.getTransactions('KR');
         const batchTx = krTransactions.filter(t => t.batchId === targetBatch.batchId);
         
         const mappedTx = batchTx.map(t => ({

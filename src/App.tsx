@@ -11,6 +11,8 @@ import AuditLogs from './pages/AuditLogs';
 import AIAssistant from './pages/AIAssistant';
 import Login from './pages/Login';
 import DataCenter from './pages/DataCenter';
+import ItalyDashboard from './pages/ItalyDashboard';
+import ItalyReporting from './pages/ItalyReporting';
 import { AuthProvider } from './components/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
@@ -28,6 +30,8 @@ const AppLayout = () => {
           <Route path="/ingestion" element={<Ingestion />} />
           <Route path="/remediation" element={<Remediation />} />
           <Route path="/reporting" element={<Reporting />} />
+          <Route path="/italy/dashboard" element={<ItalyDashboard />} />
+          <Route path="/italy/reporting" element={<ItalyReporting />} />
           <Route path="/data" element={<DataExplorer />} />
           <Route path="/audit" element={<AuditLogs />} />
           <Route path="/assistant" element={<AIAssistant />} />

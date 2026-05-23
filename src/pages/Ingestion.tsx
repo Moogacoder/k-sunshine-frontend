@@ -53,7 +53,7 @@ const Ingestion = () => {
 
       // Ingest via the Central Data Center's South Korea stream feeds
       const currentYear = new Date().getFullYear();
-      const result = APIGateway.ingestData('KR', currentYear, file.name, mappedData);
+      const result = await APIGateway.ingestData('KR', currentYear, file.name, mappedData);
 
       if (result.success) {
         setRecentUploads(prev => [{

@@ -24,7 +24,7 @@ const AuditLogs = () => {
 
   const fetchLogs = async () => {
     try {
-      const data = APIGateway.getAuditLogs();
+      const data = await APIGateway.getAuditLogs();
       setLogs(data);
     } catch (err) {
       console.error("Failed to fetch audit logs:", err);

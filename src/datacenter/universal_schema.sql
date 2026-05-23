@@ -1,4 +1,4 @@
--- Qordata Global Pharma Transparency Data Center
+-- Qordata Intelligent Transparency Data Center
 -- Universal Data Model Schema (SQL Server / PostgreSQL compliant)
 
 -- 1. Ingestion Batches Ledger

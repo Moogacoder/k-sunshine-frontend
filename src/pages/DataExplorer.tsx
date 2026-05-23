@@ -35,8 +35,8 @@ const DataExplorer = () => {
 
   const fetchTransactions = async () => {
     try {
-      const krSpend = APIGateway.getTransactions('KR');
-      const batches = APIGateway.getBatches();
+      const krSpend = await APIGateway.getTransactions('KR');
+      const batches = await APIGateway.getBatches();
       
       const mappedTx = krSpend.map(t => {
         const batch = batches.find(b => b.batchId === t.batchId);
@@ -104,7 +104,7 @@ const DataExplorer = () => {
         details: editFormData.details
       };
 
-      const success = APIGateway.updateTransaction(id, updatedValues);
+      const success = await APIGateway.updateTransaction(id, updatedValues);
       
       if (success) {
         fetchTransactions();
