@@ -159,10 +159,12 @@ export const APIGateway = {
   },
 
   // ETL Router Commit (Approve and Sync Staging buffer to separate country tables)
-  commitStaging: async (): Promise<{ success: boolean; message?: string; routed?: Record<string, number> }> => {
+  commitStaging: async (batchId?: string): Promise<{ success: boolean; message?: string; routed?: Record<string, number> }> => {
     try {
       const res = await fetch(`${BACKEND_URL}/api/staging/commit`, {
-        method: 'POST'
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ batchId })
       });
       if (!res.ok) throw new Error("ETL commit failed");
       return await res.json();

@@ -5,7 +5,8 @@ import * as XLSX from 'xlsx';
 import { parseAmount, validateReportingCompleteness } from '../datacenter/validation';
 
 const DataCenter: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'uploader' | 'transactions' | 'source_files'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'compliance_map' | 'uploader' | 'transactions' | 'source_files'>('overview');
+  const [mapMetricFilter, setMapMetricFilter] = useState<'ingested' | 'pushed' | 'reports'>('ingested');
   const [countryFilter, setCountryFilter] = useState<string>('GLOBAL');
   const [searchTerm, setSearchTerm] = useState<string>('');
   
@@ -18,6 +19,10 @@ const DataCenter: React.FC = () => {
   // Dual-view admin control center state
   const [reviewView, setReviewView] = useState<'pending' | 'committed'>('pending');
   const [selectedReviewBatchId, setSelectedReviewBatchId] = useState<string | null>(null);
+  const [commitBatchId, setCommitBatchId] = useState<string | null>(null);
+  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [allStagingTransactions, setAllStagingTransactions] = useState<UniversalTransaction[]>([]);
+
 
   // Ingestion form state
   const [targetCountry, setTargetCountry] = useState<string>('KR');
@@ -54,6 +59,9 @@ const DataCenter: React.FC = () => {
       setTransactions(txs);
       setBatches(bts);
       setCommittedTransactions(committedTxs);
+      
+      const globalStaging = await APIGateway.getTransactions('GLOBAL');
+      setAllStagingTransactions(globalStaging);
     };
     loadData();
   }, [countryFilter]);
@@ -151,6 +159,10 @@ const DataCenter: React.FC = () => {
           setTransactions(txs);
           setBatches(bts);
           setCommittedTransactions(committedTxs);
+          
+          const globalStaging = await APIGateway.getTransactions('GLOBAL');
+          setAllStagingTransactions(globalStaging);
+
           alert(`Ingestion Completed: Standardized ${result.ingested} records. ${result.flagged} flagged anomalies routed to Remediation.`);
           setActiveTab('overview');
           setSelectedFile(null);
@@ -245,6 +257,10 @@ const DataCenter: React.FC = () => {
         const committedTxs = await APIGateway.getCommittedTransactions();
         setTransactions(txs);
         setCommittedTransactions(committedTxs);
+        
+        const globalStaging = await APIGateway.getTransactions('GLOBAL');
+        setAllStagingTransactions(globalStaging);
+
         setEditingId(null);
         setEditFormData({});
       } else {
@@ -255,8 +271,9 @@ const DataCenter: React.FC = () => {
     }
   };
 
-  const handleOpenReviewModal = () => {
+  const handleOpenReviewModal = (batchId: string | null) => {
     setIsCertified(false);
+    setCommitBatchId(batchId);
     setShowReviewModal(true);
   };
 
@@ -264,7 +281,7 @@ const DataCenter: React.FC = () => {
     if (!isCertified) return;
     setIsCommitting(true);
     try {
-      const result = await APIGateway.commitStaging();
+      const result = await APIGateway.commitStaging(commitBatchId || undefined);
       if (result.success) {
         const txs = await APIGateway.getTransactions(countryFilter);
         const bts = await APIGateway.getBatches();
@@ -272,8 +289,14 @@ const DataCenter: React.FC = () => {
         setTransactions(txs);
         setBatches(bts);
         setCommittedTransactions(committedTxs);
+        
+        const globalStaging = await APIGateway.getTransactions('GLOBAL');
+        setAllStagingTransactions(globalStaging);
+
         setShowReviewModal(false);
-        alert(`Successfully committed staging records to the country databases! Routed: Korea: ${result.routed?.KR || 0}, Italy: ${result.routed?.IT || 0}, France: ${result.routed?.FR || 0}, USA: ${result.routed?.US || 0}`);
+        setSelectedReviewBatchId(null);
+        setCommitBatchId(null);
+        alert(result.message || "Successfully committed records to production registries!");
       } else {
         alert("Failed to commit staging records: " + (result.message || "Unknown error"));
       }
@@ -296,6 +319,10 @@ const DataCenter: React.FC = () => {
           setTransactions(txs);
           setBatches(bts);
           setCommittedTransactions(committedTxs);
+          
+          const globalStaging = await APIGateway.getTransactions('GLOBAL');
+          setAllStagingTransactions(globalStaging);
+
           alert("All database registries have been purged and reset successfully!");
         } else {
           alert("Failed to purge database registries.");
@@ -312,9 +339,81 @@ const DataCenter: React.FC = () => {
   };
 
   // Computations
-  const globalTotalUSD = transactions.reduce((sum, t) => sum + t.amountUSD, 0);
-  const activeAlertsCount = transactions.filter(t => t.remediationStatus === 'PENDING_REVIEW').length;
-  
+  const getCountryStats = (code: string) => {
+    const codeUpper = code.toUpperCase();
+    const stagingCount = allStagingTransactions.filter(t => t.countryCode === codeUpper).length;
+    const committedCount = committedTransactions.filter(t => t.countryCode === codeUpper).length;
+    
+    const ingested = stagingCount + committedCount;
+    const pushed = committedCount;
+    
+    let name = '';
+    let flag = '';
+    let color = '';
+    let coords = { x: 0, y: 0 };
+    let reports = 0;
+    
+    if (codeUpper === 'KR') {
+      name = 'South Korea';
+      flag = '🇰🇷';
+      color = '#8b5cf6'; // Purple
+      coords = { x: 710, y: 145 };
+      try {
+        const cached = localStorage.getItem('k_sunshine_archived_reports');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) {
+            reports = parsed.filter((r: any) => String(r.reportYear) === '2026').length;
+          }
+        } else {
+          reports = 3;
+        }
+      } catch {
+        reports = 3;
+      }
+    } else if (codeUpper === 'IT') {
+      name = 'Italy';
+      flag = '🇮🇹';
+      color = '#ef4444'; // Crimson
+      coords = { x: 455, y: 125 };
+      try {
+        const cached = localStorage.getItem('it_transparency_archived_reports');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) {
+            reports = parsed.filter((r: any) => String(r.reportYear) === '2026').length;
+          }
+        } else {
+          reports = 2;
+        }
+      } catch {
+        reports = 2;
+      }
+    } else if (codeUpper === 'FR') {
+      name = 'France';
+      flag = '🇫🇷';
+      color = '#3b82f6'; // Royal Blue
+      coords = { x: 430, y: 110 };
+      reports = 2;
+    } else if (codeUpper === 'US') {
+      name = 'United States';
+      flag = '🇺🇸';
+      color = '#f59e0b'; // Amber
+      coords = { x: 200, y: 140 };
+      reports = 1;
+    }
+    
+    return {
+      name,
+      flag,
+      color,
+      coords,
+      ingested,
+      pushed,
+      reports
+    };
+  };
+
   // Multi-dimensional filtering and sorting computations
   const filteredAndSortedTransactions = React.useMemo(() => {
     let result = [...transactions];
@@ -387,9 +486,6 @@ const DataCenter: React.FC = () => {
           <Globe size={32} color="var(--primary-accent)" />
           <h1 className="page-title" style={{ margin: 0 }}>Intelligent Transparency Data Center</h1>
         </div>
-        <p className="page-subtitle" style={{ marginBottom: '16px' }}>
-          Central administrative portal for multi-jurisdiction spend records, Universal Data Model matching, and downstream localized portals feeds.
-        </p>
       </div>
 
       {/* Tabs Menu */}
@@ -402,11 +498,18 @@ const DataCenter: React.FC = () => {
           <Database size={18} /> Incoming Data Review
         </button>
         <button 
+          onClick={() => setActiveTab('compliance_map')}
+          className={`btn ${activeTab === 'compliance_map' ? 'btn-primary' : ''}`}
+          style={{ background: activeTab === 'compliance_map' ? '' : 'transparent', color: activeTab === 'compliance_map' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
+        >
+          <Globe size={18} /> Global Compliance Map
+        </button>
+        <button 
           onClick={() => setActiveTab('uploader')}
           className={`btn ${activeTab === 'uploader' ? 'btn-primary' : ''}`}
           style={{ background: activeTab === 'uploader' ? '' : 'transparent', color: activeTab === 'uploader' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
         >
-          <UploadCloud size={18} /> Ingest Multi-Country Data
+          <UploadCloud size={18} /> Load Data
         </button>
         <button 
           onClick={() => setActiveTab('transactions')}
@@ -436,32 +539,15 @@ const DataCenter: React.FC = () => {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
             
-            {/* Dual-View Toggler Header */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '12px',
-              padding: '16px 24px',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
-            }}>
-              <div>
-                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                  Ledger Partition Control Center
-                </h2>
-                <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                  Toggle between uncommitted staging buffer files and final production databases.
-                </p>
-              </div>
-              
+            {/* Dual-View Toggler */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
               <div style={{
                 display: 'flex',
-                background: 'var(--bg-main)',
+                background: 'var(--bg-elevated)',
                 padding: '4px',
                 borderRadius: '8px',
-                border: '1px solid var(--border-color)'
+                border: '1px solid var(--border-color)',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.01)'
               }}>
                 <button
                   onClick={() => {
@@ -533,46 +619,56 @@ const DataCenter: React.FC = () => {
 
             {/* Commit / Success Action Banners */}
             {reviewView === 'pending' ? (
-              transactions.length > 0 && (
-                <div className="card" style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(139, 92, 246, 0.12) 100%)',
-                  border: '1px solid rgba(124, 58, 237, 0.25)',
-                  borderRadius: '12px',
-                  padding: '24px 30px',
-                  boxShadow: '0 8px 32px 0 rgba(124, 58, 237, 0.03)',
-                  backdropFilter: 'blur(8px)'
-                }}>
-                  <div>
-                    <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--primary-glow)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Database size={20} /> Staging Buffer Registry (Awaiting Commit)
-                    </h3>
-                    <p style={{ margin: '6px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                      There are <strong>{transactions.length} records</strong> currently loaded in the staging buffer. After auditing and remediating source files, commit them to push data to final compliance country registries.
-                    </p>
+              (() => {
+                if (!selectedReviewBatchId) {
+                  return null;
+                }
+                
+                const targetBatch = batches.find(b => b.batchId === selectedReviewBatchId);
+                const batchRecords = transactions.filter(t => t.batchId === selectedReviewBatchId);
+                if (!targetBatch || batchRecords.length === 0) return null;
+                
+                return (
+                  <div className="card" style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(139, 92, 246, 0.12) 100%)',
+                    border: '1px solid rgba(124, 58, 237, 0.25)',
+                    borderRadius: '12px',
+                    padding: '24px 30px',
+                    boxShadow: '0 8px 32px 0 rgba(124, 58, 237, 0.03)',
+                    backdropFilter: 'blur(8px)'
+                  }}>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--primary-glow)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Database size={20} /> Ingest File Commit Queue - {targetBatch.sourceFileName}
+                      </h3>
+                      <p style={{ margin: '6px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                        This source file contains <strong>{batchRecords.length} records</strong>. Once approved and committed, they will be routed strictly to the <strong>{targetBatch.countryCode}</strong> compliance database.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleOpenReviewModal(selectedReviewBatchId)}
+                      disabled={isCommitting}
+                      className="btn btn-primary"
+                      style={{
+                        padding: '12px 24px',
+                        fontWeight: 600,
+                        fontSize: '0.95rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
+                      }}
+                    >
+                      {isCommitting ? 'Committing...' : (
+                        <>Commit File to Registries <ArrowRight size={18} /></>
+                      )}
+                    </button>
                   </div>
-                  <button
-                    onClick={handleOpenReviewModal}
-                    disabled={isCommitting}
-                    className="btn btn-primary"
-                    style={{
-                      padding: '12px 24px',
-                      fontWeight: 600,
-                      fontSize: '0.95rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
-                    }}
-                  >
-                    {isCommitting ? 'Routing & Committing...' : (
-                      <>Commit Staging to Registries <ArrowRight size={18} /></>
-                    )}
-                  </button>
-                </div>
-              )
+                );
+              })()
             ) : (
               committedTransactions.length > 0 && (
                 <div className="card" style={{
@@ -640,7 +736,7 @@ const DataCenter: React.FC = () => {
                   {reviewView === 'pending' ? '4 Pending' : `${new Set(committedTransactions.map(t => t.countryCode)).size || 4} Sync'd`}
                 </div>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Korea [KR] | Italy [IT] | France [FR] | USA [US]</p>
-              </div>
+                </div>
             </div>
 
             {/* Split-Pane Source File Review Console */}
@@ -1009,14 +1105,354 @@ const DataCenter: React.FC = () => {
         );
       })()}
 
+      {/* Global Compliance Map Dashboard Tab */}
+      {activeTab === 'compliance_map' && (() => {
+        const activeMetric = mapMetricFilter;
+        const maxMetricValue = Math.max(
+          ...['KR', 'IT', 'FR', 'US'].map(c => {
+            const stats = getCountryStats(c);
+            if (activeMetric === 'ingested') return stats.ingested;
+            if (activeMetric === 'pushed') return stats.pushed;
+            return stats.reports;
+          })
+        ) || 1;
+
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* Telemetry Control Bar */}
+            <div className="card" style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              padding: '20px 24px', 
+              background: 'var(--bg-elevated)', 
+              border: '1px solid var(--border-color)', 
+              borderRadius: '12px',
+              flexWrap: 'wrap',
+              gap: '16px'
+            }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Globe size={22} color="var(--primary-accent)" />
+                  <span>Global Regulatory Compliance Choropleth Map</span>
+                </h2>
+                <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                  Double-click or hover active country geometries to inspect records, pushed registries, and compliance audit reports.
+                </p>
+              </div>
+
+              {/* Dynamic Color Coding Toggle Selectors */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Color Code Map By:</span>
+                <div style={{
+                  display: 'flex',
+                  background: 'var(--bg-base)',
+                  padding: '3px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-color)'
+                }}>
+                  {[
+                    { id: 'ingested', label: '📁 Records Ingested', color: 'var(--primary-accent)' },
+                    { id: 'pushed', label: '⚡ Data Pushed', color: 'var(--success)' },
+                    { id: 'reports', label: '📄 Reports Created', color: '#8b5cf6' }
+                  ].map(btn => (
+                    <button
+                      key={btn.id}
+                      onClick={() => setMapMetricFilter(btn.id as any)}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '6px',
+                        border: 'none',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        background: mapMetricFilter === btn.id ? btn.color : 'transparent',
+                        color: mapMetricFilter === btn.id ? 'white' : 'var(--text-secondary)',
+                        transition: 'all 0.2s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      {btn.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Split Screen Telemetry Map & Metrics Cards */}
+            <div style={{ display: 'flex', gap: '24px', alignItems: 'stretch', minHeight: '420px', flexWrap: 'wrap' }}>
+              {/* Map Panel (65% width) */}
+              <div className="card" style={{ 
+                flex: '2 1 500px', 
+                position: 'relative', 
+                background: 'var(--bg-base)', 
+                border: '1px solid var(--border-color)', 
+                borderRadius: '12px', 
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '24px',
+                minHeight: '400px'
+              }}>
+                {/* Glowing Matrix Grid Backing */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0, left: 0, right: 0, bottom: 0,
+                  backgroundImage: 'radial-gradient(var(--border-color) 1.2px, transparent 0)',
+                  backgroundSize: '28px 28px',
+                  opacity: 0.35,
+                  pointerEvents: 'none'
+                }} />
+
+                {/* SVG world map */}
+                <svg viewBox="0 0 800 360" style={{ width: '100%', height: '100%', display: 'block', zIndex: 2 }}>
+                  <defs>
+                    <linearGradient id="syncTrailGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="var(--primary-accent)" stopOpacity="0.1" />
+                      <stop offset="50%" stopColor="var(--primary-glow)" stopOpacity="0.7" />
+                      <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.1" />
+                    </linearGradient>
+
+                    <filter id="shapeGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation="3" result="blur" />
+                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                  </defs>
+
+                  <style>{`
+                    @keyframes syncLineDash {
+                      to {
+                        stroke-dashoffset: -40;
+                      }
+                    }
+                    .sync-trail {
+                      animation: syncLineDash 4s linear infinite;
+                    }
+                    .country-path {
+                      transition: all 0.3s ease;
+                      cursor: pointer;
+                    }
+                    .country-path:hover {
+                      filter: url(#shapeGlow);
+                    }
+                  `}</style>
+
+                  {/* Stylized Continent Outlines (Background Inactive Landmasses) */}
+                  <g fill="rgba(0, 0, 0, 0.03)" stroke="var(--border-color)" strokeWidth="0.8" strokeDasharray="3 3">
+                    {/* North America minus USA */}
+                    <path d="M 50 60 L 130 50 L 250 60 L 220 70 L 80 80 Z" />
+                    {/* Greenland */}
+                    <path d="M 270 40 L 320 30 L 300 60 Z" />
+                    {/* South America */}
+                    <path d="M 150 175 L 210 185 L 240 240 L 190 320 L 160 260 Z" />
+                    {/* Europe minus France/Italy */}
+                    <path d="M 370 80 L 405 95 L 410 110 L 432 112 L 438 120 L 442 110 L 442 110 L 460 70 Z" />
+                    {/* Africa */}
+                    <path d="M 390 140 L 470 140 L 500 200 L 460 270 L 410 230 Z" />
+                    {/* Asia minus South Korea */}
+                    <path d="M 470 70 L 700 60 L 698 125 L 696 133 L 750 110 L 720 200 L 610 200 L 490 140 Z" />
+                    {/* Australia */}
+                    <path d="M 690 230 L 750 235 L 760 280 L 700 280 Z" />
+                  </g>
+
+                  {/* Ledger Sync Trail Lines to KR host node */}
+                  <g fill="none" strokeWidth="1.5" strokeDasharray="6 6" opacity="0.45">
+                    {/* US to KR */}
+                    <path d="M 165 95 Q 430 45 700 120" stroke="url(#syncTrailGrad)" className="sync-trail" style={{ animationDuration: '4s' }} />
+                    {/* FR to KR */}
+                    <path d="M 418 100 Q 550 60 700 120" stroke="url(#syncTrailGrad)" className="sync-trail" style={{ animationDuration: '3s' }} />
+                    {/* IT to KR */}
+                    <path d="M 445 125 Q 570 70 700 120" stroke="url(#syncTrailGrad)" className="sync-trail" style={{ animationDuration: '2.5s' }} />
+                  </g>
+
+                  {/* Color-Coded Choropleth Active Country Paths */}
+                  {[
+                    { 
+                      code: 'US', 
+                      d: 'M 80 80 L 220 70 L 250 120 L 140 140 Z' 
+                    },
+                    { 
+                      code: 'FR', 
+                      d: 'M 405 95 L 425 90 L 430 105 L 420 115 L 410 110 Z' 
+                    },
+                    { 
+                      code: 'IT', 
+                      d: 'M 432 112 L 442 110 L 448 122 L 458 135 L 452 138 L 438 120 Z' 
+                    },
+                    { 
+                      code: 'KR', 
+                      d: 'M 685 110 L 705 113 L 700 130 L 680 125 Z' 
+                    }
+                  ].map(item => {
+                    const stats = getCountryStats(item.code);
+                    const isHovered = hoveredCountry === item.code;
+                    
+                    let val = 0;
+                    if (activeMetric === 'ingested') val = stats.ingested;
+                    else if (activeMetric === 'pushed') val = stats.pushed;
+                    else if (activeMetric === 'reports') val = stats.reports;
+                    
+                    const ratio = val / maxMetricValue;
+                    const fillOpacity = 0.2 + ratio * 0.75; // color density opacity 20% to 95%
+                    const strokeOpacity = 0.5 + ratio * 0.5; // stroke density opacity 50% to 100%
+                    
+                    return (
+                      <path
+                        key={item.code}
+                        d={item.d}
+                        className="country-path"
+                        fill={stats.color}
+                        fillOpacity={isHovered ? 0.95 : fillOpacity}
+                        stroke={stats.color}
+                        strokeOpacity={strokeOpacity}
+                        strokeWidth={isHovered ? 2.5 : 1.5}
+                        onMouseEnter={() => setHoveredCountry(item.code)}
+                        onMouseLeave={() => setHoveredCountry(null)}
+                        style={{
+                          transition: 'all 0.25s'
+                        }}
+                      />
+                    );
+                  })}
+                </svg>
+
+                {/* Floating Map Glassmorphic Tooltip */}
+                {hoveredCountry && (() => {
+                  const stats = getCountryStats(hoveredCountry);
+                  return (
+                    <div style={{
+                      position: 'absolute',
+                      left: `${(stats.coords.x / 800) * 100}%`,
+                      top: `${(stats.coords.y / 360) * 100 - 15}%`,
+                      transform: 'translate(-50%, -100%)',
+                      background: 'var(--bg-elevated)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
+                      border: `1.5px solid ${stats.color}`,
+                      padding: '12px 16px',
+                      borderRadius: '8px',
+                      color: 'var(--text-primary)',
+                      boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15)',
+                      zIndex: 10,
+                      pointerEvents: 'none',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '6px',
+                      minWidth: '200px',
+                      fontSize: '0.8rem',
+                      transition: 'all 0.15s ease-out'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', borderBottom: '1px solid var(--border-color)', paddingBottom: '4px', fontWeight: 700 }}>
+                        <span style={{ fontSize: '1.1rem' }}>{stats.flag}</span>
+                        <span>{stats.name}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Records Uploaded:</span>
+                        <span style={{ fontWeight: 600 }}>{stats.ingested}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Data Pushed:</span>
+                        <span style={{ fontWeight: 600, color: 'var(--success)' }}>{stats.pushed}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Reports Created (2026):</span>
+                        <span style={{ fontWeight: 600, color: stats.color }}>{stats.reports}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* Sidebar Metrics Cards Panel (35% width) */}
+              <div style={{ 
+                flex: '1 1 240px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '16px',
+                justifyContent: 'center'
+              }}>
+                {['KR', 'IT', 'FR', 'US'].map(code => {
+                  const stats = getCountryStats(code);
+                  const isHovered = hoveredCountry === code;
+                  
+                  let val = 0;
+                  if (activeMetric === 'ingested') val = stats.ingested;
+                  else if (activeMetric === 'pushed') val = stats.pushed;
+                  else if (activeMetric === 'reports') val = stats.reports;
+                  
+                  return (
+                    <div 
+                      key={code}
+                      onMouseEnter={() => setHoveredCountry(code)}
+                      onMouseLeave={() => setHoveredCountry(null)}
+                      style={{
+                        padding: '16px 20px',
+                        borderRadius: '12px',
+                        border: '1px solid var(--border-color)',
+                        background: isHovered ? `linear-gradient(135deg, var(--bg-elevated) 0%, rgba(255,255,255,0.03) 100%)` : 'var(--bg-elevated)',
+                        boxShadow: isHovered ? `0 0 20px -4px ${stats.color}25` : 'none',
+                        borderColor: isHovered ? stats.color : 'var(--border-color)',
+                        cursor: 'pointer',
+                        transition: 'all 0.25s ease',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '1.3rem' }}>{stats.flag}</span>
+                          <span style={{ fontWeight: 700, fontSize: '0.95rem', color: isHovered ? stats.color : 'var(--text-primary)', transition: 'color 0.2s' }}>{stats.name}</span>
+                        </div>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', background: 'var(--bg-base)', padding: '3px 8px', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+                          {code}
+                        </span>
+                      </div>
+
+                      {/* Display active color coded metric beautifully */}
+                      <div style={{ margin: '4px 0', borderLeft: `3px solid ${stats.color}`, paddingLeft: '10px' }}>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          {activeMetric === 'ingested' ? '📁 Records Ingested' : activeMetric === 'pushed' ? '⚡ Data Pushed' : '📄 Reports Created'}
+                        </div>
+                        <div style={{ fontSize: '1.4rem', fontWeight: 800, color: isHovered ? stats.color : 'var(--text-primary)' }}>
+                          {val}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginTop: '4px', textAlign: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '8px' }}>
+                        <div>
+                          <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Ingested</div>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{stats.ingested}</div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Pushed</div>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--success)' }}>{stats.pushed}</div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Reports</div>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: stats.color }}>{stats.reports}</div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Multi-Country Ingestion Uploader */}
       {activeTab === 'uploader' && (
         <div className="card" style={{ maxWidth: '600px', margin: '0 auto', width: '100%' }}>
           <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <UploadCloud size={22} color="var(--primary-glow)" /> Ingest Multi-Country Dataset
+            <UploadCloud size={22} color="var(--primary-glow)" /> Load Multi-Country Data
           </h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '0.9rem' }}>
-            Upload raw manufacturer spend spreadsheets. The Ingestion Engine will map source headers onto the Universal Data Model (UDM) based on your selected target country's legal boundaries.
+            Upload raw manufacturer spend spreadsheets. The Data Loading Engine will map source headers onto the Universal Data Model (UDM) based on your selected target country's legal boundaries.
           </p>
 
           <form onSubmit={handleIngest} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -1515,160 +1951,168 @@ const DataCenter: React.FC = () => {
         </div>
       )}
       {/* Staging Pre-Commit Validation & Review Modal */}
-      {showReviewModal && (
-        <div className="pdf-modal-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div className="pdf-modal-container" style={{ maxWidth: '750px', height: 'auto', maxHeight: '90vh', display: 'flex', flexDirection: 'column', padding: 0 }}>
-            <div className="pdf-toolbar" style={{ borderBottom: '1px solid var(--border-color)', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div className="pdf-toolbar-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
-                <ShieldAlert size={20} color="var(--primary-glow)" />
-                <span>Staging Registry Validation & Pre-Commit Review</span>
-              </div>
-              <button 
-                className="btn" 
-                onClick={() => setShowReviewModal(false)}
-                style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-              >
-                <X size={16} />
-              </button>
-            </div>
-            
-            <div style={{ padding: '24px', overflowY: 'auto', flex: 1, color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div>
-                <h3 style={{ margin: '0 0 6px 0', fontSize: '1.1rem' }}>Data Integrity & Policy Auditing</h3>
-                <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.4 }}>
-                  Please review the summary metrics and validation alerts below. Once records are committed, they will be pushed to isolated country SQL repositories and removed from the staging buffer.
-                </p>
-              </div>
-
-              {/* Summary Stats Table */}
-              <div className="table-container" style={{ margin: 0 }}>
-                <table style={{ margin: 0, width: '100%' }}>
-                  <thead>
-                    <tr>
-                      <th>Jurisdiction</th>
-                      <th style={{ textAlign: 'center' }}>Compliant Records</th>
-                      <th style={{ textAlign: 'center' }}>Flagged Anomalies</th>
-                      <th style={{ textAlign: 'right' }}>Total Value (USD)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {['KR', 'IT', 'FR', 'US'].map(code => {
-                      const countryTxs = transactions.filter(t => t.countryCode === code);
-                      if (countryTxs.length === 0) return null;
-
-                      const compliantCount = countryTxs.filter(t => t.remediationStatus === 'APPROVED').length;
-                      const flaggedCount = countryTxs.filter(t => t.remediationStatus === 'PENDING_REVIEW').length;
-                      const totalUSDVal = countryTxs.reduce((sum, t) => sum + t.amountUSD, 0);
-
-                      return (
-                        <tr key={code}>
-                          <td style={{ fontWeight: 'bold' }}>
-                            {code === 'KR' ? '🇰🇷 South Korea [KR]' : code === 'IT' ? '🇮🇹 Italy [IT]' : code === 'FR' ? '🇫🇷 France [FR]' : '🇺🇸 USA [US]'}
-                          </td>
-                          <td style={{ textAlign: 'center', color: 'var(--success)' }}>{compliantCount} Approved</td>
-                          <td style={{ textAlign: 'center', color: flaggedCount > 0 ? 'var(--warning)' : 'var(--text-muted)', fontWeight: flaggedCount > 0 ? 'bold' : 'normal' }}>
-                            {flaggedCount} Flags
-                          </td>
-                          <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
-                            ${totalUSDVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Warning box if there are flagged records */}
-              {transactions.some(t => t.remediationStatus === 'PENDING_REVIEW') ? (
-                <div style={{
-                  padding: '16px 20px',
-                  borderRadius: '8px',
-                  background: 'rgba(245, 158, 11, 0.08)',
-                  border: '1px solid rgba(245, 158, 11, 0.3)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--warning)', fontWeight: 'bold', fontSize: '0.95rem' }}>
-                    <ShieldAlert size={18} />
-                    <span>Compliance Action Required: Unresolved Policy Flags Detected</span>
-                  </div>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
-                    There are currently <strong>{transactions.filter(t => t.remediationStatus === 'PENDING_REVIEW').length} records</strong> that violate transparency policy limits (such as dinner limits or advisory caps). We highly recommend remediating these items in the **Universal Records Grid** first.
-                  </p>
+      {showReviewModal && (() => {
+        const commitTxs = commitBatchId ? transactions.filter(t => t.batchId === commitBatchId) : transactions;
+        const activeCommitBatch = batches.find(b => b.batchId === commitBatchId);
+        
+        return (
+          <div className="pdf-modal-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+            <div className="pdf-modal-container" style={{ maxWidth: '750px', height: 'auto', maxHeight: '90vh', display: 'flex', flexDirection: 'column', padding: 0 }}>
+              <div className="pdf-toolbar" style={{ borderBottom: '1px solid var(--border-color)', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="pdf-toolbar-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+                  <ShieldAlert size={20} color="var(--primary-glow)" />
+                  <span>Staging File Commit Review: {activeCommitBatch ? activeCommitBatch.sourceFileName : 'Batch Audit'}</span>
                 </div>
-              ) : (
-                <div style={{
-                  padding: '16px 20px',
-                  borderRadius: '8px',
-                  background: 'rgba(16, 185, 129, 0.08)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  color: 'var(--success)',
-                  fontWeight: 'bold',
-                  fontSize: '0.95rem'
-                }}>
-                  <CheckCircle size={18} />
-                  <span>All Staging Records are Fully Compliant & Approved</span>
-                </div>
-              )}
-
-              {/* Certification Checklist */}
-              <div style={{
-                padding: '16px 20px',
-                borderRadius: '8px',
-                background: 'var(--bg-main)',
-                border: '1px solid var(--border-color)',
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '12px'
-              }}>
-                <input 
-                  type="checkbox" 
-                  id="certify-checkbox"
-                  checked={isCertified}
-                  onChange={(e) => setIsCertified(e.target.checked)}
-                  style={{ marginTop: '4px', cursor: 'pointer', width: '16px', height: '16px' }}
-                />
-                <label htmlFor="certify-checkbox" style={{ fontSize: '0.88rem', color: 'var(--text-primary)', lineHeight: 1.4, cursor: 'pointer', userSelect: 'none' }}>
-                  <strong>I certify that I have reviewed the staging transactions.</strong> I confirm that all listed value transfers represent fair market value (FMV), are correctly attributed to the specified HCP/HCO beneficiaries, and conform to the transparency guidelines of their respective jurisdictions.
-                </label>
-              </div>
-
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px' }}>
                 <button 
                   className="btn" 
                   onClick={() => {
                     setShowReviewModal(false);
-                    setActiveTab('transactions');
+                    setCommitBatchId(null);
                   }}
-                  style={{ background: 'rgba(0,0,0,0.05)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '10px 20px' }}
+                  style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                 >
-                  Cancel & Review Grid
+                  <X size={16} />
                 </button>
-                <button 
-                  className="btn btn-primary" 
-                  onClick={handleConfirmCommit}
-                  disabled={!isCertified || isCommitting}
-                  style={{
-                    padding: '10px 24px',
-                    fontWeight: 600,
-                    opacity: isCertified ? 1 : 0.5,
-                    cursor: isCertified ? 'pointer' : 'not-allowed',
-                    boxShadow: isCertified ? '0 4px 12px rgba(124, 58, 237, 0.2)' : 'none'
-                  }}
-                >
-                  {isCommitting ? 'Committing & Routing...' : 'Confirm & Route to Country Registries'}
-                </button>
+              </div>
+              
+              <div style={{ padding: '24px', overflowY: 'auto', flex: 1, color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>
+                  <h3 style={{ margin: '0 0 6px 0', fontSize: '1.1rem' }}>Statutory Data Integrity & Compliance Audit</h3>
+                  <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.4 }}>
+                    Please review the audit summary metrics below. Once committed, these records will be pushed to the final compliance country registers and purged from the staging buffer.
+                  </p>
+                </div>
+
+                {/* Summary Stats Table */}
+                <div className="table-container" style={{ margin: 0 }}>
+                  <table style={{ margin: 0, width: '100%' }}>
+                    <thead>
+                      <tr>
+                        <th>Jurisdiction</th>
+                        <th style={{ textAlign: 'center' }}>Compliant Records</th>
+                        <th style={{ textAlign: 'center' }}>Flagged Anomalies</th>
+                        <th style={{ textAlign: 'right' }}>Total Value (USD)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {['KR', 'IT', 'FR', 'US'].map(code => {
+                        const countryTxs = commitTxs.filter(t => t.countryCode === code);
+                        if (countryTxs.length === 0) return null;
+
+                        const compliantCount = countryTxs.filter(t => t.remediationStatus === 'APPROVED').length;
+                        const flaggedCount = countryTxs.filter(t => t.remediationStatus === 'PENDING_REVIEW').length;
+                        const totalUSDVal = countryTxs.reduce((sum, t) => sum + t.amountUSD, 0);
+
+                        return (
+                          <tr key={code}>
+                            <td style={{ fontWeight: 'bold' }}>
+                              {code === 'KR' ? '🇰🇷 South Korea [KR]' : code === 'IT' ? '🇮🇹 Italy [IT]' : code === 'FR' ? '🇫🇷 France [FR]' : '🇺🇸 USA [US]'}
+                            </td>
+                            <td style={{ textAlign: 'center', color: 'var(--success)' }}>{compliantCount} Approved</td>
+                            <td style={{ textAlign: 'center', color: flaggedCount > 0 ? 'var(--warning)' : 'var(--text-muted)', fontWeight: flaggedCount > 0 ? 'bold' : 'normal' }}>
+                              {flaggedCount} Flags
+                            </td>
+                            <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                              ${totalUSDVal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Warning box if there are flagged records */}
+                {commitTxs.some(t => t.remediationStatus === 'PENDING_REVIEW') ? (
+                  <div style={{
+                    padding: '16px 20px',
+                    borderRadius: '8px',
+                    background: 'rgba(245, 158, 11, 0.08)',
+                    border: '1px solid rgba(245, 158, 11, 0.3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--warning)', fontWeight: 'bold', fontSize: '0.95rem' }}>
+                      <ShieldAlert size={18} />
+                      <span>Compliance Action Required: Unresolved Policy Flags Detected</span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                      There are currently <strong>{commitTxs.filter(t => t.remediationStatus === 'PENDING_REVIEW').length} records</strong> inside this source file that violate statutory transparency policy caps. We highly recommend auditing and remediating them in the grid editor before proceeding.
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{
+                    padding: '16px 20px',
+                    borderRadius: '8px',
+                    background: 'rgba(16, 185, 129, 0.08)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: 'var(--success)',
+                    fontWeight: 'bold',
+                    fontSize: '0.95rem'
+                  }}>
+                    <CheckCircle size={18} />
+                    <span>All Records in This File are Fully Compliant & Approved</span>
+                  </div>
+                )}
+
+                {/* Certification Checklist */}
+                <div style={{
+                  padding: '16px 20px',
+                  borderRadius: '8px',
+                  background: 'var(--bg-main)',
+                  border: '1px solid var(--border-color)',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '12px'
+                }}>
+                  <input 
+                    type="checkbox" 
+                    id="certify-checkbox"
+                    checked={isCertified}
+                    onChange={(e) => setIsCertified(e.target.checked)}
+                    style={{ marginTop: '4px', cursor: 'pointer', width: '16px', height: '16px' }}
+                  />
+                  <label htmlFor="certify-checkbox" style={{ fontSize: '0.88rem', color: 'var(--text-primary)', lineHeight: 1.4, cursor: 'pointer', userSelect: 'none' }}>
+                    <strong>I certify that I have audited this specific source file.</strong> I confirm that all listed value transfers represent fair market value (FMV), are correctly attributed to the specified HCP/HCO beneficiaries, and conform to statutory guidelines.
+                  </label>
+                </div>
+
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px' }}>
+                  <button 
+                    className="btn" 
+                    onClick={() => {
+                      setShowReviewModal(false);
+                      setCommitBatchId(null);
+                    }}
+                    style={{ background: 'rgba(0,0,0,0.05)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', padding: '10px 20px' }}
+                  >
+                    Cancel & Edit Records
+                  </button>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={handleConfirmCommit}
+                    disabled={!isCertified || isCommitting}
+                    style={{
+                      padding: '10px 24px',
+                      fontWeight: 600,
+                      opacity: isCertified ? 1 : 0.5,
+                      cursor: isCertified ? 'pointer' : 'not-allowed',
+                      boxShadow: isCertified ? '0 4px 12px rgba(124, 58, 237, 0.2)' : 'none'
+                    }}
+                  >
+                    {isCommitting ? 'Committing & Routing...' : 'Confirm & Commit File to Production'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };
