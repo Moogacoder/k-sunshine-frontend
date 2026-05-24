@@ -25,6 +25,7 @@ const AppLayout = () => {
         <Routes>
           <Route path="/" element={<Navigate to="/datacenter" replace />} />
           <Route path="/datacenter" element={<DataCenter />} />
+          <Route path="/global-data-status" element={<DataCenter defaultTab="compliance_map" />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/source-files" element={<SourceFiles />} />
           <Route path="/ingestion" element={<Ingestion />} />

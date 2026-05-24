@@ -21,8 +21,13 @@ const Sidebar = () => {
         {/* Administrative Control Hub */}
         <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.05em', margin: '8px 0 4px 12px', fontWeight: 'bold', opacity: 0.8 }}>Administrative Hub</div>
         <NavLink to="/datacenter" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ borderLeft: '3px solid var(--secondary-accent)', background: 'rgba(124, 58, 237, 0.05)', fontWeight: 'bold' }}>
-          <Globe size={20} color="var(--primary-glow)" />
+          <Database size={20} color="var(--primary-glow)" />
           <span style={{ color: 'var(--primary-glow)' }}>Global Data Center</span>
+        </NavLink>
+
+        <NavLink to="/global-data-status" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <Globe size={20} />
+          <span>Global Data Status</span>
         </NavLink>
 
         <NavLink to="/audit" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>

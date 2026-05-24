@@ -398,3 +398,45 @@ tr:hover td {
   to { transform: scale(1); opacity: 1; }
 }
 
+/* Premium Leaflet Map Adjustments */
+#global-telemetry-map {
+  background-color: #f8fafc !important;
+}
+
+/* Custom Glassmorphic Leaflet Tooltip */
+.leaflet-glass-tooltip {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  WebkitBackdropFilter: blur(12px) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15) !important;
+  padding: 10px 14px !important;
+  color: var(--text-primary) !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.leaflet-glass-tooltip::before {
+  border-top-color: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* Leaflet Zoom Widget Premium Curation */
+.leaflet-bar {
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-md) !important;
+  border-radius: var(--radius-sm) !important;
+  overflow: hidden;
+}
+
+.leaflet-bar a {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  transition: all 0.2s ease;
+}
+
+.leaflet-bar a:hover {
+  background-color: var(--bg-elevated) !important;
+  color: var(--primary-accent) !important;
+}
+

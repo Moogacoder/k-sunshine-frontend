@@ -1,14 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, Search, Filter, X, FileText, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, X, FileText, ArrowRight } from 'lucide-react';
 import { APIGateway, type UniversalTransaction, type IngestionBatch, type AuditLog } from '../datacenter/api_gateway';
 import * as XLSX from 'xlsx';
 import { parseAmount, validateReportingCompleteness } from '../datacenter/validation';
 
-const DataCenter: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'compliance_map' | 'uploader' | 'transactions' | 'source_files'>('overview');
+declare const L: any;
+
+interface DataCenterProps {
+  defaultTab?: 'overview' | 'compliance_map' | 'uploader' | 'transactions' | 'source_files';
+}
+
+const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'overview' | 'compliance_map' | 'uploader' | 'transactions' | 'source_files'>(defaultTab || 'overview');
   const [mapMetricFilter, setMapMetricFilter] = useState<'ingested' | 'pushed' | 'reports'>('ingested');
-  const [countryFilter, setCountryFilter] = useState<string>('GLOBAL');
-  const [searchTerm, setSearchTerm] = useState<string>('');
+
+  useEffect(() => {
+    if (defaultTab) {
+      setActiveTab(defaultTab);
+    }
+  }, [defaultTab]);
+
   
   // States holding mock central database feeds
   const [transactions, setTransactions] = useState<UniversalTransaction[]>([]);
@@ -31,9 +44,8 @@ const DataCenter: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // Sorting and advanced filtering states
-  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
-  const [recipientTypeFilter, setRecipientTypeFilter] = useState<string>('ALL');
-  const [remediationFilter, setRemediationFilter] = useState<string>('ALL');
+
+
 
   // Inline row editor states
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -53,7 +65,7 @@ const DataCenter: React.FC = () => {
   useEffect(() => {
     // Load live central database feed asynchronously
     const loadData = async () => {
-      const txs = await APIGateway.getTransactions(countryFilter);
+      const txs = await APIGateway.getTransactions('GLOBAL');
       const bts = await APIGateway.getBatches();
       const committedTxs = await APIGateway.getCommittedTransactions();
       setTransactions(txs);
@@ -64,7 +76,172 @@ const DataCenter: React.FC = () => {
       setAllStagingTransactions(globalStaging);
     };
     loadData();
-  }, [countryFilter]);
+  }, []);
+
+  // Setup Leaflet map instance ref
+  const mapRef = useRef<any>(null);
+  const markersRef = useRef<{ [key: string]: any }>({});
+
+  useEffect(() => {
+    // If we're not on the compliance_map tab, clean up map if it exists
+    if (activeTab !== 'compliance_map') {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+      markersRef.current = {};
+      return;
+    }
+
+    // Leaflet map initialization
+    if (typeof window === 'undefined' || !(window as any).L) {
+      return;
+    }
+
+    const L = (window as any).L;
+
+    // Check if the container element is ready in the DOM
+    const container = document.getElementById('global-telemetry-map');
+    if (!container) return;
+
+    // If map isn't created yet, initialize it
+    if (!mapRef.current) {
+      const map = L.map('global-telemetry-map', {
+        center: [25, 10],
+        zoom: 2,
+        minZoom: 1.5,
+        maxZoom: 10,
+        zoomControl: true,
+        attributionControl: false
+      });
+
+      // Add CartoDB Positron elegant light theme
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 20
+      }).addTo(map);
+
+      mapRef.current = map;
+    }
+
+    const map = mapRef.current;
+    const countries = ['KR', 'IT', 'FR', 'US'];
+
+    // Coordinates mapping
+    const coords: { [key: string]: [number, number] } = {
+      KR: [37.5665, 126.9780], // Seoul
+      IT: [41.9028, 12.4964],  // Rome
+      FR: [48.8566, 2.3522],   // Paris
+      US: [38.9072, -77.0369]  // Washington D.C.
+    };
+
+    // Calculate max value for the active metric to normalize sizes
+    const activeMetric = mapMetricFilter;
+    const maxMetricValue = Math.max(
+      ...countries.map(c => {
+        const stats = getCountryStats(c);
+        if (activeMetric === 'ingested') return stats.ingested;
+        if (activeMetric === 'pushed') return stats.pushed;
+        return stats.reports;
+      })
+    ) || 1;
+
+    // Remove existing markers if any
+    Object.values(markersRef.current).forEach(m => m.remove());
+    markersRef.current = {};
+
+    // Loop through countries and add dynamic circle markers
+    countries.forEach(code => {
+      const stats = getCountryStats(code);
+      const latlng = coords[code];
+      if (!latlng) return;
+
+      let val = 0;
+      if (activeMetric === 'ingested') val = stats.ingested;
+      else if (activeMetric === 'pushed') val = stats.pushed;
+      else if (activeMetric === 'reports') val = stats.reports;
+
+      const ratio = val / maxMetricValue;
+      const radius = 10 + ratio * 24; 
+      
+      const circle = L.circleMarker(latlng, {
+        radius: radius,
+        fillColor: stats.color,
+        fillOpacity: 0.6,
+        color: stats.color,
+        weight: 1.5,
+        opacity: 0.8
+      }).addTo(map);
+
+      markersRef.current[code] = circle;
+
+      circle.on('mouseover', () => {
+        setHoveredCountry(code);
+        circle.setStyle({
+          weight: 3.5,
+          fillOpacity: 0.9
+        });
+      });
+
+      circle.on('mouseout', () => {
+        setHoveredCountry(null);
+        circle.setStyle({
+          weight: 1.5,
+          fillOpacity: 0.6
+        });
+      });
+
+      circle.on('click', () => {
+        if (code === 'KR') {
+          navigate('/dashboard');
+        } else if (code === 'IT') {
+          navigate('/italy/dashboard');
+        } else {
+          alert(`Compliance Portal: The local reporting database for ${stats.name} is active in staging. Standard operations are currently logged via the primary data load queues.`);
+        }
+      });
+
+      const tooltipContent = `
+        <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; padding: 4px; min-width: 150px;">
+          <div style="font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 6px;">
+            <span style="font-size: 1.15rem;">${stats.flag}</span>
+            <span style="color: #0f172a;">${stats.name}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+            <span style="color: #64748b;">Uploaded Ingests:</span>
+            <span style="font-weight: 600; color: #0f172a;">${stats.ingested.toLocaleString()}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+            <span style="color: #64748b;">Registries Pushed:</span>
+            <span style="font-weight: 600; color: #10b981;">${stats.pushed.toLocaleString()}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
+            <span style="color: #64748b;">MOHW Reports (2026):</span>
+            <span style="font-weight: 600; color: ${stats.color};">${stats.reports}</span>
+          </div>
+        </div>
+      `;
+
+      circle.bindTooltip(tooltipContent, {
+        direction: 'top',
+        className: 'leaflet-glass-tooltip',
+        opacity: 0.96,
+        sticky: true
+      });
+    });
+
+  }, [activeTab, mapMetricFilter, allStagingTransactions, committedTransactions]);
+
+  // Sync hovered state from list to map circle marker styling
+  useEffect(() => {
+    if (!mapRef.current) return;
+    Object.entries(markersRef.current).forEach(([code, marker]) => {
+      const isHovered = hoveredCountry === code;
+      marker.setStyle({
+        weight: isHovered ? 3.5 : 1.5,
+        fillOpacity: isHovered ? 0.9 : 0.6
+      });
+    });
+  }, [hoveredCountry]);
 
   // Load audit logs when modal is shown
   useEffect(() => {
@@ -153,7 +330,7 @@ const DataCenter: React.FC = () => {
         const result = await APIGateway.ingestData(targetCountry, targetYear, selectedFile.name, mockRows);
         if (result.success) {
           // Reload central ledger
-          const txs = await APIGateway.getTransactions(countryFilter);
+          const txs = await APIGateway.getTransactions('GLOBAL');
           const bts = await APIGateway.getBatches();
           const committedTxs = await APIGateway.getCommittedTransactions();
           setTransactions(txs);
@@ -176,13 +353,7 @@ const DataCenter: React.FC = () => {
     }, 500);
   };
 
-  const handleSort = (key: string) => {
-    let direction: 'asc' | 'desc' = 'desc';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'desc') {
-      direction = 'asc';
-    }
-    setSortConfig({ key, direction });
-  };
+
 
   const handleEditClick = (tx: UniversalTransaction) => {
     setEditingId(tx.id);
@@ -253,7 +424,7 @@ const DataCenter: React.FC = () => {
       const success = await APIGateway.updateTransaction(id, updatedValues);
       if (success) {
         // Reload transactions from the central source of truth
-        const txs = await APIGateway.getTransactions(countryFilter);
+        const txs = await APIGateway.getTransactions('GLOBAL');
         const committedTxs = await APIGateway.getCommittedTransactions();
         setTransactions(txs);
         setCommittedTransactions(committedTxs);
@@ -283,7 +454,7 @@ const DataCenter: React.FC = () => {
     try {
       const result = await APIGateway.commitStaging(commitBatchId || undefined);
       if (result.success) {
-        const txs = await APIGateway.getTransactions(countryFilter);
+        const txs = await APIGateway.getTransactions('GLOBAL');
         const bts = await APIGateway.getBatches();
         const committedTxs = await APIGateway.getCommittedTransactions();
         setTransactions(txs);
@@ -313,7 +484,7 @@ const DataCenter: React.FC = () => {
       try {
         const success = await APIGateway.purgeDatabases();
         if (success) {
-          const txs = await APIGateway.getTransactions(countryFilter);
+          const txs = await APIGateway.getTransactions('GLOBAL');
           const bts = await APIGateway.getBatches();
           const committedTxs = await APIGateway.getCommittedTransactions();
           setTransactions(txs);
@@ -414,118 +585,56 @@ const DataCenter: React.FC = () => {
     };
   };
 
-  // Multi-dimensional filtering and sorting computations
-  const filteredAndSortedTransactions = React.useMemo(() => {
-    let result = [...transactions];
 
-    // 1. Text Search Filter
-    if (searchTerm) {
-      const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter(t => 
-        t.recipientName.toLowerCase().includes(lowerSearch) ||
-        t.workplaceInstitution.toLowerCase().includes(lowerSearch) ||
-        t.id.toLowerCase().includes(lowerSearch) ||
-        t.spendCategory.toLowerCase().includes(lowerSearch) ||
-        t.purposeOfBenefit.toLowerCase().includes(lowerSearch)
-      );
-    }
-
-    // 2. Recipient Type Filter
-    if (recipientTypeFilter !== 'ALL') {
-      result = result.filter(t => t.recipientType === recipientTypeFilter);
-    }
-
-    // 3. Compliance Remediation Filter
-    if (remediationFilter !== 'ALL') {
-      result = result.filter(t => t.remediationStatus === remediationFilter);
-    }
-
-    // 4. Sorting logic
-    if (sortConfig) {
-      result.sort((a, b) => {
-        let valA = a[sortConfig.key as keyof UniversalTransaction];
-        let valB = b[sortConfig.key as keyof UniversalTransaction];
-
-        if (sortConfig.key === 'dateOfProvision') {
-          valA = new Date(valA as string).getTime();
-          valB = new Date(valB as string).getTime();
-        }
-
-        if (valA == null) valA = '';
-        if (valB == null) valB = '';
-
-        if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
-        if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
-        return 0;
-      });
-    }
-
-    return result;
-  }, [transactions, searchTerm, sortConfig, recipientTypeFilter, remediationFilter]);
-
-  const renderSortableHeader = (label: string, sortKey: string) => {
-    return (
-      <th 
-        onClick={() => handleSort(sortKey)} 
-        style={{ cursor: 'pointer', userSelect: 'none', padding: '12px 16px', background: 'var(--bg-main)' }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'space-between' }}>
-          <span>{label}</span>
-          <span style={{ fontSize: '0.75rem', color: sortConfig?.key === sortKey ? 'var(--primary-glow)' : 'var(--text-secondary)', opacity: sortConfig?.key === sortKey ? 1 : 0.3 }}>
-            {sortConfig?.key === sortKey ? (sortConfig.direction === 'asc' ? '▲' : '▼') : '↕'}
-          </span>
-        </div>
-      </th>
-    );
-  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Globe size={32} color="var(--primary-accent)" />
-          <h1 className="page-title" style={{ margin: 0 }}>Intelligent Transparency Data Center</h1>
-        </div>
-      </div>
+      {activeTab !== 'compliance_map' ? (
+        <>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Database size={32} color="var(--primary-accent)" />
+              <h1 className="page-title" style={{ margin: 0 }}>Intelligent Transparency Data Center</h1>
+            </div>
+          </div>
 
-      {/* Tabs Menu */}
-      <div style={{ display: 'flex', gap: '12px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
-        <button 
-          onClick={() => setActiveTab('overview')}
-          className={`btn ${activeTab === 'overview' ? 'btn-primary' : ''}`}
-          style={{ background: activeTab === 'overview' ? '' : 'transparent', color: activeTab === 'overview' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
-        >
-          <Database size={18} /> Incoming Data Review
-        </button>
-        <button 
-          onClick={() => setActiveTab('compliance_map')}
-          className={`btn ${activeTab === 'compliance_map' ? 'btn-primary' : ''}`}
-          style={{ background: activeTab === 'compliance_map' ? '' : 'transparent', color: activeTab === 'compliance_map' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
-        >
-          <Globe size={18} /> Global Compliance Map
-        </button>
-        <button 
-          onClick={() => setActiveTab('uploader')}
-          className={`btn ${activeTab === 'uploader' ? 'btn-primary' : ''}`}
-          style={{ background: activeTab === 'uploader' ? '' : 'transparent', color: activeTab === 'uploader' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
-        >
-          <UploadCloud size={18} /> Load Data
-        </button>
-        <button 
-          onClick={() => setActiveTab('transactions')}
-          className={`btn ${activeTab === 'transactions' ? 'btn-primary' : ''}`}
-          style={{ background: activeTab === 'transactions' ? '' : 'transparent', color: activeTab === 'transactions' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
-        >
-          <Search size={18} /> Universal Records Grid
-        </button>
-        <button 
-          onClick={() => setActiveTab('source_files')}
-          className={`btn ${activeTab === 'source_files' ? 'btn-primary' : ''}`}
-          style={{ background: activeTab === 'source_files' ? '' : 'transparent', color: activeTab === 'source_files' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
-        >
-          <FileText size={18} /> Source Files Explorer
-        </button>
-      </div>
+          {/* Tabs Menu */}
+          <div style={{ display: 'flex', gap: '12px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
+            <button 
+              onClick={() => setActiveTab('overview')}
+              className={`btn ${activeTab === 'overview' ? 'btn-primary' : ''}`}
+              style={{ background: activeTab === 'overview' ? '' : 'transparent', color: activeTab === 'overview' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
+            >
+              <Database size={18} /> Incoming Data Review
+            </button>
+            <button 
+              onClick={() => setActiveTab('uploader')}
+              className={`btn ${activeTab === 'uploader' ? 'btn-primary' : ''}`}
+              style={{ background: activeTab === 'uploader' ? '' : 'transparent', color: activeTab === 'uploader' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
+            >
+              <UploadCloud size={18} /> Load Data
+            </button>
+
+            <button 
+              onClick={() => setActiveTab('source_files')}
+              className={`btn ${activeTab === 'source_files' ? 'btn-primary' : ''}`}
+              style={{ background: activeTab === 'source_files' ? '' : 'transparent', color: activeTab === 'source_files' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
+            >
+              <FileText size={18} /> Source Files Explorer
+            </button>
+          </div>
+        </>
+      ) : (
+        <div style={{ marginBottom: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Globe size={32} color="var(--primary-accent)" />
+            <h1 className="page-title" style={{ margin: 0 }}>Global Data Status</h1>
+          </div>
+          <p style={{ margin: '8px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+            Real-time compliance telemetry across active pharmaceutical value transparency registers.
+          </p>
+        </div>
+      )}
 
       {/* Overview Dashboard */}
       {activeTab === 'overview' && (() => {
@@ -1105,18 +1214,8 @@ const DataCenter: React.FC = () => {
         );
       })()}
 
-      {/* Global Compliance Map Dashboard Tab */}
       {activeTab === 'compliance_map' && (() => {
         const activeMetric = mapMetricFilter;
-        const maxMetricValue = Math.max(
-          ...['KR', 'IT', 'FR', 'US'].map(c => {
-            const stats = getCountryStats(c);
-            if (activeMetric === 'ingested') return stats.ingested;
-            if (activeMetric === 'pushed') return stats.pushed;
-            return stats.reports;
-          })
-        ) || 1;
-
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Telemetry Control Bar */}
@@ -1134,10 +1233,10 @@ const DataCenter: React.FC = () => {
               <div>
                 <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Globe size={22} color="var(--primary-accent)" />
-                  <span>Global Regulatory Compliance Choropleth Map</span>
+                  <span>Global Data Status Telemetry</span>
                 </h2>
                 <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                  Double-click or hover active country geometries to inspect records, pushed registries, and compliance audit reports.
+                  Hover over active compliance nodes to view real-time records, pushed registries, and statutory disclosure reports. Click on nodes to deep-dive into local dashboards.
                 </p>
               </div>
 
@@ -1182,7 +1281,7 @@ const DataCenter: React.FC = () => {
             </div>
 
             {/* Split Screen Telemetry Map & Metrics Cards */}
-            <div style={{ display: 'flex', gap: '24px', alignItems: 'stretch', minHeight: '420px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '24px', alignItems: 'stretch', minHeight: '450px', flexWrap: 'wrap' }}>
               {/* Map Panel (65% width) */}
               <div className="card" style={{ 
                 flex: '2 1 500px', 
@@ -1191,179 +1290,12 @@ const DataCenter: React.FC = () => {
                 border: '1px solid var(--border-color)', 
                 borderRadius: '12px', 
                 overflow: 'hidden',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '24px',
-                minHeight: '400px'
+                padding: '0',
+                minHeight: '450px',
+                boxShadow: 'var(--shadow-md)'
               }}>
-                {/* Glowing Matrix Grid Backing */}
-                <div style={{
-                  position: 'absolute',
-                  top: 0, left: 0, right: 0, bottom: 0,
-                  backgroundImage: 'radial-gradient(var(--border-color) 1.2px, transparent 0)',
-                  backgroundSize: '28px 28px',
-                  opacity: 0.35,
-                  pointerEvents: 'none'
-                }} />
-
-                {/* SVG world map */}
-                <svg viewBox="0 0 800 360" style={{ width: '100%', height: '100%', display: 'block', zIndex: 2 }}>
-                  <defs>
-                    <linearGradient id="syncTrailGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="var(--primary-accent)" stopOpacity="0.1" />
-                      <stop offset="50%" stopColor="var(--primary-glow)" stopOpacity="0.7" />
-                      <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.1" />
-                    </linearGradient>
-
-                    <filter id="shapeGlow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="3" result="blur" />
-                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                  </defs>
-
-                  <style>{`
-                    @keyframes syncLineDash {
-                      to {
-                        stroke-dashoffset: -40;
-                      }
-                    }
-                    .sync-trail {
-                      animation: syncLineDash 4s linear infinite;
-                    }
-                    .country-path {
-                      transition: all 0.3s ease;
-                      cursor: pointer;
-                    }
-                    .country-path:hover {
-                      filter: url(#shapeGlow);
-                    }
-                  `}</style>
-
-                  {/* Stylized Continent Outlines (Background Inactive Landmasses) */}
-                  <g fill="rgba(0, 0, 0, 0.03)" stroke="var(--border-color)" strokeWidth="0.8" strokeDasharray="3 3">
-                    {/* North America minus USA */}
-                    <path d="M 50 60 L 130 50 L 250 60 L 220 70 L 80 80 Z" />
-                    {/* Greenland */}
-                    <path d="M 270 40 L 320 30 L 300 60 Z" />
-                    {/* South America */}
-                    <path d="M 150 175 L 210 185 L 240 240 L 190 320 L 160 260 Z" />
-                    {/* Europe minus France/Italy */}
-                    <path d="M 370 80 L 405 95 L 410 110 L 432 112 L 438 120 L 442 110 L 442 110 L 460 70 Z" />
-                    {/* Africa */}
-                    <path d="M 390 140 L 470 140 L 500 200 L 460 270 L 410 230 Z" />
-                    {/* Asia minus South Korea */}
-                    <path d="M 470 70 L 700 60 L 698 125 L 696 133 L 750 110 L 720 200 L 610 200 L 490 140 Z" />
-                    {/* Australia */}
-                    <path d="M 690 230 L 750 235 L 760 280 L 700 280 Z" />
-                  </g>
-
-                  {/* Ledger Sync Trail Lines to KR host node */}
-                  <g fill="none" strokeWidth="1.5" strokeDasharray="6 6" opacity="0.45">
-                    {/* US to KR */}
-                    <path d="M 165 95 Q 430 45 700 120" stroke="url(#syncTrailGrad)" className="sync-trail" style={{ animationDuration: '4s' }} />
-                    {/* FR to KR */}
-                    <path d="M 418 100 Q 550 60 700 120" stroke="url(#syncTrailGrad)" className="sync-trail" style={{ animationDuration: '3s' }} />
-                    {/* IT to KR */}
-                    <path d="M 445 125 Q 570 70 700 120" stroke="url(#syncTrailGrad)" className="sync-trail" style={{ animationDuration: '2.5s' }} />
-                  </g>
-
-                  {/* Color-Coded Choropleth Active Country Paths */}
-                  {[
-                    { 
-                      code: 'US', 
-                      d: 'M 80 80 L 220 70 L 250 120 L 140 140 Z' 
-                    },
-                    { 
-                      code: 'FR', 
-                      d: 'M 405 95 L 425 90 L 430 105 L 420 115 L 410 110 Z' 
-                    },
-                    { 
-                      code: 'IT', 
-                      d: 'M 432 112 L 442 110 L 448 122 L 458 135 L 452 138 L 438 120 Z' 
-                    },
-                    { 
-                      code: 'KR', 
-                      d: 'M 685 110 L 705 113 L 700 130 L 680 125 Z' 
-                    }
-                  ].map(item => {
-                    const stats = getCountryStats(item.code);
-                    const isHovered = hoveredCountry === item.code;
-                    
-                    let val = 0;
-                    if (activeMetric === 'ingested') val = stats.ingested;
-                    else if (activeMetric === 'pushed') val = stats.pushed;
-                    else if (activeMetric === 'reports') val = stats.reports;
-                    
-                    const ratio = val / maxMetricValue;
-                    const fillOpacity = 0.2 + ratio * 0.75; // color density opacity 20% to 95%
-                    const strokeOpacity = 0.5 + ratio * 0.5; // stroke density opacity 50% to 100%
-                    
-                    return (
-                      <path
-                        key={item.code}
-                        d={item.d}
-                        className="country-path"
-                        fill={stats.color}
-                        fillOpacity={isHovered ? 0.95 : fillOpacity}
-                        stroke={stats.color}
-                        strokeOpacity={strokeOpacity}
-                        strokeWidth={isHovered ? 2.5 : 1.5}
-                        onMouseEnter={() => setHoveredCountry(item.code)}
-                        onMouseLeave={() => setHoveredCountry(null)}
-                        style={{
-                          transition: 'all 0.25s'
-                        }}
-                      />
-                    );
-                  })}
-                </svg>
-
-                {/* Floating Map Glassmorphic Tooltip */}
-                {hoveredCountry && (() => {
-                  const stats = getCountryStats(hoveredCountry);
-                  return (
-                    <div style={{
-                      position: 'absolute',
-                      left: `${(stats.coords.x / 800) * 100}%`,
-                      top: `${(stats.coords.y / 360) * 100 - 15}%`,
-                      transform: 'translate(-50%, -100%)',
-                      background: 'var(--bg-elevated)',
-                      backdropFilter: 'blur(16px)',
-                      WebkitBackdropFilter: 'blur(16px)',
-                      border: `1.5px solid ${stats.color}`,
-                      padding: '12px 16px',
-                      borderRadius: '8px',
-                      color: 'var(--text-primary)',
-                      boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15)',
-                      zIndex: 10,
-                      pointerEvents: 'none',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '6px',
-                      minWidth: '200px',
-                      fontSize: '0.8rem',
-                      transition: 'all 0.15s ease-out'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', borderBottom: '1px solid var(--border-color)', paddingBottom: '4px', fontWeight: 700 }}>
-                        <span style={{ fontSize: '1.1rem' }}>{stats.flag}</span>
-                        <span>{stats.name}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: 'var(--text-secondary)' }}>Records Uploaded:</span>
-                        <span style={{ fontWeight: 600 }}>{stats.ingested}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: 'var(--text-secondary)' }}>Data Pushed:</span>
-                        <span style={{ fontWeight: 600, color: 'var(--success)' }}>{stats.pushed}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: 'var(--text-secondary)' }}>Reports Created (2026):</span>
-                        <span style={{ fontWeight: 600, color: stats.color }}>{stats.reports}</span>
-                      </div>
-                    </div>
-                  );
-                })()}
+                {/* Real Leaflet Map Container */}
+                <div id="global-telemetry-map" style={{ width: '100%', height: '100%', minHeight: '450px', borderRadius: '12px' }}></div>
               </div>
 
               {/* Sidebar Metrics Cards Panel (35% width) */}
@@ -1507,217 +1439,6 @@ const DataCenter: React.FC = () => {
               {isUploading ? 'Validating & Normalizing...' : 'Submit & Normalize to Universal UDM'}
             </button>
           </form>
-        </div>
-      )}
-
-      {/* Universal Records Grid / Global Data Explorer */}
-      {activeTab === 'transactions' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Advanced Multi-Dimensional Filtering Bar */}
-          <div className="card" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '16px', padding: '16px', alignItems: 'center' }}>
-            <div style={{ position: 'relative' }}>
-              <Search size={18} style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-secondary)' }} />
-              <input 
-                type="text" 
-                placeholder="Search globally (Name, Hospital, ID, Specialty...)" 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ width: '100%', padding: '10px 10px 10px 40px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.9rem' }}
-              />
-            </div>
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Filter size={16} color="var(--text-secondary)" />
-              <select 
-                value={countryFilter} 
-                onChange={(e) => setCountryFilter(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-elevated)', color: 'var(--text-primary)', fontWeight: 500, fontSize: '0.85rem' }}
-              >
-                <option value="GLOBAL">🌍 All Countries</option>
-                <option value="KR">🇰🇷 South Korea [KR]</option>
-                <option value="IT">🇮🇹 Italy [IT]</option>
-                <option value="FR">🇫🇷 France [FR]</option>
-                <option value="US">🇺🇸 United States [US]</option>
-              </select>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <select 
-                value={recipientTypeFilter} 
-                onChange={(e) => setRecipientTypeFilter(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-elevated)', color: 'var(--text-primary)', fontWeight: 500, fontSize: '0.85rem' }}
-              >
-                <option value="ALL">👤 All Beneficiary Types</option>
-                <option value="HCP">HCP (Clinicians)</option>
-                <option value="INSTITUTION">HCO (Institutions/Hospitals)</option>
-              </select>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <select 
-                value={remediationFilter} 
-                onChange={(e) => setRemediationFilter(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-elevated)', color: 'var(--text-primary)', fontWeight: 500, fontSize: '0.85rem' }}
-              >
-                <option value="ALL">🛡️ All Audit Statuses</option>
-                <option value="APPROVED">Compliant (Approved)</option>
-                <option value="PENDING_REVIEW">Flagged (Remediation Required)</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Interactive Global Explorer Grid */}
-          <div className="card" style={{ padding: 0 }}>
-            <div className="table-container" style={{ margin: 0, overflowX: 'auto' }}>
-              <table style={{ margin: 0, width: '100%', tableLayout: 'auto' }}>
-                <thead>
-                  <tr>
-                    {renderSortableHeader('Record ID', 'id')}
-                    {renderSortableHeader('Country', 'countryCode')}
-                    {renderSortableHeader('Recipient Details', 'recipientName')}
-                    {renderSortableHeader('Category', 'spendCategory')}
-                    {renderSortableHeader('Provision Details', 'purposeOfBenefit')}
-                    {renderSortableHeader('Original Value', 'amountOriginal')}
-                    {renderSortableHeader('Normalized USD', 'amountUSD')}
-                    {renderSortableHeader('Compliance Check', 'remediationStatus')}
-                    <th style={{ padding: '12px 16px', background: 'var(--bg-main)', minWidth: '120px' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredAndSortedTransactions.length === 0 ? (
-                    <tr>
-                      <td colSpan={9} style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '40px' }}>
-                        No spend records found matching the active filtering rules.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredAndSortedTransactions.map(tx => (
-                      <tr key={tx.id} style={{ background: editingId === tx.id ? 'rgba(124, 58, 237, 0.03)' : 'transparent', borderBottom: '1px solid var(--border-color)' }}>
-                        {editingId === tx.id ? (
-                          <>
-                            <td style={{ fontWeight: 'bold', padding: '12px 16px' }}>{tx.id}</td>
-                            <td>
-                              <span className="badge" style={{ background: '#f1f5f9', border: '1px solid var(--border-color)', color: '#334155' }}>
-                                {tx.countryCode}
-                              </span>
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <input 
-                                value={editFormData.recipientName || ''} 
-                                onChange={(e) => handleChange(e, 'recipientName')} 
-                                style={{ padding: '6px 8px', width: '130px', marginBottom: '6px', display: 'block', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)' }} 
-                                placeholder="Recipient Name" 
-                              />
-                              <input 
-                                value={editFormData.workplaceInstitution || ''} 
-                                onChange={(e) => handleChange(e, 'workplaceInstitution')} 
-                                style={{ padding: '4px 8px', width: '130px', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)' }} 
-                                placeholder="Institution" 
-                              />
-                            </td>
-                            <td>
-                              <select 
-                                value={editFormData.spendCategory || ''} 
-                                onChange={(e) => handleChange(e, 'spendCategory')} 
-                                style={{ padding: '6px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)' }}
-                              >
-                                <option value="PRESENTATION">PRESENTATION</option>
-                                <option value="SAMPLES">SAMPLES</option>
-                                <option value="CONSULTANCY">CONSULTANCY</option>
-                                <option value="CONVENZIONI">CONVENZIONI</option>
-                                <option value="DONAZIONI">DONAZIONI</option>
-                                <option value="CONFERENCE_SUPPORT">CONFERENCE_SUPPORT</option>
-                              </select>
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <input 
-                                value={editFormData.purposeOfBenefit || ''} 
-                                onChange={(e) => handleChange(e, 'purposeOfBenefit')} 
-                                style={{ padding: '6px 8px', width: '150px', marginBottom: '6px', display: 'block', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)' }} 
-                                placeholder="Purpose" 
-                              />
-                              <input 
-                                value={editFormData.details || ''} 
-                                onChange={(e) => handleChange(e, 'details')} 
-                                style={{ padding: '4px 8px', width: '150px', fontSize: '0.8rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)' }} 
-                                placeholder="Details / Reference" 
-                              />
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{tx.currencyOriginal}</span>
-                                <input 
-                                  type="number" 
-                                  value={editFormData.amountOriginal || ''} 
-                                  onChange={(e) => handleChange(e, 'amountOriginal')} 
-                                  style={{ padding: '6px 8px', width: '80px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', textAlign: 'right' }} 
-                                />
-                              </div>
-                            </td>
-                            <td style={{ fontWeight: 'bold', color: 'var(--primary-accent)', padding: '12px 16px' }}>
-                              ${tx.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <span className={`badge ${tx.remediationStatus === 'APPROVED' ? 'badge-success' : 'badge-warning'}`}>
-                                {tx.remediationStatus === 'APPROVED' ? 'Compliant' : 'Audit Flag'}
-                              </span>
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <div style={{ display: 'flex', gap: '6px' }}>
-                                <button className="btn btn-primary" onClick={() => handleSaveEdit(tx.id)} style={{ padding: '6px 10px', fontSize: '0.75rem', borderRadius: '4px' }}>Save</button>
-                                <button className="btn" onClick={handleCancelEdit} style={{ padding: '6px 10px', fontSize: '0.75rem', borderRadius: '4px', background: 'rgba(0,0,0,0.05)', color: 'var(--text-primary)' }}>Cancel</button>
-                              </div>
-                            </td>
-                          </>
-                        ) : (
-                          <>
-                            <td style={{ fontWeight: 'bold', fontSize: '0.85rem', padding: '12px 16px' }}>{tx.id}</td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <span className="badge" style={{ background: '#f1f5f9', border: '1px solid var(--border-color)', color: '#334155' }}>
-                                {tx.countryCode === 'KR' ? '🇰🇷 KR' : tx.countryCode === 'FR' ? '🇫🇷 FR' : tx.countryCode === 'IT' ? '🇮🇹 IT' : '🇺🇸 US'}
-                              </span>
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <div><strong>{tx.recipientName}</strong></div>
-                              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                                {tx.licenseNumber} | {tx.workplaceInstitution}
-                              </div>
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <span className="badge" style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
-                                {tx.spendCategory}
-                              </span>
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <div>{tx.purposeOfBenefit}</div>
-                              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tx.details}</div>
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              {tx.currencyOriginal} {tx.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2 })}
-                            </td>
-                            <td style={{ fontWeight: 'bold', color: 'var(--primary-accent)', padding: '12px 16px' }}>
-                              ${tx.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <span className={`badge ${tx.remediationStatus === 'APPROVED' ? 'badge-success' : 'badge-warning'}`}>
-                                {tx.remediationStatus === 'APPROVED' ? 'Compliant' : 'Audit Flag'}
-                              </span>
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <div style={{ display: 'flex', gap: '6px' }}>
-                                <button className="btn" onClick={() => handleEditClick(tx)} style={{ padding: '6px 10px', fontSize: '0.75rem', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', borderRadius: '4px' }}>Edit</button>
-                                <button className="btn" onClick={() => setSelectedHistoryTxId(tx.id)} style={{ padding: '6px 10px', fontSize: '0.75rem', background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px' }}>History</button>
-                              </div>
-                            </td>
-                          </>
-                        )}
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
       )}
 
