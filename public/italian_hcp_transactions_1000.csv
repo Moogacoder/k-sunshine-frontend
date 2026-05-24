@@ -1,0 +1,1001 @@
+"Recipient Type","Recipient Name","Codice Fiscale","Struttura","Specializzazione","Tipologia","Data","Place","Oggetto","Dettagli","Amount"
+"HCP","Dr. Silvia De Luca","DLCSLV70L25F205H","Policlinico di Bari","Chirurgia Generale","CONSULTANCY","2026-01-29","Torino","Consulenza tecnica di prodotto","Fattura IT-20260129-1",494
+"HCP","Dr. Beatrice Barbier","BRBBTR51M02F205H","Ospedale Molinette (Torino)","Chirurgia Generale","CONSULTANCY","2026-05-13","Padova","Partecipazione tavola rotonda","Fattura IT-20260513-2",615
+"HCP","Dr. Paola Barbier","BRBPLP85P01F205H","Policlinico di Bari","Oncologia","CONSULTANCY","2026-01-24","Torino","Partecipazione tavola rotonda","Fattura IT-20260124-3",170
+"HCP","Dr. Alice Rinaldi","RNLLCL71H01F205H","Ospedale Sant'Orsola (Bologna)","Chirurgia Generale","CONSULTANCY","2026-03-05","Napoli","Consulenza tecnica di prodotto","Fattura IT-20260305-4",73
+"HCP","Dr. Mattia Rossi","RSSMTT83L14F205H","Ospedale San Martino (Genova)","Anestesiologia","PRESENTATION","2026-03-31","","Presentazione di prodotto farmaceutico","",479
+"HCP","Dr. Antonio Bruno","BRNNTN87L01F205H","Ospedale Civile di Padova","Cardiologia","CONSULTANCY","2026-03-05","Genova","Consulenza tecnica di prodotto","Fattura IT-20260305-6",828
+"HCP","Dr. Leonardo Ricci","RCCLNR64R01F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","CONFERENCE_SUPPORT","2026-03-13","Napoli","Rimborso spese viaggio e alloggio","Fattura IT-20260313-7",803
+"HCP","Dr. Matteo Gatti","GTTMTT83M23F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","DONAZIONI","2026-02-16","Napoli","Donazione apparecchio ecografico","Fattura IT-20260216-8",740
+"HCP","Dr. Mattia Moretti","MRTMTT64H16F205H","Ospedale Niguarda (Milano)","Dermatologia","CONVENZIONI","2026-02-01","Milano","Contratto di advisory board","Fattura IT-20260201-9",1491
+"HCP","Dr. Antonio Bruno","BRNNTN89A12F205H","Ospedale Cardarelli (Napoli)","Cardiologia","DONAZIONI","2026-01-25","Bari","Supporto liberale borse di studio","Fattura IT-20260125-10",6506
+"HCP","Dr. Chiara Bruno","BRNCHR55C19F205H","Ospedale Sant'Orsola (Bologna)","Pediatria","CONSULTANCY","2026-04-13","Napoli","Partecipazione tavola rotonda","Fattura IT-20260413-11",750
+"HCP","Dr. Emma Costa","CSTMMM56D10F205H","Ospedale Cardarelli (Napoli)","Ginecologia","CONFERENCE_SUPPORT","2026-04-17","Bari","Copertura spese di ospitalità","Fattura IT-20260417-12",146
+"HCP","Dr. Giulia Caruso","CRSGLG74B06F205H","Ospedale Niguarda (Milano)","Neurologia","PRESENTATION","2026-03-07","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260307-13",412
+"HCP","Dr. Sofia Santoro","SNTSFS77P02F205H","Ospedale San Raffaele (Milano)","Cardiologia","DONAZIONI","2026-03-29","Firenze","Erogazione per attrezzature di reparto","Fattura IT-20260329-14",1896
+"HCP","Dr. Beatrice Moretti","","Ospedale Cardarelli (Napoli)","Medicina Interna","CONSULTANCY","2026-02-12","Bari","Relazione scientifica convegno","Fattura IT-20260212-15",690
+"HCP","Dr. Gabriele Romano","RMNGBR67R01F205H","Policlinico Gemelli (Roma)","Neurologia","DONAZIONI","2026-01-14","Roma","Donazione apparecchio ecografico","Fattura IT-20260114-16",745
+"HCP","Dr. Giovanni De Luca","DLCGVN79M20F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","DONAZIONI","2026-01-16","Napoli","Erogazione per attrezzature di reparto","Fattura IT-20260116-17",586
+"HCP","Dr. Marco Russo","RSSMRC71H08F205H","Ospedale San Raffaele (Milano)","Neurologia","PRESENTATION","2026-04-23","Firenze","Briefing scientifico aziendale","Fattura IT-20260423-18",795
+"HCP","Dr. Silvia Marino","MRNSLV56P09F205H","Policlinico di Bari","Dermatologia","CONSULTANCY","2026-03-04","Torino","Partecipazione tavola rotonda","Fattura IT-20260304-19",586
+"HCP","Dr. Alice Rizzo","RZZLCL80H07F205H","Ospedale Sant'Orsola (Bologna)","Neurologia","CONSULTANCY","2026-05-12","Napoli","Relazione scientifica convegno","Fattura IT-20260512-20",816
+"HCP","Dr. Alessandro De Luca","DLCLSS87L27F205H","Ospedale Careggi (Firenze)","Anestesiologia","CONVENZIONI","2026-04-11","Bologna","Supporto alla ricerca clinica","Fattura IT-20260411-21",475
+"HCP","Dr. Antonio Esposito","SPSNTN65L10F205H","Ospedale Molinette (Torino)","Ginecologia","CONFERENCE_SUPPORT","2026-05-20","Padova","Quota di iscrizione congresso","Fattura IT-20260520-22",819
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI713003114","","","CONSULTANCY","2026-05-19","Milano","Consulenza tecnica di prodotto","Fattura IT-20260519-23",387
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI742426743","","","CONFERENCE_SUPPORT","2026-04-29","Roma","Quota di iscrizione congresso","Fattura IT-20260429-24",67
+"HCP","Dr. Gabriele Conti","INVALID_CF_123","Ospedale Careggi (Firenze)","Neurologia","CONFERENCE_SUPPORT","2026-03-26","Bologna","Rimborso spese viaggio e alloggio","Fattura IT-20260326-25",294
+"HCP","Dr. Aurora Mancini","MNCRRR64T14F205H","Policlinico Gemelli (Roma)","Pediatria","PRESENTATION","2026-03-14","Roma","Briefing scientifico aziendale","Fattura IT-20260314-26",66
+"HCP","Dr. Silvia Greco","GRCSLV76L20F205H","Ospedale Cardarelli (Napoli)","Ginecologia","CONSULTANCY","2026-04-13","Bari","Consulenza tecnica di prodotto","Fattura IT-20260413-27",668
+"HCP","Dr. Andrea Mancini","MNCNDR83S17F205H","Ospedale San Raffaele (Milano)","Oncologia","PRESENTATION","2026-02-19","Firenze","Presentazione di prodotto farmaceutico","Fattura IT-20260219-28",427
+"HCP","Dr. Sofia Rinaldi","RNLSFS76B06F205H","Ospedale Careggi (Firenze)","Medicina Interna","CONVENZIONI","2026-02-11","Bologna","Supporto alla ricerca clinica","Fattura IT-20260211-29",815
+"HCP","Dr. Davide Barbier","BRBDVD75T22F205H","Ospedale San Martino (Genova)","Neurologia","CONFERENCE_SUPPORT","2026-02-04","Palermo","Copertura spese di ospitalità","Fattura IT-20260204-30",160
+"HCP","Dr. Pietro Rinaldi","RNLPTR78D25F205H","Ospedale Civile di Padova","Pediatria","PRESENTATION","2026-02-04","Genova","Presentazione di prodotto farmaceutico","Fattura IT-20260204-31",644
+"HCP","Dr. Alice Ferraro","FRRLCL79E12F205H","Policlinico di Bari","Cardiologia","PRESENTATION","2026-05-19","Torino","Briefing scientifico aziendale","Fattura IT-20260519-32",397
+"HCP","Dr. Chiara Costa","CSTCHR86C28F205H","Ospedale Sant'Orsola (Bologna)","Oncologia","DONAZIONI","2026-05-07","Napoli","Erogazione per attrezzature di reparto","Fattura IT-20260507-33",2288
+"HCP","Dr. Sofia De Luca","DLCSFS75D01F205H","Policlinico di Bari","Medicina Interna","CONSULTANCY","2026-04-28","Torino","Relazione scientifica convegno","Fattura IT-20260428-34",641
+"HCP","Dr. Francesca Barbier","BRBFRN67C07F205H","Ospedale Cardarelli (Napoli)","Radiologia","CONFERENCE_SUPPORT","2026-02-24","Bari","Copertura spese di ospitalità","Fattura IT-20260224-35",322
+"HCP","Dr. Davide Greco","GRCDVD63T18F205H","Ospedale Niguarda (Milano)","Oncologia","CONSULTANCY","2026-04-02","Milano","Partecipazione tavola rotonda","Fattura IT-20260402-36",128
+"INSTITUTION","Ospedale Civile di Padova","PI642009024","","","CONFERENCE_SUPPORT","2026-02-21","Palermo","Quota di iscrizione congresso","Fattura IT-20260221-37",566
+"HCP","Dr. Gabriele Moretti","MRTGBR81C12F205H","Ospedale San Raffaele (Milano)","Pediatria","PRESENTATION","2026-01-22","Firenze","Briefing scientifico aziendale","Fattura IT-20260122-38",774
+"HCP","Dr. Francesca Bianchi","BNCFRN80T24F205H","Ospedale San Martino (Genova)","Chirurgia Generale","CONFERENCE_SUPPORT","2026-01-19","Palermo","Quota di iscrizione congresso","Fattura IT-20260119-39",815
+"HCP","Dr. Riccardo Rizzo","RZZRCC84B16F205H","Ospedale Civile di Padova","Anestesiologia","PRESENTATION","2026-03-03","Genova","Briefing scientifico aziendale","Fattura IT-20260303-40",331
+"HCP","Dr. Leonardo Vinci","VNCLNR61H22F205H","Policlinico di Bari","Pediatria","PRESENTATION","2026-04-18","Torino","Presentazione di prodotto farmaceutico","Fattura IT-20260418-41",745
+"HCP","Dr. Mattia Russo","RSSMTT79E09F205H","Ospedale Niguarda (Milano)","Medicina Interna","DONAZIONI","2026-04-09","Milano","Supporto liberale borse di studio","Fattura IT-20260409-42",1791
+"HCP","Dr. Francesco Ferraro","FRRFRN71A02F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","CONVENZIONI","2026-05-15","Roma","Accordo di consulenza scientifica","Fattura IT-20260515-43",382
+"HCP","Dr. Chiara Lombardi","LMBCHR77H19F205H","Ospedale Cardarelli (Napoli)","Cardiologia","DONAZIONI","2026-05-23","Bari","Supporto liberale borse di studio","Fattura IT-20260523-44",1108
+"INSTITUTION","Ospedale Molinette (Torino)","PI332216098","","","CONVENZIONI","2026-01-28","Firenze","Accordo di consulenza scientifica","Fattura IT-20260128-45",190
+"HCP","Dr. Giorgia Gallo","GLLGRG79S25F205H","Policlinico Gemelli (Roma)","Radiologia","DONAZIONI","2026-04-20","Roma","Donazione apparecchio ecografico","Fattura IT-20260420-46",1179
+"HCP","Dr. Pietro Greco","GRCPTR56A05F205H","Policlinico Gemelli (Roma)","Anestesiologia","PRESENTATION","2026-01-19","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260119-47",823
+"HCP","Dr. Antonio Conti","CNTNTN75L10F205H","Ospedale Cardarelli (Napoli)","Neurologia","CONVENZIONI","2026-02-12","Bari","Contratto di advisory board","Fattura IT-20260212-48",389
+"HCP","Dr. Pietro Ferraro","FRRPTR64R27F205H","Policlinico di Bari","Dermatologia","PRESENTATION","2026-01-15","Torino","Briefing scientifico aziendale","Fattura IT-20260115-49",281
+"HCP","Dr. Chiara Caruso","CRSCHR88A26F205H","Ospedale Sant'Orsola (Bologna)","Chirurgia Generale","DONAZIONI","2026-01-20","Napoli","Erogazione per attrezzature di reparto","Fattura IT-20260120-50",1914
+"INSTITUTION","Policlinico Gemelli (Roma)","PI856380041","","","PRESENTATION","2026-02-19","Palermo","Briefing scientifico aziendale","Fattura IT-20260219-51",771
+"HCP","Dr. Pietro Ferrari","FRRPTR58D04F205H","Ospedale Niguarda (Milano)","Ginecologia","CONFERENCE_SUPPORT","2026-01-28","Milano","Rimborso spese viaggio e alloggio","Fattura IT-20260128-52",753
+"HCP","Dr. Aurora Bianchi","BNCRRR84E13F205H","Ospedale Civile di Padova","Dermatologia","CONSULTANCY","2026-03-18","Genova","Relazione scientifica convegno","Fattura IT-20260318-53",437
+"HCP","Dr. Giovanni Caruso","CRSGVN61B25F205H","Ospedale Cardarelli (Napoli)","Pediatria","DONAZIONI","2026-03-08","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260308-54",2228
+"HCP","Dr. Leonardo Ricci","RCCLNR82D28F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","CONSULTANCY","2026-05-22","Napoli","Relazione scientifica convegno","Fattura IT-20260522-55",505
+"HCP","Dr. Giovanni Romano","RMNGVN86H07F205H","Ospedale Niguarda (Milano)","Anestesiologia","CONSULTANCY","2026-05-14","Milano","Consulenza tecnica di prodotto","Fattura IT-20260514-56",256
+"HCP","Dr. Valeria Gallo","GLLVLR80E25F205H","Policlinico di Bari","Cardiologia","CONVENZIONI","2026-01-16","Torino","Supporto alla ricerca clinica","Fattura IT-20260116-57",736
+"HCP","Dr. Francesco Santoro","SNTFRN85M20F205H","Ospedale San Raffaele (Milano)","Neurologia","CONSULTANCY","2026-02-19","Firenze","Consulenza tecnica di prodotto","Fattura IT-20260219-58",542
+"HCP","Dr. Greta De Luca","DLCGRT61A20F205H","Ospedale San Raffaele (Milano)","Radiologia","CONFERENCE_SUPPORT","2026-04-01","Firenze","Rimborso spese viaggio e alloggio","Fattura IT-20260401-59",254
+"HCP","Dr. Luca Rinaldi","RNLLCL57C14F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","CONVENZIONI","2026-04-20","Roma","Supporto alla ricerca clinica","Fattura IT-20260420-60",197
+"HCP","Dr. Francesca Rinaldi","RNLFRN58A12F205H","Ospedale Cardarelli (Napoli)","Dermatologia","DONAZIONI","2026-04-22","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260422-61",985
+"HCP","Dr. Riccardo Ricci","RCCRCC50R15F205H","Ospedale Sant'Orsola (Bologna)","Neurologia","PRESENTATION","2026-01-07","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20260107-62",308
+"HCP","Dr. Greta Giordano","GRDGRT50M04F205H","Ospedale Cardarelli (Napoli)","Chirurgia Generale","DONAZIONI","2026-01-03","Bari","Donazione materiale didattico","Fattura IT-20260103-63",1857
+"HCP","Dr. Matteo Russo","RSSMTT53E26F205H","Policlinico di Bari","Neurologia","PRESENTATION","2026-05-13","Torino","Briefing scientifico aziendale","Fattura IT-20260513-64",497
+"HCP","Dr. Antonio Rinaldi","RNLNTN53H02F205H","Ospedale Civile di Padova","Radiologia","PRESENTATION","2026-02-21","Genova","Presentazione di prodotto farmaceutico","Fattura IT-20260221-65",399
+"HCP","Dr. Giorgia Costa","CSTGRG69B11F205H","Ospedale San Raffaele (Milano)","Radiologia","CONFERENCE_SUPPORT","2026-03-06","Firenze","Copertura spese di ospitalità","Fattura IT-20260306-66",352
+"HCP","Dr. Ludovica Ferrari","FRRLDV55M05F205H","Ospedale Sant'Orsola (Bologna)","Medicina Interna","CONSULTANCY","2026-05-04","Napoli","Relazione scientifica convegno","Fattura IT-20260504-67",591
+"HCP","Dr. Gabriele Esposito","SPSGBR84C02F205H","Ospedale Civile di Padova","Oncologia","CONVENZIONI","2026-01-20","Genova","Supporto alla ricerca clinica","Fattura IT-20260120-68",846
+"HCP","Dr. Beatrice Rizzo","RZZBTR79P27F205H","Ospedale Niguarda (Milano)","Medicina Interna","CONVENZIONI","2026-04-25","Milano","Contratto di advisory board","Fattura IT-20260425-69",625
+"HCP","Dr. Davide Santoro","SNTDVD82T05F205H","Policlinico di Bari","Anestesiologia","DONAZIONI","2026-03-25","Torino","Supporto liberale borse di studio","Fattura IT-20260325-70",1791
+"HCP","Dr. Aurora Vinci","VNCRRR77P13F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","CONVENZIONI","2026-01-07","Napoli","Accordo di consulenza scientifica","Fattura IT-20260107-71",472
+"INSTITUTION","Ospedale Careggi (Firenze)","PI833376954","","","CONSULTANCY","2026-02-25","Bologna","Relazione scientifica convegno","Fattura IT-20260225-72",523
+"HCP","Dr. Giulia Costa","CSTGLG58R23F205H","Ospedale Careggi (Firenze)","Radiologia","CONFERENCE_SUPPORT","2025-12-28","Bologna","Rimborso spese viaggio e alloggio","Fattura IT-20251228-73",108
+"HCP","Dr. Paola Mancini","MNCPLP54S18F205H","Ospedale Molinette (Torino)","Chirurgia Generale","CONSULTANCY","2026-03-22","Padova","Partecipazione tavola rotonda","Fattura IT-20260322-74",706
+"HCP","Dr. Giovanni Greco","GRCGVN88P01F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","CONSULTANCY","2026-04-20","Milano","Partecipazione tavola rotonda","Fattura IT-20260420-75",615
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI437165706","","","DONAZIONI","2026-05-03","Milano","Erogazione per attrezzature di reparto","Fattura IT-20260503-76",2183
+"HCP","Dr. Andrea Pellegrini","PLLNDR73L22F205H","Ospedale San Raffaele (Milano)","Radiologia","CONVENZIONI","2026-04-22","Firenze","Supporto alla ricerca clinica","Fattura IT-20260422-77",212
+"HCP","Dr. Riccardo Russo","RSSRCC83L11F205H","Policlinico di Bari","Ginecologia","PRESENTATION","2026-02-24","Torino","Presentazione di prodotto farmaceutico","Fattura IT-20260224-78",513
+"HCP","Dr. Silvia Gatti","GTTSLV80H27F205H","Ospedale San Martino (Genova)","Dermatologia","DONAZIONI","2026-04-15","Palermo","Supporto liberale borse di studio","Fattura IT-20260415-79",1807
+"HCP","Dr. Chiara Barbier","BRBCHR65T22F205H","Policlinico di Bari","Neurologia","CONFERENCE_SUPPORT","2026-02-27","Torino","Quota di iscrizione congresso","Fattura IT-20260227-80",651
+"HCP","Dr. Silvia Bruno","BRNSLV77C10F205H","Ospedale Niguarda (Milano)","Cardiologia","CONVENZIONI","2026-01-08","Milano","Incarico di docenza per seminario","Fattura IT-20260108-81",431
+"HCP","Dr. Andrea Bruno","BRNNDR77M19F205H","Policlinico Gemelli (Roma)","Radiologia","CONVENZIONI","2026-05-24","Roma","Contratto di advisory board","Fattura IT-20260524-82",707
+"HCP","Dr. Valeria Bruno","BRNVLR81H28F205H","Policlinico di Bari","Pediatria","CONSULTANCY","2026-02-23","Torino","Relazione scientifica convegno","Fattura IT-20260223-83",523
+"HCP","Dr. Riccardo Giordano","GRDRCC56L21F205H","Ospedale San Martino (Genova)","Pediatria","CONSULTANCY","2026-03-10","Palermo","Partecipazione tavola rotonda","Fattura IT-20260310-84",372
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI711410203","","","DONAZIONI","2026-04-14","Milano","Donazione apparecchio ecografico","Fattura IT-20260414-85",1237
+"HCP","Dr. Sofia Russo","RSSSFS74T03F205H","Ospedale Cardarelli (Napoli)","Oncologia","CONVENZIONI","2026-04-23","Bari","Accordo di consulenza scientifica","Fattura IT-20260423-86",529
+"HCP","Dr. Greta Colombo","CLMGRT78E11F205H","Policlinico di Bari","Oncologia","CONFERENCE_SUPPORT","2026-04-24","Torino","Quota di iscrizione congresso","Fattura IT-20260424-87",253
+"HCP","Dr. Francesca Moretti","MRTFRN64B20F205H","Ospedale Niguarda (Milano)","Oncologia","DONAZIONI","2026-03-05","Milano","Supporto liberale borse di studio","Fattura IT-20260305-88",2268
+"HCP","Dr. Paola Costa","CSTPLP80M07F205H","Ospedale Sant'Orsola (Bologna)","Chirurgia Generale","PRESENTATION","2026-05-23","Napoli","Briefing scientifico aziendale","Fattura IT-20260523-89",496
+"HCP","Dr. Antonio Marino","MRNNTN53M09F205H","Ospedale San Martino (Genova)","Anestesiologia","DONAZIONI","2026-03-30","Palermo","Erogazione per attrezzature di reparto","Fattura IT-20260330-90",2235
+"HCP","Dr. Antonio Russo","RSSNTN72R16F205H","Ospedale San Martino (Genova)","Ginecologia","CONVENZIONI","2026-04-05","Palermo","Supporto alla ricerca clinica","Fattura IT-20260405-91",419
+"HCP","Dr. Silvia Colombo","CLMSLV65H12F205H","Ospedale San Raffaele (Milano)","Dermatologia","DONAZIONI","2026-02-04","Firenze","Donazione materiale didattico","Fattura IT-20260204-92",1925
+"INSTITUTION","Ospedale Civile di Padova","PI966172218","","","CONSULTANCY","2026-03-18","Padova","Relazione scientifica convegno","Fattura IT-20260318-93",824
+"HCP","Dr. Alice Gallo","GLLLCL77C22F205H","Ospedale Cardarelli (Napoli)","Medicina Interna","CONVENZIONI","2026-02-28","Bari","Contratto di advisory board","Fattura IT-20260228-94",1579
+"HCP","Dr. Paola De Luca","DLCPLP88M15F205H","Ospedale Civile di Padova","Cardiologia","CONSULTANCY","2026-03-12","Genova","Relazione scientifica convegno","Fattura IT-20260312-95",334
+"HCP","Dr. Paola Romano","RMNPLP83C15F205H","Ospedale San Martino (Genova)","Neurologia","CONSULTANCY","2025-12-30","Palermo","Relazione scientifica convegno","Fattura IT-20251230-96",235
+"HCP","Dr. Antonio Barbier","BRBNTN54T11F205H","Ospedale Cardarelli (Napoli)","Medicina Interna","PRESENTATION","2025-12-26","Bari","Presentazione di prodotto farmaceutico","Fattura IT-20251226-97",626
+"HCP","Dr. Luca Mancini","MNCLCL83D17F205H","Ospedale Civile di Padova","Medicina Interna","CONSULTANCY","2025-12-31","Genova","Partecipazione tavola rotonda","Fattura IT-20251231-98",610
+"HCP","Dr. Pietro Santoro","SNTPTR89S14F205H","Ospedale Molinette (Torino)","Anestesiologia","CONSULTANCY","2026-05-21","Padova","Partecipazione tavola rotonda","Fattura IT-20260521-99",512
+"HCP","Dr. Giulia Greco","GRCGLG70R19F205H","Ospedale Civile di Padova","Cardiologia","CONVENZIONI","2026-02-04","Genova","Contratto di advisory board","Fattura IT-20260204-100",607
+"HCP","Dr. Aurora Gallo","GLLRRR86B28F205H","Ospedale Careggi (Firenze)","Anestesiologia","CONVENZIONI","2026-04-19","Bologna","Incarico di docenza per seminario","Fattura IT-20260419-101",608
+"INSTITUTION","Ospedale Civile di Padova","PI256263994","","","CONVENZIONI","2026-05-08","Napoli","Incarico di docenza per seminario","Fattura IT-20260508-102",304
+"HCP","Dr. Francesco Rizzo","RZZFRN79S07F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","CONVENZIONI","2026-02-08","Napoli","Contratto di advisory board","Fattura IT-20260208-103",825
+"HCP","Dr. Silvia Mariani","MRNSLV54M14F205H","Ospedale San Martino (Genova)","Radiologia","CONSULTANCY","2026-03-28","Palermo","Consulenza tecnica di prodotto","Fattura IT-20260328-104",127
+"HCP","Dr. Giorgia Mariani","MRNGRG80E20F205H","Ospedale Cardarelli (Napoli)","Pediatria","CONFERENCE_SUPPORT","2026-03-01","Bari","Copertura spese di ospitalità","Fattura IT-20260301-105",151
+"HCP","Dr. Antonio Ferrari","FRRNTN68L02F205H","Ospedale Cardarelli (Napoli)","Oncologia","CONSULTANCY","2026-03-31","Bari","Consulenza tecnica di prodotto","Fattura IT-20260331-106",348
+"HCP","Dr. Pietro Russo","RSSPTR58D25F205H","Policlinico di Bari","Anestesiologia","PRESENTATION","2026-04-09","Torino","Briefing scientifico aziendale","Fattura IT-20260409-107",550
+"HCP","Dr. Valeria Gallo","GLLVLR71C09F205H","Ospedale Molinette (Torino)","Cardiologia","DONAZIONI","2026-04-18","Padova","Donazione apparecchio ecografico","Fattura IT-20260418-108",728
+"HCP","Dr. Giorgia Moretti","MRTGRG71S14F205H","Ospedale San Raffaele (Milano)","Radiologia","DONAZIONI","2026-04-22","Firenze","Donazione materiale didattico","Fattura IT-20260422-109",1458
+"INSTITUTION","Ospedale Niguarda (Milano)","PI792861663","","","CONVENZIONI","2026-03-07","Firenze","Incarico di docenza per seminario","Fattura IT-20260307-110",635
+"INSTITUTION","Ospedale Molinette (Torino)","PI755559611","","","CONFERENCE_SUPPORT","2026-04-03","Genova","Copertura spese di ospitalità","Fattura IT-20260403-111",339
+"HCP","Dr. Marco Gallo","GLLMRC87S09F205H","Ospedale Cardarelli (Napoli)","Ginecologia","CONSULTANCY","2026-03-29","Bari","Relazione scientifica convegno","Fattura IT-20260329-112",88
+"HCP","Dr. Alessandro Moretti","MRTLSS67S08F205H","Policlinico di Bari","Dermatologia","DONAZIONI","2026-02-10","Torino","Donazione apparecchio ecografico","Fattura IT-20260210-113",1831
+"HCP","Dr. Filippo Bianchi","BNCFLP73C08F205H","Ospedale Cardarelli (Napoli)","Neurologia","PRESENTATION","2026-05-08","Bari","Presentazione di prodotto farmaceutico","Fattura IT-20260508-114",624
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI203605315","","","CONSULTANCY","2026-03-21","Torino","Consulenza tecnica di prodotto","Fattura IT-20260321-115",635
+"HCP","Dr. Antonio Fontana","FNTNTN78C05F205H","Ospedale San Raffaele (Milano)","Chirurgia Generale","PRESENTATION","2026-04-29","Firenze","Presentazione di prodotto farmaceutico","Fattura IT-20260429-116",272
+"HCP","Dr. Matteo Moretti","MRTMTT66B28F205H","Ospedale San Martino (Genova)","Anestesiologia","DONAZIONI","2026-04-15","Palermo","Erogazione per attrezzature di reparto","Fattura IT-20260415-117",2487
+"HCP","Dr. Lorenzo Greco","GRCLRN50L01F205H","Ospedale Sant'Orsola (Bologna)","Oncologia","CONFERENCE_SUPPORT","2026-05-19","Napoli","Quota di iscrizione congresso","Fattura IT-20260519-118",163
+"HCP","Dr. Filippo Costa","CSTFLP76D05F205H","Ospedale Cardarelli (Napoli)","Dermatologia","CONSULTANCY","2026-03-08","Bari","Partecipazione tavola rotonda","Fattura IT-20260308-119",483
+"HCP","Dr. Aurora Barbier","BRBRRR61H28F205H","Ospedale Civile di Padova","Ginecologia","CONVENZIONI","2026-05-05","Genova","Supporto alla ricerca clinica","Fattura IT-20260505-120",210
+"HCP","Dr. Paola Moretti","MRTPLP85H23F205H","Ospedale Molinette (Torino)","Radiologia","PRESENTATION","2026-03-26","Padova","Briefing scientifico aziendale","Fattura IT-20260326-121",392
+"HCP","Dr. Greta Fontana","FNTGRT53C09F205H","Ospedale Civile di Padova","Medicina Interna","CONSULTANCY","2026-01-17","Genova","Partecipazione tavola rotonda","Fattura IT-20260117-122",103
+"HCP","Dr. Antonio Rizzo","RZZNTN64T25F205H","Ospedale Sant'Orsola (Bologna)","Ginecologia","CONFERENCE_SUPPORT","2026-03-25","Napoli","Rimborso spese viaggio e alloggio","Fattura IT-20260325-123",241
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI208282108","","","CONSULTANCY","2026-01-13","Bologna","Relazione scientifica convegno","Fattura IT-20260113-124",470
+"HCP","Dr. Gabriele Bianchi","BNCGBR62S11F205H","Ospedale Molinette (Torino)","Medicina Interna","CONSULTANCY","2026-03-29","Padova","Partecipazione tavola rotonda","Fattura IT-20260329-125",841
+"HCP","Dr. Giovanni Bruno","BRNGVN77A04F205H","Policlinico di Bari","Medicina Interna","DONAZIONI","2026-04-25","Torino","Donazione materiale didattico","Fattura IT-20260425-126",5755
+"HCP","Dr. Mattia Esposito","SPSMTT85T16F205H","Ospedale Cardarelli (Napoli)","Neurologia","DONAZIONI","2026-03-12","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260312-127",718
+"HCP","Dr. Silvia Ferraro","FRRSLV57A04F205H","Policlinico Gemelli (Roma)","Dermatologia","DONAZIONI","2026-04-30","Roma","Donazione apparecchio ecografico","Fattura IT-20260430-128",999
+"HCP","Dr. Alice Gallo","GLLLCL53L02F205H","Ospedale Civile di Padova","Chirurgia Generale","CONFERENCE_SUPPORT","2026-01-14","Genova","Quota di iscrizione congresso","Fattura IT-20260114-129",561
+"HCP","Dr. Leonardo Rinaldi","RNLLNR62R21F205H","Policlinico di Bari","Ginecologia","PRESENTATION","2026-05-04","Torino","Briefing scientifico aziendale","Fattura IT-20260504-130",390
+"HCP","Dr. Aurora Ricci","RCCRRR54A18F205H","Ospedale Careggi (Firenze)","Oncologia","CONSULTANCY","2026-03-19","Bologna","Partecipazione tavola rotonda","Fattura IT-20260319-131",426
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI379378835","","","PRESENTATION","2026-05-19","Palermo","Briefing scientifico aziendale","Fattura IT-20260519-132",325
+"HCP","Dr. Leonardo Gatti","GTTLNR82P05F205H","Ospedale Cardarelli (Napoli)","Neurologia","CONSULTANCY","2026-04-05","Bari","Partecipazione tavola rotonda","Fattura IT-20260405-133",473
+"HCP","Dr. Pietro Mariani","MRNPTR62P15F205H","Ospedale Cardarelli (Napoli)","Dermatologia","CONVENZIONI","2026-05-11","Bari","Supporto alla ricerca clinica","Fattura IT-20260511-134",1509
+"HCP","Dr. Silvia Romano","RMNSLV86T14F205H","Ospedale San Martino (Genova)","Radiologia","PRESENTATION","2026-05-22","Palermo","Briefing scientifico aziendale","Fattura IT-20260522-135",512
+"INSTITUTION","Policlinico Gemelli (Roma)","PI871262424","","","CONVENZIONI","2026-05-21","Palermo","Contratto di advisory board","Fattura IT-20260521-136",538
+"HCP","Dr. Beatrice Lombardi","LMBBTR51H25F205H","Ospedale San Raffaele (Milano)","Pediatria","CONSULTANCY","2026-04-03","Firenze","Consulenza tecnica di prodotto","Fattura IT-20260403-137",613
+"HCP","Dr. Antonio Conti","CNTNTN71M11F205H","Policlinico di Bari","Pediatria","DONAZIONI","2026-02-28","Torino","Erogazione per attrezzature di reparto","Fattura IT-20260228-138",945
+"HCP","Dr. Leonardo Lombardi","LMBLNR58S01F205H","Ospedale Molinette (Torino)","Radiologia","PRESENTATION","2026-01-30","Padova","Presentazione di prodotto farmaceutico","Fattura IT-20260130-139",418
+"HCP","Dr. Riccardo Caruso","CRSRCC78B19F205H","Ospedale Molinette (Torino)","Ginecologia","CONVENZIONI","2026-05-16","Padova","Supporto alla ricerca clinica","Fattura IT-20260516-140",1556
+"HCP","Dr. Alessandro Colombo","CLMLSS78E22F205H","Policlinico di Bari","Dermatologia","PRESENTATION","2025-12-27","Torino","Presentazione di prodotto farmaceutico","Fattura IT-20251227-141",794
+"HCP","Dr. Riccardo Rinaldi","RNLRCC87T01F205H","Ospedale San Martino (Genova)","Neurologia","CONFERENCE_SUPPORT","2026-04-30","Palermo","Copertura spese di ospitalità","Fattura IT-20260430-142",533
+"HCP","Dr. Leonardo Barbier","BRBLNR65E04F205H","Ospedale Sant'Orsola (Bologna)","Neurologia","PRESENTATION","2026-01-24","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20260124-143",675
+"HCP","Dr. Aurora Colombo","CLMRRR85H05F205H","Ospedale Cardarelli (Napoli)","Neurologia","CONVENZIONI","2026-01-02","Bari","Accordo di consulenza scientifica","Fattura IT-20260102-144",562
+"HCP","Dr. Paola Moretti","MRTPLP65M16F205H","Ospedale Careggi (Firenze)","Dermatologia","CONVENZIONI","2026-05-23","Bologna","Contratto di advisory board","Fattura IT-20260523-145",1250
+"HCP","Dr. Gabriele Rossi","RSSGBR80P25F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","CONFERENCE_SUPPORT","2025-12-29","Roma","Quota di iscrizione congresso","Fattura IT-20251229-146",760
+"HCP","Dr. Marco Conti","CNTMRC63B28F205H","Policlinico di Bari","Chirurgia Generale","CONVENZIONI","2026-04-28","Torino","Accordo di consulenza scientifica","Fattura IT-20260428-147",1358
+"HCP","Dr. Paola Esposito","SPSPLP79L27F205H","Ospedale San Martino (Genova)","Ginecologia","CONVENZIONI","2026-01-11","Palermo","Incarico di docenza per seminario","Fattura IT-20260111-148",1337
+"HCP","Dr. Francesco Marino","MRNFRN65S19F205H","Ospedale Cardarelli (Napoli)","Ginecologia","CONVENZIONI","2026-05-20","Bari","Contratto di advisory board","Fattura IT-20260520-149",326
+"HCP","Dr. Lorenzo Bruno","BRNLRN68T09F205H","Ospedale Molinette (Torino)","Chirurgia Generale","CONVENZIONI","2026-04-10","Padova","Supporto alla ricerca clinica","Fattura IT-20260410-150",678
+"HCP","Dr. Pietro Conti","CNTPTR59E08F205H","Policlinico Gemelli (Roma)","Ginecologia","CONSULTANCY","2026-04-24","Roma","Relazione scientifica convegno","Fattura IT-20260424-151",519
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI614246730","","","CONSULTANCY","2026-05-04","Genova","Relazione scientifica convegno","Fattura IT-20260504-152",208
+"HCP","Dr. Gabriele Colombo","CLMGBR67R25F205H","Ospedale Civile di Padova","Oncologia","DONAZIONI","2026-01-03","Genova","Supporto liberale borse di studio","Fattura IT-20260103-153",8517
+"HCP","Dr. Davide Mariani","MRNDVD56A15F205H","Ospedale San Martino (Genova)","Dermatologia","CONFERENCE_SUPPORT","2026-01-25","Palermo","Copertura spese di ospitalità","Fattura IT-20260125-154",587
+"HCP","Dr. Andrea Vinci","VNCNDR64M10F205H","Ospedale San Raffaele (Milano)","Cardiologia","DONAZIONI","2026-03-17","Firenze","Donazione materiale didattico","Fattura IT-20260317-155",905
+"HCP","Dr. Valeria Rossi","RSSVLR63H14F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","CONSULTANCY","2026-01-09","Milano","Consulenza tecnica di prodotto","Fattura IT-20260109-156",597
+"HCP","Dr. Andrea Marino","MRNNDR87H15F205H","Ospedale Careggi (Firenze)","Oncologia","PRESENTATION","2026-05-14","Bologna","Presentazione di prodotto farmaceutico","Fattura IT-20260514-157",442
+"HCP","Dr. Leonardo De Luca","DLCLNR60M05F205H","Ospedale Niguarda (Milano)","Cardiologia","CONSULTANCY","2026-04-03","Milano","Consulenza tecnica di prodotto","Fattura IT-20260403-158",152
+"HCP","Dr. Silvia Greco","GRCSLV56D11F205H","Ospedale Molinette (Torino)","Anestesiologia","DONAZIONI","2026-01-09","Padova","Erogazione per attrezzature di reparto","Fattura IT-20260109-159",1744
+"HCP","Dr. Aurora Gallo","GLLRRR53S22F205H","Ospedale Civile di Padova","Chirurgia Generale","PRESENTATION","2026-01-29","Genova","Briefing scientifico aziendale","Fattura IT-20260129-160",662
+"HCP","Dr. Luca Mariani","MRNLCL57S24F205H","Ospedale Molinette (Torino)","Neurologia","DONAZIONI","2026-01-31","Padova","Supporto liberale borse di studio","Fattura IT-20260131-161",1834
+"HCP","Dr. Greta Mariani","MRNGRT52H17F205H","Ospedale Careggi (Firenze)","Cardiologia","DONAZIONI","2026-03-01","Bologna","Erogazione per attrezzature di reparto","Fattura IT-20260301-162",853
+"HCP","Dr. Gabriele Costa","CSTGBR85C11F205H","Policlinico di Bari","Pediatria","DONAZIONI","2026-03-14","Torino","Supporto liberale borse di studio","Fattura IT-20260314-163",1751
+"HCP","Dr. Giovanni Bruno","BRNGVN59E19F205H","Ospedale Niguarda (Milano)","Dermatologia","CONSULTANCY","2026-05-02","Milano","Relazione scientifica convegno","Fattura IT-20260502-164",838
+"HCP","Dr. Matteo Mariani","MRNMTT74R09F205H","Ospedale Niguarda (Milano)","Pediatria","DONAZIONI","2026-03-25","Milano","Supporto liberale borse di studio","Fattura IT-20260325-165",642
+"HCP","Dr. Davide De Luca","DLCDVD75P24F205H","Ospedale Civile di Padova","Oncologia","CONVENZIONI","2026-01-11","Genova","Supporto alla ricerca clinica","Fattura IT-20260111-166",646
+"HCP","Dr. Ludovica Conti","CNTLDV85A08F205H","Policlinico Gemelli (Roma)","Dermatologia","CONFERENCE_SUPPORT","2026-03-16","Roma","Quota di iscrizione congresso","Fattura IT-20260316-167",779
+"HCP","Dr. Antonio Vinci","VNCNTN89H24F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","CONVENZIONI","2026-01-14","Milano","Supporto alla ricerca clinica","Fattura IT-20260114-168",441
+"HCP","Dr. Alice Pellegrini","PLLLCL85T08F205H","Policlinico di Bari","Pediatria","CONVENZIONI","2026-01-25","Torino","Supporto alla ricerca clinica","Fattura IT-20260125-169",1908
+"HCP","Dr. Giulia Santoro","SNTGLG54B27F205H","Ospedale Molinette (Torino)","Anestesiologia","PRESENTATION","2026-01-13","Padova","Briefing scientifico aziendale","Fattura IT-20260113-170",626
+"HCP","Dr. Leonardo Conti","CNTLNR80B11F205H","Ospedale Careggi (Firenze)","Ginecologia","CONSULTANCY","2026-04-10","Bologna","Relazione scientifica convegno","Fattura IT-20260410-171",501
+"HCP","Dr. Marco Bruno","BRNMRC61C06F205H","Ospedale Molinette (Torino)","Radiologia","PRESENTATION","2026-05-21","Padova","Presentazione di prodotto farmaceutico","Fattura IT-20260521-172",832
+"INSTITUTION","Policlinico Gemelli (Roma)","PI400935092","","","CONVENZIONI","2026-03-03","Bari","Incarico di docenza per seminario","Fattura IT-20260303-173",322
+"HCP","Dr. Giovanni Gatti","GTTGVN70B28F205H","Ospedale San Raffaele (Milano)","Ginecologia","CONSULTANCY","2026-05-07","Firenze","Partecipazione tavola rotonda","Fattura IT-20260507-174",792
+"HCP","Dr. Marco Gatti","GTTMRC68P08F205H","Ospedale Civile di Padova","Oncologia","DONAZIONI","2026-03-28","Genova","Supporto liberale borse di studio","Fattura IT-20260328-175",2370
+"HCP","Dr. Beatrice Giordano","GRDBTR85R13F205H","Ospedale San Raffaele (Milano)","Neurologia","CONSULTANCY","2026-01-08","Firenze","Relazione scientifica convegno","Fattura IT-20260108-176",168
+"HCP","Dr. Francesca Bianchi","BNCFRN65H20F205H","Ospedale San Raffaele (Milano)","Chirurgia Generale","CONVENZIONI","2026-03-19","Firenze","Contratto di advisory board","Fattura IT-20260319-177",652
+"INSTITUTION","Ospedale Niguarda (Milano)","PI290742089","","","PRESENTATION","2026-04-27","Palermo","Briefing scientifico aziendale","Fattura IT-20260427-178",391
+"HCP","Dr. Pietro Russo","RSSPTR58L12F205H","Ospedale Cardarelli (Napoli)","Radiologia","PRESENTATION","2026-03-22","Bari","Briefing scientifico aziendale","Fattura IT-20260322-179",423
+"HCP","Dr. Alice Gatti","GTTLCL53D04F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","CONVENZIONI","2026-02-19","Napoli","Accordo di consulenza scientifica","Fattura IT-20260219-180",784
+"HCP","Dr. Emma Marino","MRNMMM57L08F205H","Ospedale Cardarelli (Napoli)","Pediatria","PRESENTATION","2026-04-01","Bari","Briefing scientifico aziendale","Fattura IT-20260401-181",512
+"HCP","Dr. Sofia Russo","RSSSFS73L14F205H","Ospedale Cardarelli (Napoli)","Neurologia","DONAZIONI","2026-02-25","Bari","Donazione materiale didattico","Fattura IT-20260225-182",1776
+"HCP","Dr. Giulia Lombardi","LMBGLG83T13F205H","Ospedale Careggi (Firenze)","Dermatologia","CONSULTANCY","2026-03-29","Bologna","Relazione scientifica convegno","Fattura IT-20260329-183",527
+"HCP","Dr. Giulia Bianchi","BNCGLG89P05F205H","Ospedale Molinette (Torino)","Dermatologia","DONAZIONI","2026-03-14","Padova","Donazione materiale didattico","Fattura IT-20260314-184",1755
+"HCP","Dr. Chiara Caruso","CRSCHR53T25F205H","Policlinico Gemelli (Roma)","Oncologia","DONAZIONI","2026-04-11","Roma","Supporto liberale borse di studio","Fattura IT-20260411-185",2363
+"HCP","Dr. Pietro Bruno","BRNPTR77H21F205H","Policlinico Gemelli (Roma)","Oncologia","PRESENTATION","2026-01-28","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260128-186",256
+"HCP","Dr. Sofia Russo","RSSSFS79L28F205H","Policlinico Gemelli (Roma)","Dermatologia","CONFERENCE_SUPPORT","2026-05-22","Roma","Copertura spese di ospitalità","Fattura IT-20260522-187",477
+"INSTITUTION","Ospedale Civile di Padova","PI116422497","","","DONAZIONI","2026-01-25","Palermo","Erogazione per attrezzature di reparto","Fattura IT-20260125-188",850
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI100946128","","","CONFERENCE_SUPPORT","2026-01-22","Bologna","Copertura spese di ospitalità","Fattura IT-20260122-189",596
+"HCP","Dr. Paola Rizzo","RZZPLP77H06F205H","Ospedale Careggi (Firenze)","Oncologia","PRESENTATION","2026-04-05","Bologna","Briefing scientifico aziendale","Fattura IT-20260405-190",73
+"HCP","Dr. Matteo Costa","CSTMTT75H27F205H","Ospedale Civile di Padova","Dermatologia","CONFERENCE_SUPPORT","2026-02-17","Genova","Rimborso spese viaggio e alloggio","Fattura IT-20260217-191",405
+"HCP","Dr. Lorenzo Barbier","BRBLRN64B19F205H","Ospedale San Raffaele (Milano)","Radiologia","DONAZIONI","2026-02-12","Firenze","Donazione materiale didattico","Fattura IT-20260212-192",2060
+"HCP","Dr. Ludovica Barbier","BRBLDV79H17F205H","Ospedale San Raffaele (Milano)","Neurologia","CONFERENCE_SUPPORT","2026-01-31","Firenze","Quota di iscrizione congresso","Fattura IT-20260131-193",172
+"HCP","Dr. Mattia Esposito","SPSMTT51D07F205H","Ospedale Molinette (Torino)","Dermatologia","CONFERENCE_SUPPORT","2026-05-19","Padova","Copertura spese di ospitalità","Fattura IT-20260519-194",515
+"HCP","Dr. Luca Russo","RSSLCL81L14F205H","Ospedale Careggi (Firenze)","Oncologia","PRESENTATION","2026-04-11","Bologna","Briefing scientifico aziendale","Fattura IT-20260411-195",772
+"INSTITUTION","Policlinico Gemelli (Roma)","PI657946216","","","PRESENTATION","2026-03-18","Genova","Briefing scientifico aziendale","Fattura IT-20260318-196",547
+"HCP","Dr. Mattia Lombardi","LMBMTT58P08F205H","Ospedale Niguarda (Milano)","Anestesiologia","PRESENTATION","2026-02-20","Milano","Briefing scientifico aziendale","Fattura IT-20260220-197",150
+"HCP","Dr. Davide Barbier","BRBDVD58C09F205H","Policlinico Gemelli (Roma)","Anestesiologia","CONFERENCE_SUPPORT","2026-03-26","Roma","Rimborso spese viaggio e alloggio","Fattura IT-20260326-198",70
+"HCP","Dr. Luca Moretti","MRTLCL74M12F205H","Ospedale San Martino (Genova)","Ginecologia","CONFERENCE_SUPPORT","2026-02-10","Palermo","Rimborso spese viaggio e alloggio","Fattura IT-20260210-199",532
+"HCP","Dr. Alessandro Pellegrini","PLLLSS81D03F205H","Ospedale San Raffaele (Milano)","Neurologia","DONAZIONI","2026-02-11","Firenze","Donazione materiale didattico","Fattura IT-20260211-200",1463
+"HCP","Dr. Riccardo Caruso","CRSRCC60B08F205H","Ospedale San Raffaele (Milano)","Neurologia","PRESENTATION","2026-05-12","Firenze","Presentazione di prodotto farmaceutico","Fattura IT-20260512-201",240
+"HCP","Dr. Marco Giordano","GRDMRC62M08F205H","Ospedale Cardarelli (Napoli)","Pediatria","CONSULTANCY","2025-12-28","Bari","Partecipazione tavola rotonda","Fattura IT-20251228-202",298
+"HCP","Dr. Alessandro Moretti","MRTLSS81P25F205H","Ospedale Civile di Padova","Pediatria","CONFERENCE_SUPPORT","2026-03-30","Genova","Rimborso spese viaggio e alloggio","Fattura IT-20260330-203",644
+"HCP","Dr. Andrea Marino","MRNNDR68T12F205H","Policlinico di Bari","Chirurgia Generale","CONVENZIONI","2026-02-22","Torino","Contratto di advisory board","Fattura IT-20260222-204",634
+"HCP","Dr. Filippo Rossi","RSSFLP53E08F205H","Ospedale San Martino (Genova)","Medicina Interna","PRESENTATION","2026-05-07","Palermo","Briefing scientifico aziendale","Fattura IT-20260507-205",434
+"HCP","Dr. Giorgia Giordano","GRDGRG62M23F205H","Ospedale San Martino (Genova)","Pediatria","CONFERENCE_SUPPORT","2026-02-15","Palermo","Copertura spese di ospitalità","Fattura IT-20260215-206",801
+"HCP","Dr. Andrea Colombo","CLMNDR72M24F205H","Ospedale Molinette (Torino)","Ginecologia","PRESENTATION","2026-01-28","Padova","Presentazione di prodotto farmaceutico","Fattura IT-20260128-207",626
+"HCP","Dr. Aurora Mancini","MNCRRR74C28F205H","Ospedale San Raffaele (Milano)","Neurologia","CONFERENCE_SUPPORT","2026-03-16","Firenze","Rimborso spese viaggio e alloggio","Fattura IT-20260316-208",214
+"HCP","Dr. Ludovica Fontana","FNTLDV60A21F205H","Ospedale San Martino (Genova)","Ginecologia","DONAZIONI","2026-05-22","Palermo","Erogazione per attrezzature di reparto","Fattura IT-20260522-209",627
+"INSTITUTION","Ospedale Molinette (Torino)","PI198893545","","","CONSULTANCY","2025-12-27","Milano","Partecipazione tavola rotonda","Fattura IT-20251227-210",190
+"HCP","Dr. Greta Ferraro","FRRGRT64B12F205H","Ospedale Niguarda (Milano)","Neurologia","PRESENTATION","2026-03-11","Milano","Briefing scientifico aziendale","Fattura IT-20260311-211",375
+"HCP","Dr. Gabriele Ricci","RCCGBR85S19F205H","Ospedale Civile di Padova","Chirurgia Generale","CONFERENCE_SUPPORT","2026-02-28","Genova","Copertura spese di ospitalità","Fattura IT-20260228-212",575
+"INSTITUTION","Ospedale Civile di Padova","PI846736646","","","DONAZIONI","2026-02-28","Firenze","Erogazione per attrezzature di reparto","Fattura IT-20260228-213",1476
+"HCP","Dr. Riccardo Conti","CNTRCC84R22F205H","Ospedale San Raffaele (Milano)","Anestesiologia","CONSULTANCY","2026-01-14","Firenze","Partecipazione tavola rotonda","Fattura IT-20260114-214",107
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI583419046","","","CONFERENCE_SUPPORT","2026-03-23","Torino","Copertura spese di ospitalità","Fattura IT-20260323-215",817
+"HCP","Dr. Pietro Conti","CNTPTR73T22F205H","Ospedale Molinette (Torino)","Ginecologia","DONAZIONI","2026-01-22","Padova","Donazione materiale didattico","Fattura IT-20260122-216",2489
+"HCP","Dr. Alice Ferrari","FRRLCL71E06F205H","Policlinico di Bari","Cardiologia","CONSULTANCY","2026-03-05","Torino","Consulenza tecnica di prodotto","Fattura IT-20260305-217",534
+"HCP","Dr. Antonio Esposito","SPSNTN64B04F205H","Ospedale Cardarelli (Napoli)","Chirurgia Generale","DONAZIONI","2026-05-14","Bari","Donazione apparecchio ecografico","Fattura IT-20260514-218",1947
+"HCP","Dr. Sofia Lombardi","LMBSFS89R12F205H","Ospedale Molinette (Torino)","Radiologia","DONAZIONI","2026-01-02","Padova","Supporto liberale borse di studio","Fattura IT-20260102-219",1252
+"HCP","Dr. Greta Conti","CNTGRT54L16F205H","Ospedale Sant'Orsola (Bologna)","Ginecologia","PRESENTATION","2026-02-16","Napoli","Briefing scientifico aziendale","Fattura IT-20260216-220",481
+"HCP","Dr. Filippo Gallo","GLLFLP57E11F205H","Ospedale Careggi (Firenze)","Pediatria","CONFERENCE_SUPPORT","2026-03-27","Bologna","Copertura spese di ospitalità","Fattura IT-20260327-221",498
+"HCP","Dr. Marco Greco","GRCMRC73M19F205H","Ospedale Sant'Orsola (Bologna)","Anestesiologia","CONVENZIONI","2026-02-24","Napoli","Incarico di docenza per seminario","Fattura IT-20260224-222",749
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI778850962","","","DONAZIONI","2026-02-27","Palermo","Erogazione per attrezzature di reparto","Fattura IT-20260227-223",1493
+"INSTITUTION","Policlinico di Bari","PI118618132","","","CONFERENCE_SUPPORT","2026-03-12","Padova","Rimborso spese viaggio e alloggio","Fattura IT-20260312-224",743
+"HCP","Dr. Davide Colombo","CLMDVD68C01F205H","Ospedale San Martino (Genova)","Chirurgia Generale","CONVENZIONI","2026-02-16","Palermo","Accordo di consulenza scientifica","Fattura IT-20260216-225",465
+"INSTITUTION","Ospedale Careggi (Firenze)","PI118536786","","","CONSULTANCY","2026-05-11","Bari","Partecipazione tavola rotonda","Fattura IT-20260511-226",115
+"HCP","Dr. Greta Gatti","GTTGRT57C13F205H","Policlinico di Bari","Ginecologia","PRESENTATION","2026-02-14","Torino","Presentazione di prodotto farmaceutico","Fattura IT-20260214-227",842
+"HCP","Dr. Luca Rossi","RSSLCL50B24F205H","Ospedale Civile di Padova","Pediatria","PRESENTATION","2026-03-07","Genova","Presentazione di prodotto farmaceutico","Fattura IT-20260307-228",774
+"HCP","Dr. Luca Ferrari","FRRLCL72S02F205H","Ospedale San Martino (Genova)","Cardiologia","CONVENZIONI","2026-02-21","Palermo","Accordo di consulenza scientifica","Fattura IT-20260221-229",1476
+"HCP","Dr. Alessandro Rinaldi","RNLLSS56M12F205H","Ospedale Sant'Orsola (Bologna)","Pediatria","CONFERENCE_SUPPORT","2026-03-07","Napoli","Copertura spese di ospitalità","Fattura IT-20260307-230",549
+"HCP","Dr. Silvia Russo","RSSSLV66A26F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","CONFERENCE_SUPPORT","2026-03-20","Milano","Rimborso spese viaggio e alloggio","Fattura IT-20260320-231",554
+"HCP","Dr. Andrea De Luca","DLCNDR61E16F205H","Ospedale Cardarelli (Napoli)","Anestesiologia","CONFERENCE_SUPPORT","2026-03-21","Bari","Rimborso spese viaggio e alloggio","Fattura IT-20260321-232",580
+"HCP","Dr. Gabriele Conti","CNTGBR65D09F205H","Ospedale Civile di Padova","Pediatria","CONVENZIONI","2026-02-19","Genova","Accordo di consulenza scientifica","Fattura IT-20260219-233",420
+"HCP","Dr. Ludovica Mariani","MRNLDV80C07F205H","Ospedale Molinette (Torino)","Radiologia","DONAZIONI","2026-02-04","Padova","Donazione materiale didattico","Fattura IT-20260204-234",1307
+"INSTITUTION","Policlinico di Bari","PI579979284","","","CONSULTANCY","2026-04-24","Firenze","Consulenza tecnica di prodotto","Fattura IT-20260424-235",108
+"HCP","Dr. Lorenzo De Luca","DLCLRN50D06F205H","Policlinico Gemelli (Roma)","Ginecologia","DONAZIONI","2026-03-13","Roma","Donazione materiale didattico","Fattura IT-20260313-236",940
+"HCP","Dr. Marco Rizzo","RZZMRC77S02F205H","Ospedale Civile di Padova","Anestesiologia","CONSULTANCY","2026-04-28","Genova","Relazione scientifica convegno","Fattura IT-20260428-237",603
+"INSTITUTION","Policlinico Gemelli (Roma)","PI673951263","","","CONSULTANCY","2026-04-07","Palermo","Partecipazione tavola rotonda","Fattura IT-20260407-238",132
+"HCP","Dr. Silvia Ricci","RCCSLV82M25F205H","Ospedale Niguarda (Milano)","Dermatologia","DONAZIONI","2026-03-07","Milano","Donazione apparecchio ecografico","Fattura IT-20260307-239",2076
+"HCP","Dr. Sofia Vinci","VNCSFS60R27F205H","Ospedale San Martino (Genova)","Ginecologia","PRESENTATION","2026-02-10","Palermo","Presentazione di prodotto farmaceutico","Fattura IT-20260210-240",447
+"HCP","Dr. Gabriele Pellegrini","PLLGBR68C19F205H","Policlinico Gemelli (Roma)","Dermatologia","CONFERENCE_SUPPORT","2026-03-07","Roma","Copertura spese di ospitalità","Fattura IT-20260307-241",688
+"HCP","Dr. Antonio Bruno","BRNNTN88B28F205H","Policlinico di Bari","Dermatologia","PRESENTATION","2026-04-04","Torino","Presentazione di prodotto farmaceutico","Fattura IT-20260404-242",530
+"HCP","Dr. Giorgia Ricci","RCCGRG84A22F205H","Policlinico di Bari","Neurologia","CONFERENCE_SUPPORT","2026-05-22","Torino","Rimborso spese viaggio e alloggio","Fattura IT-20260522-243",467
+"HCP","Dr. Valeria De Luca","DLCVLR50A24F205H","Ospedale San Raffaele (Milano)","Anestesiologia","DONAZIONI","2026-05-19","Firenze","Supporto liberale borse di studio","Fattura IT-20260519-244",2363
+"HCP","Dr. Filippo Mancini","MNCFLP67B04F205H","Ospedale Cardarelli (Napoli)","Oncologia","CONSULTANCY","2026-03-27","Bari","Consulenza tecnica di prodotto","Fattura IT-20260327-245",383
+"HCP","Dr. Matteo Ferraro","FRRMTT59S02F205H","Ospedale Civile di Padova","Neurologia","CONVENZIONI","2026-05-22","Genova","Contratto di advisory board","Fattura IT-20260522-246",1611
+"HCP","Dr. Riccardo Caruso","CRSRCC51S13F205H","Ospedale San Martino (Genova)","Dermatologia","PRESENTATION","2026-04-02","Palermo","Presentazione di prodotto farmaceutico","Fattura IT-20260402-247",494
+"HCP","Dr. Luca Rizzo","RZZLCL69P24F205H","Policlinico Gemelli (Roma)","Anestesiologia","PRESENTATION","2026-04-25","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260425-248",596
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI761336709","","","DONAZIONI","2026-02-17","Palermo","Donazione materiale didattico","Fattura IT-20260217-249",897
+"HCP","Dr. Silvia Costa","CSTSLV68B21F205H","Ospedale Cardarelli (Napoli)","Chirurgia Generale","PRESENTATION","2026-02-06","Bari","Presentazione di prodotto farmaceutico","Fattura IT-20260206-250",636
+"HCP","Dr. Francesca Lombardi","LMBFRN66C11F205H","Ospedale San Martino (Genova)","Oncologia","CONFERENCE_SUPPORT","2026-02-21","Palermo","Rimborso spese viaggio e alloggio","Fattura IT-20260221-251",655
+"INSTITUTION","Ospedale Molinette (Torino)","PI937292455","","","CONSULTANCY","2026-05-14","Milano","Relazione scientifica convegno","Fattura IT-20260514-252",629
+"HCP","Dr. Gabriele Esposito","SPSGBR57P27F205H","Ospedale Niguarda (Milano)","Pediatria","PRESENTATION","2026-01-10","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260110-253",495
+"HCP","Dr. Leonardo Ricci","RCCLNR83H13F205H","Ospedale San Martino (Genova)","Ginecologia","PRESENTATION","2026-02-13","Palermo","Briefing scientifico aziendale","Fattura IT-20260213-254",225
+"HCP","Dr. Alessandro Fontana","FNTLSS52T20F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","DONAZIONI","2026-05-18","Milano","Erogazione per attrezzature di reparto","Fattura IT-20260518-255",1619
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI613326922","","","CONSULTANCY","2026-01-25","Padova","Relazione scientifica convegno","Fattura IT-20260125-256",315
+"HCP","Dr. Matteo De Luca","DLCMTT81S24F205H","Ospedale Molinette (Torino)","Ginecologia","CONVENZIONI","2026-01-08","Padova","Contratto di advisory board","Fattura IT-20260108-257",1505
+"HCP","Dr. Filippo Russo","RSSFLP74H09F205H","Ospedale San Martino (Genova)","Dermatologia","CONSULTANCY","2026-05-02","Palermo","Consulenza tecnica di prodotto","Fattura IT-20260502-258",334
+"HCP","Dr. Aurora Greco","GRCRRR69H19F205H","Policlinico Gemelli (Roma)","Ginecologia","DONAZIONI","2026-05-08","Roma","Donazione apparecchio ecografico","Fattura IT-20260508-259",1263
+"HCP","Dr. Francesca Russo","RSSFRN57M27F205H","Ospedale Sant'Orsola (Bologna)","Pediatria","CONVENZIONI","2026-05-09","Napoli","Contratto di advisory board","Fattura IT-20260509-260",1930
+"HCP","Dr. Mattia Moretti","MRTMTT70R02F205H","Ospedale Niguarda (Milano)","Pediatria","CONVENZIONI","2026-03-05","Milano","Accordo di consulenza scientifica","Fattura IT-20260305-261",371
+"HCP","Dr. Paola Rinaldi","RNLPLP55C22F205H","Ospedale Cardarelli (Napoli)","Chirurgia Generale","PRESENTATION","2026-01-25","Bari","Briefing scientifico aziendale","Fattura IT-20260125-262",827
+"HCP","Dr. Mattia Gatti","GTTMTT77E19F205H","Ospedale San Raffaele (Milano)","Neurologia","DONAZIONI","2026-02-23","Firenze","Donazione materiale didattico","Fattura IT-20260223-263",1392
+"HCP","Dr. Alice Ferrari","FRRLCL63P17F205H","Ospedale Niguarda (Milano)","Oncologia","CONVENZIONI","2026-01-26","Milano","Incarico di docenza per seminario","Fattura IT-20260126-264",361
+"HCP","Dr. Antonio Ferrari","FRRNTN59B15F205H","Policlinico Gemelli (Roma)","Medicina Interna","CONFERENCE_SUPPORT","2026-05-14","Roma","Copertura spese di ospitalità","Fattura IT-20260514-265",365
+"HCP","Dr. Davide Colombo","CLMDVD82M17F205H","Ospedale San Raffaele (Milano)","Anestesiologia","CONVENZIONI","2026-03-08","Firenze","Incarico di docenza per seminario","Fattura IT-20260308-266",1760
+"HCP","Dr. Gabriele Giordano","GRDGBR89A07F205H","Ospedale Niguarda (Milano)","Dermatologia","DONAZIONI","2026-01-06","Milano","Donazione materiale didattico","Fattura IT-20260106-267",7991
+"HCP","Dr. Marco Ferrari","FRRMRC53P17F205H","Ospedale San Martino (Genova)","Oncologia","CONSULTANCY","2026-01-18","Palermo","Partecipazione tavola rotonda","Fattura IT-20260118-268",608
+"HCP","Dr. Andrea Vinci","VNCNDR57A15F205H","Policlinico di Bari","Radiologia","DONAZIONI","2026-02-25","Torino","Supporto liberale borse di studio","Fattura IT-20260225-269",764
+"INSTITUTION","Policlinico Gemelli (Roma)","PI362436069","","","DONAZIONI","2026-03-07","Torino","Supporto liberale borse di studio","Fattura IT-20260307-270",1015
+"HCP","Dr. Pietro Vinci","VNCPTR75H04F205H","Ospedale San Martino (Genova)","Dermatologia","PRESENTATION","2025-12-30","Palermo","Briefing scientifico aziendale","Fattura IT-20251230-271",607
+"HCP","Dr. Francesca Ricci","RCCFRN83B22F205H","Policlinico di Bari","Chirurgia Generale","CONFERENCE_SUPPORT","2026-04-20","Torino","Rimborso spese viaggio e alloggio","Fattura IT-20260420-272",608
+"HCP","Dr. Beatrice Marino","MRNBTR57E07F205H","Policlinico di Bari","Cardiologia","DONAZIONI","2026-04-22","Torino","Erogazione per attrezzature di reparto","Fattura IT-20260422-273",1245
+"HCP","Dr. Lorenzo Rizzo","RZZLRN69C11F205H","Ospedale Niguarda (Milano)","Cardiologia","CONVENZIONI","2026-04-17","Milano","Accordo di consulenza scientifica","Fattura IT-20260417-274",453
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI568565825","","","PRESENTATION","2025-12-31","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20251231-275",779
+"HCP","Dr. Francesca Russo","RSSFRN53M24F205H","Policlinico di Bari","Pediatria","DONAZIONI","2026-03-31","Torino","Donazione materiale didattico","Fattura IT-20260331-276",9327
+"HCP","Dr. Marco Mancini","MNCMRC76L25F205H","Ospedale Cardarelli (Napoli)","Oncologia","CONSULTANCY","2026-04-01","Bari","Consulenza tecnica di prodotto","Fattura IT-20260401-277",447
+"HCP","Dr. Greta Lombardi","LMBGRT73T14F205H","Ospedale Molinette (Torino)","Oncologia","DONAZIONI","2026-04-30","Padova","Supporto liberale borse di studio","Fattura IT-20260430-278",5959
+"INSTITUTION","Ospedale Niguarda (Milano)","PI569912675","","","CONSULTANCY","2026-01-05","Bologna","Partecipazione tavola rotonda","Fattura IT-20260105-279",712
+"HCP","Dr. Silvia De Luca","DLCSLV62M18F205H","Ospedale Molinette (Torino)","Dermatologia","DONAZIONI","2026-01-27","Padova","Erogazione per attrezzature di reparto","Fattura IT-20260127-280",742
+"HCP","Dr. Paola Conti","CNTPLP80H21F205H","Ospedale Cardarelli (Napoli)","Medicina Interna","CONFERENCE_SUPPORT","2026-03-25","Bari","Rimborso spese viaggio e alloggio","Fattura IT-20260325-281",177
+"HCP","Dr. Alessandro Gallo","GLLLSS86M28F205H","Policlinico di Bari","Pediatria","CONFERENCE_SUPPORT","2026-04-26","Torino","Rimborso spese viaggio e alloggio","Fattura IT-20260426-282",481
+"INSTITUTION","Policlinico di Bari","PI256426056","","","CONVENZIONI","2026-02-22","Milano","Supporto alla ricerca clinica","Fattura IT-20260222-283",462
+"HCP","Dr. Giulia Gatti","GTTGLG73D14F205H","Ospedale San Raffaele (Milano)","Medicina Interna","CONVENZIONI","2026-03-28","Firenze","Incarico di docenza per seminario","Fattura IT-20260328-284",735
+"HCP","Dr. Paola Rinaldi","RNLPLP50S21F205H","Ospedale San Martino (Genova)","Radiologia","PRESENTATION","2026-03-20","Palermo","Presentazione di prodotto farmaceutico","Fattura IT-20260320-285",372
+"HCP","Dr. Chiara Caruso","CRSCHR65A04F205H","Policlinico di Bari","Ginecologia","CONVENZIONI","2026-02-10","Torino","Supporto alla ricerca clinica","Fattura IT-20260210-286",436
+"INSTITUTION","Ospedale Civile di Padova","PI958761900","","","DONAZIONI","2026-02-16","Roma","Supporto liberale borse di studio","Fattura IT-20260216-287",8928
+"HCP","Dr. Marco Santoro","SNTMRC68C03F205H","Ospedale Molinette (Torino)","Oncologia","PRESENTATION","2026-04-23","Padova","Briefing scientifico aziendale","Fattura IT-20260423-288",809
+"HCP","Dr. Giovanni Rinaldi","RNLGVN56L14F205H","Policlinico di Bari","Medicina Interna","CONSULTANCY","2026-01-25","Torino","Consulenza tecnica di prodotto","Fattura IT-20260125-289",576
+"INSTITUTION","Ospedale San Martino (Genova)","PI843307404","","","PRESENTATION","2026-01-16","Bari","Presentazione di prodotto farmaceutico","Fattura IT-20260116-290",334
+"HCP","Dr. Leonardo Mancini","MNCLNR72M04F205H","Ospedale San Martino (Genova)","Pediatria","CONSULTANCY","2026-05-17","Palermo","Consulenza tecnica di prodotto","Fattura IT-20260517-291",628
+"INSTITUTION","Ospedale Civile di Padova","PI979539163","","","DONAZIONI","2026-02-22","Padova","Donazione apparecchio ecografico","Fattura IT-20260222-292",939
+"HCP","Dr. Pietro Russo","RSSPTR71H19F205H","Ospedale Molinette (Torino)","Oncologia","CONVENZIONI","2026-04-06","Padova","Supporto alla ricerca clinica","Fattura IT-20260406-293",813
+"HCP","Dr. Francesco Colombo","CLMFRN85A05F205H","Ospedale Civile di Padova","Cardiologia","PRESENTATION","2026-01-12","Genova","Presentazione di prodotto farmaceutico","Fattura IT-20260112-294",167
+"HCP","Dr. Luca Bianchi","BNCLCL71D17F205H","Policlinico di Bari","Anestesiologia","CONFERENCE_SUPPORT","2026-04-17","Torino","Quota di iscrizione congresso","Fattura IT-20260417-295",79
+"HCP","Dr. Alice Vinci","VNCLCL59P05F205H","Ospedale San Martino (Genova)","Oncologia","PRESENTATION","2026-04-08","Palermo","Presentazione di prodotto farmaceutico","Fattura IT-20260408-296",424
+"HCP","Dr. Marco Mariani","MRNMRC87A22F205H","Ospedale Molinette (Torino)","Dermatologia","CONVENZIONI","2026-02-23","Padova","Supporto alla ricerca clinica","Fattura IT-20260223-297",1935
+"HCP","Dr. Giorgia Vinci","VNCGRG59D04F205H","Ospedale Molinette (Torino)","Cardiologia","CONVENZIONI","2026-03-21","Padova","Supporto alla ricerca clinica","Fattura IT-20260321-298",241
+"HCP","Dr. Lorenzo Barbier","BRBLRN78P05F205H","Ospedale Civile di Padova","Medicina Interna","CONVENZIONI","2026-01-19","Genova","Supporto alla ricerca clinica","Fattura IT-20260119-299",1611
+"HCP","Dr. Pietro Ferraro","FRRPTR51B28F205H","Ospedale Civile di Padova","Chirurgia Generale","CONFERENCE_SUPPORT","2026-05-16","Genova","Rimborso spese viaggio e alloggio","Fattura IT-20260516-300",753
+"HCP","Dr. Paola Ferraro","FRRPLP58P06F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","CONVENZIONI","2026-03-29","Napoli","Incarico di docenza per seminario","Fattura IT-20260329-301",683
+"HCP","Dr. Francesco Russo","RSSFRN87D02F205H","Ospedale Cardarelli (Napoli)","Ginecologia","DONAZIONI","2026-01-17","Bari","Donazione apparecchio ecografico","Fattura IT-20260117-302",1366
+"HCP","Dr. Aurora Ferraro","FRRRRR56C18F205H","Ospedale Niguarda (Milano)","Pediatria","CONFERENCE_SUPPORT","2026-02-18","Milano","Copertura spese di ospitalità","Fattura IT-20260218-303",688
+"HCP","Dr. Beatrice Russo","RSSBTR73A19F205H","Ospedale Sant'Orsola (Bologna)","Anestesiologia","CONFERENCE_SUPPORT","2026-05-21","Napoli","Rimborso spese viaggio e alloggio","Fattura IT-20260521-304",471
+"HCP","Dr. Giovanni Ricci","RCCGVN55E05F205H","Policlinico di Bari","Anestesiologia","CONFERENCE_SUPPORT","2026-05-21","Torino","Copertura spese di ospitalità","Fattura IT-20260521-305",476
+"HCP","Dr. Marco Ricci","RCCMRC57A09F205H","Ospedale Careggi (Firenze)","Chirurgia Generale","CONVENZIONI","2026-01-05","Bologna","Supporto alla ricerca clinica","Fattura IT-20260105-306",840
+"INSTITUTION","Ospedale Niguarda (Milano)","PI755304284","","","DONAZIONI","2026-03-03","Bari","Donazione materiale didattico","Fattura IT-20260303-307",8090
+"HCP","Dr. Marco Colombo","CLMMRC82D21F205H","Ospedale Cardarelli (Napoli)","Medicina Interna","DONAZIONI","2026-03-04","Bari","Donazione apparecchio ecografico","Fattura IT-20260304-308",7893
+"INSTITUTION","Policlinico di Bari","PI992699078","","","DONAZIONI","2026-01-08","Bologna","Erogazione per attrezzature di reparto","Fattura IT-20260108-309",1597
+"HCP","Dr. Paola Pellegrini","PLLPLP54A18F205H","Ospedale Sant'Orsola (Bologna)","Dermatologia","PRESENTATION","2026-03-09","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20260309-310",725
+"HCP","Dr. Silvia Caruso","CRSSLV55A22F205H","Ospedale Cardarelli (Napoli)","Chirurgia Generale","CONVENZIONI","2026-01-17","Bari","Supporto alla ricerca clinica","Fattura IT-20260117-311",694
+"HCP","Dr. Aurora Moretti","MRTRRR55T15F205H","Ospedale San Raffaele (Milano)","Medicina Interna","CONSULTANCY","2026-02-28","Firenze","Partecipazione tavola rotonda","Fattura IT-20260228-312",69
+"HCP","Dr. Francesco Pellegrini","PLLFRN80R02F205H","Policlinico Gemelli (Roma)","Radiologia","CONSULTANCY","2026-01-28","Roma","Consulenza tecnica di prodotto","Fattura IT-20260128-313",320
+"HCP","Dr. Filippo Caruso","CRSFLP78C21F205H","Ospedale San Raffaele (Milano)","Oncologia","DONAZIONI","2026-02-08","Firenze","Donazione apparecchio ecografico","Fattura IT-20260208-314",1748
+"INSTITUTION","Policlinico di Bari","PI920365242","","","CONSULTANCY","2026-04-28","Bologna","Partecipazione tavola rotonda","Fattura IT-20260428-315",596
+"HCP","Dr. Greta Gatti","GTTGRT79D07F205H","Ospedale Sant'Orsola (Bologna)","Neurologia","CONSULTANCY","2026-02-04","Napoli","Consulenza tecnica di prodotto","Fattura IT-20260204-316",180
+"HCP","Dr. Riccardo Ricci","RCCRCC82P19F205H","Policlinico di Bari","Medicina Interna","DONAZIONI","2026-03-12","Torino","Supporto liberale borse di studio","Fattura IT-20260312-317",5743
+"HCP","Dr. Andrea Romano","RMNNDR57T01F205H","Ospedale San Martino (Genova)","Chirurgia Generale","DONAZIONI","2025-12-30","Palermo","Donazione materiale didattico","Fattura IT-20251230-318",1701
+"HCP","Dr. Gabriele Mancini","MNCGBR60M26F205H","Policlinico di Bari","Anestesiologia","PRESENTATION","2026-04-06","Torino","Presentazione di prodotto farmaceutico","Fattura IT-20260406-319",249
+"HCP","Dr. Marco Rizzo","RZZMRC82P25F205H","Ospedale Molinette (Torino)","Radiologia","DONAZIONI","2026-04-26","Padova","Donazione apparecchio ecografico","Fattura IT-20260426-320",1638
+"HCP","Dr. Giovanni Ferrari","FRRGVN54C23F205H","Ospedale Niguarda (Milano)","Pediatria","PRESENTATION","2026-04-15","Milano","Briefing scientifico aziendale","Fattura IT-20260415-321",782
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI574658055","","","CONFERENCE_SUPPORT","2026-02-26","Genova","Copertura spese di ospitalità","Fattura IT-20260226-322",98
+"HCP","Dr. Alice Colombo","CLMLCL76C11F205H","Ospedale San Martino (Genova)","Radiologia","CONFERENCE_SUPPORT","2026-04-29","Palermo","Quota di iscrizione congresso","Fattura IT-20260429-323",603
+"HCP","Dr. Paola Lombardi","LMBPLP74L06F205H","Ospedale Cardarelli (Napoli)","Oncologia","CONFERENCE_SUPPORT","2026-04-13","Bari","Rimborso spese viaggio e alloggio","Fattura IT-20260413-324",418
+"HCP","Dr. Luca Santoro","SNTLCL64M08F205H","Ospedale Civile di Padova","Pediatria","CONSULTANCY","2026-02-25","Genova","Relazione scientifica convegno","Fattura IT-20260225-325",101
+"HCP","Dr. Giovanni Ferrari","FRRGVN55L08F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","DONAZIONI","2026-03-19","Roma","Erogazione per attrezzature di reparto","Fattura IT-20260319-326",1782
+"INSTITUTION","Ospedale Molinette (Torino)","PI112572143","","","PRESENTATION","2026-04-20","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260420-327",679
+"HCP","Dr. Davide Conti","CNTDVD51B05F205H","Ospedale Niguarda (Milano)","Cardiologia","PRESENTATION","2026-03-25","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260325-328",435
+"INSTITUTION","Ospedale Civile di Padova","PI273688894","","","CONVENZIONI","2026-04-03","Palermo","Incarico di docenza per seminario","Fattura IT-20260403-329",395
+"HCP","Dr. Giovanni Conti","CNTGVN74T17F205H","Ospedale Niguarda (Milano)","Ginecologia","CONSULTANCY","2026-01-03","Milano","Relazione scientifica convegno","Fattura IT-20260103-330",642
+"HCP","Dr. Pietro Barbier","BRBPTR61L15F205H","Ospedale San Martino (Genova)","Cardiologia","DONAZIONI","2026-03-05","Palermo","Donazione materiale didattico","Fattura IT-20260305-331",1421
+"HCP","Dr. Alessandro Vinci","VNCLSS88B03F205H","Ospedale San Raffaele (Milano)","Radiologia","CONVENZIONI","2026-02-17","Firenze","Accordo di consulenza scientifica","Fattura IT-20260217-332",167
+"HCP","Dr. Francesca Bianchi","BNCFRN81M07F205H","Ospedale San Raffaele (Milano)","Oncologia","CONVENZIONI","2026-03-19","Firenze","Incarico di docenza per seminario","Fattura IT-20260319-333",834
+"HCP","Dr. Sofia Mancini","MNCSFS70R09F205H","Ospedale Sant'Orsola (Bologna)","Radiologia","CONSULTANCY","2026-05-02","Napoli","Relazione scientifica convegno","Fattura IT-20260502-334",656
+"HCP","Dr. Paola Esposito","SPSPLP76D26F205H","Policlinico Gemelli (Roma)","Dermatologia","PRESENTATION","2026-01-14","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260114-335",221
+"HCP","Dr. Beatrice Esposito","SPSBTR84C03F205H","Ospedale Molinette (Torino)","Chirurgia Generale","DONAZIONI","2026-02-21","Padova","Donazione apparecchio ecografico","Fattura IT-20260221-336",2200
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI598578426","","","PRESENTATION","2026-04-26","Firenze","Briefing scientifico aziendale","Fattura IT-20260426-337",77
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI694169618","","","CONFERENCE_SUPPORT","2026-04-14","Milano","Rimborso spese viaggio e alloggio","Fattura IT-20260414-338",760
+"HCP","Dr. Andrea Colombo","CLMNDR73P12F205H","Ospedale Sant'Orsola (Bologna)","Ginecologia","PRESENTATION","2026-03-09","Napoli","Briefing scientifico aziendale","Fattura IT-20260309-339",237
+"HCP","Dr. Paola Gatti","GTTPLP66S04F205H","Ospedale Careggi (Firenze)","Cardiologia","CONSULTANCY","2026-04-16","Bologna","Consulenza tecnica di prodotto","Fattura IT-20260416-340",74
+"HCP","Dr. Giulia Greco","GRCGLG72T06F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","DONAZIONI","2026-03-30","Napoli","Donazione materiale didattico","Fattura IT-20260330-341",9183
+"HCP","Dr. Davide Conti","CNTDVD58T19F205H","Policlinico di Bari","Medicina Interna","CONVENZIONI","2026-04-13","Torino","Contratto di advisory board","Fattura IT-20260413-342",1859
+"HCP","Dr. Emma Fontana","FNTMMM64M09F205H","Ospedale Careggi (Firenze)","Neurologia","CONSULTANCY","2026-04-07","Bologna","Partecipazione tavola rotonda","Fattura IT-20260407-343",309
+"HCP","Dr. Pietro Romano","RMNPTR61C04F205H","Ospedale Sant'Orsola (Bologna)","Dermatologia","CONVENZIONI","2026-02-23","Napoli","Contratto di advisory board","Fattura IT-20260223-344",587
+"HCP","Dr. Beatrice Giordano","GRDBTR59R02F205H","Ospedale San Martino (Genova)","Ginecologia","DONAZIONI","2026-01-02","Palermo","Donazione apparecchio ecografico","Fattura IT-20260102-345",8217
+"HCP","Dr. Davide Santoro","SNTDVD52R10F205H","Ospedale Careggi (Firenze)","Pediatria","CONVENZIONI","2026-03-05","Bologna","Incarico di docenza per seminario","Fattura IT-20260305-346",1507
+"HCP","Dr. Filippo Ferraro","FRRFLP57A17F205H","Policlinico di Bari","Chirurgia Generale","CONVENZIONI","2026-02-03","Torino","Supporto alla ricerca clinica","Fattura IT-20260203-347",731
+"HCP","Dr. Alice Russo","RSSLCL65R06F205H","Policlinico Gemelli (Roma)","Dermatologia","CONVENZIONI","2026-02-03","Roma","Supporto alla ricerca clinica","Fattura IT-20260203-348",232
+"HCP","Dr. Pietro Romano","RMNPTR88M17F205H","Ospedale San Martino (Genova)","Radiologia","CONSULTANCY","2026-01-07","Palermo","Partecipazione tavola rotonda","Fattura IT-20260107-349",94
+"HCP","Dr. Leonardo Gallo","GLLLNR64B10F205H","Ospedale San Martino (Genova)","Chirurgia Generale","CONVENZIONI","2026-02-12","Palermo","Accordo di consulenza scientifica","Fattura IT-20260212-350",1947
+"HCP","Dr. Chiara Barbier","BRBCHR64S11F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","PRESENTATION","2026-03-31","Milano","Briefing scientifico aziendale","Fattura IT-20260331-351",546
+"HCP","Dr. Davide Fontana","FNTDVD55C15F205H","Policlinico Gemelli (Roma)","Radiologia","PRESENTATION","2026-01-04","Roma","Briefing scientifico aziendale","Fattura IT-20260104-352",172
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI114390319","","","CONSULTANCY","2026-03-21","Napoli","Relazione scientifica convegno","Fattura IT-20260321-353",265
+"HCP","Dr. Matteo Mancini","MNCMTT60H05F205H","Ospedale Sant'Orsola (Bologna)","Medicina Interna","PRESENTATION","2026-04-02","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20260402-354",691
+"HCP","Dr. Aurora Esposito","SPSRRR56P14F205H","Ospedale Niguarda (Milano)","Ginecologia","CONFERENCE_SUPPORT","2026-05-01","Milano","Copertura spese di ospitalità","Fattura IT-20260501-355",683
+"HCP","Dr. Giulia Pellegrini","PLLGLG63H12F205H","Policlinico Gemelli (Roma)","Dermatologia","CONFERENCE_SUPPORT","2026-02-22","Roma","Quota di iscrizione congresso","Fattura IT-20260222-356",755
+"HCP","Dr. Greta Moretti","MRTGRT51L06F205H","Policlinico Gemelli (Roma)","Cardiologia","CONSULTANCY","2026-03-11","Roma","Relazione scientifica convegno","Fattura IT-20260311-357",419
+"HCP","Dr. Mattia Marino","MRNMTT65A15F205H","Ospedale Sant'Orsola (Bologna)","Pediatria","CONFERENCE_SUPPORT","2026-02-27","Napoli","Rimborso spese viaggio e alloggio","Fattura IT-20260227-358",273
+"HCP","Dr. Matteo Costa","CSTMTT67D25F205H","Ospedale San Raffaele (Milano)","Cardiologia","DONAZIONI","2026-01-02","Firenze","Supporto liberale borse di studio","Fattura IT-20260102-359",1507
+"HCP","Dr. Marco Esposito","SPSMRC75C27F205H","Ospedale Civile di Padova","Cardiologia","PRESENTATION","2026-02-15","Genova","Presentazione di prodotto farmaceutico","Fattura IT-20260215-360",777
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI595880791","","","CONFERENCE_SUPPORT","2026-02-18","Milano","Rimborso spese viaggio e alloggio","Fattura IT-20260218-361",586
+"INSTITUTION","Ospedale Civile di Padova","PI836481387","","","DONAZIONI","2026-04-15","Padova","Donazione apparecchio ecografico","Fattura IT-20260415-362",2255
+"HCP","Dr. Chiara Gatti","GTTCHR79H25F205H","Ospedale San Raffaele (Milano)","Anestesiologia","CONVENZIONI","2026-03-19","Firenze","Accordo di consulenza scientifica","Fattura IT-20260319-363",849
+"HCP","Dr. Pietro Pellegrini","PLLPTR67H28F205H","Ospedale Cardarelli (Napoli)","Radiologia","CONVENZIONI","2026-04-20","Bari","Accordo di consulenza scientifica","Fattura IT-20260420-364",1444
+"INSTITUTION","Ospedale San Martino (Genova)","PI506992663","","","CONVENZIONI","2026-04-10","Palermo","Contratto di advisory board","Fattura IT-20260410-365",669
+"HCP","Dr. Pietro Costa","CSTPTR63C23F205H","Ospedale San Martino (Genova)","Medicina Interna","CONVENZIONI","2026-04-30","Palermo","Incarico di docenza per seminario","Fattura IT-20260430-366",1462
+"HCP","Dr. Francesco Mariani","MRNFRN62S22F205H","Ospedale Civile di Padova","Pediatria","CONSULTANCY","2026-02-17","Genova","Consulenza tecnica di prodotto","Fattura IT-20260217-367",671
+"HCP","Dr. Greta Rizzo","RZZGRT53L23F205H","Ospedale San Raffaele (Milano)","Ginecologia","DONAZIONI","2026-04-25","Firenze","Donazione materiale didattico","Fattura IT-20260425-368",1309
+"HCP","Dr. Giulia Ferraro","FRRGLG59D26F205H","Ospedale Careggi (Firenze)","Chirurgia Generale","CONVENZIONI","2026-04-14","Bologna","Incarico di docenza per seminario","Fattura IT-20260414-369",1658
+"HCP","Dr. Valeria Colombo","CLMVLR62M14F205H","Ospedale San Raffaele (Milano)","Ginecologia","CONSULTANCY","2026-01-29","Firenze","Relazione scientifica convegno","Fattura IT-20260129-370",417
+"HCP","Dr. Giulia Mariani","MRNGLG60L28F205H","Ospedale Niguarda (Milano)","Cardiologia","CONFERENCE_SUPPORT","2026-01-11","Milano","Quota di iscrizione congresso","Fattura IT-20260111-371",514
+"HCP","Dr. Beatrice Colombo","CLMBTR86T09F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","PRESENTATION","2026-04-16","Roma","Briefing scientifico aziendale","Fattura IT-20260416-372",680
+"HCP","Dr. Matteo De Luca","DLCMTT60A04F205H","Policlinico di Bari","Pediatria","CONSULTANCY","2026-04-02","Torino","Partecipazione tavola rotonda","Fattura IT-20260402-373",772
+"HCP","Dr. Francesco Colombo","CLMFRN56L15F205H","Ospedale San Raffaele (Milano)","Radiologia","CONVENZIONI","2025-12-27","Firenze","Incarico di docenza per seminario","Fattura IT-20251227-374",626
+"HCP","Dr. Giorgia Rossi","RSSGRG64E11F205H","Ospedale Sant'Orsola (Bologna)","Ginecologia","CONSULTANCY","2026-01-09","Napoli","Relazione scientifica convegno","Fattura IT-20260109-375",176
+"HCP","Dr. Aurora Esposito","SPSRRR59A10F205H","Ospedale Cardarelli (Napoli)","Pediatria","CONVENZIONI","2026-03-16","Bari","Incarico di docenza per seminario","Fattura IT-20260316-376",1598
+"HCP","Dr. Antonio Ricci","RCCNTN57E16F205H","Ospedale Civile di Padova","Ginecologia","CONFERENCE_SUPPORT","2026-05-01","Genova","Copertura spese di ospitalità","Fattura IT-20260501-377",189
+"HCP","Dr. Valeria Costa","CSTVLR75D24F205H","Ospedale San Raffaele (Milano)","Cardiologia","DONAZIONI","2026-05-20","Firenze","Donazione materiale didattico","Fattura IT-20260520-378",2473
+"HCP","Dr. Riccardo Marino","MRNRCC51L12F205H","Policlinico Gemelli (Roma)","Pediatria","PRESENTATION","2026-02-22","Roma","Briefing scientifico aziendale","Fattura IT-20260222-379",168
+"INSTITUTION","Ospedale Careggi (Firenze)","PI741219701","","","PRESENTATION","2026-04-14","Palermo","Briefing scientifico aziendale","Fattura IT-20260414-380",185
+"HCP","Dr. Silvia Ricci","RCCSLV56H14F205H","Policlinico Gemelli (Roma)","Neurologia","CONSULTANCY","2026-01-01","Roma","Consulenza tecnica di prodotto","Fattura IT-20260101-381",461
+"HCP","Dr. Paola Esposito","SPSPLP68L05F205H","Ospedale San Martino (Genova)","Pediatria","CONVENZIONI","2026-01-26","Palermo","Contratto di advisory board","Fattura IT-20260126-382",1626
+"HCP","Dr. Beatrice Ferraro","FRRBTR67D13F205H","Ospedale San Raffaele (Milano)","Cardiologia","CONVENZIONI","2026-04-12","Firenze","Accordo di consulenza scientifica","Fattura IT-20260412-383",701
+"HCP","Dr. Marco Moretti","MRTMRC71M22F205H","Policlinico di Bari","Anestesiologia","PRESENTATION","2026-04-11","Torino","Briefing scientifico aziendale","Fattura IT-20260411-384",837
+"INSTITUTION","Ospedale Careggi (Firenze)","PI272145611","","","CONSULTANCY","2026-04-09","Padova","Consulenza tecnica di prodotto","Fattura IT-20260409-385",582
+"HCP","Dr. Riccardo Rizzo","RZZRCC63E02F205H","Ospedale San Martino (Genova)","Medicina Interna","CONSULTANCY","2026-01-28","Palermo","Partecipazione tavola rotonda","Fattura IT-20260128-386",809
+"INSTITUTION","Ospedale Careggi (Firenze)","PI770204406","","","DONAZIONI","2026-02-26","Milano","Donazione materiale didattico","Fattura IT-20260226-387",1839
+"HCP","Dr. Antonio Moretti","MRTNTN75B19F205H","Ospedale San Martino (Genova)","Neurologia","CONVENZIONI","2026-02-13","Palermo","Supporto alla ricerca clinica","Fattura IT-20260213-388",690
+"HCP","Dr. Alessandro Mancini","MNCLSS61A20F205H","Ospedale San Raffaele (Milano)","Oncologia","CONSULTANCY","2026-01-29","Firenze","Partecipazione tavola rotonda","Fattura IT-20260129-389",693
+"HCP","Dr. Filippo Ricci","RCCFLP77P07F205H","Ospedale Sant'Orsola (Bologna)","Medicina Interna","PRESENTATION","2026-02-21","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20260221-390",422
+"HCP","Dr. Leonardo Mancini","MNCLNR80B04F205H","Ospedale San Raffaele (Milano)","Ginecologia","CONFERENCE_SUPPORT","2026-01-02","Firenze","Quota di iscrizione congresso","Fattura IT-20260102-391",628
+"HCP","Dr. Mattia Moretti","MRTMTT75E16F205H","Ospedale Cardarelli (Napoli)","Anestesiologia","CONVENZIONI","2026-05-15","Bari","Incarico di docenza per seminario","Fattura IT-20260515-392",209
+"HCP","Dr. Paola Vinci","VNCPLP81P13F205H","Ospedale San Raffaele (Milano)","Anestesiologia","CONVENZIONI","2026-02-02","Firenze","Accordo di consulenza scientifica","Fattura IT-20260202-393",315
+"HCP","Dr. Davide Barbier","BRBDVD73L21F205H","Ospedale Cardarelli (Napoli)","Radiologia","CONVENZIONI","2026-04-13","Bari","Incarico di docenza per seminario","Fattura IT-20260413-394",784
+"INSTITUTION","Ospedale San Martino (Genova)","PI102795179","","","DONAZIONI","2026-01-09","Palermo","Donazione materiale didattico","Fattura IT-20260109-395",1760
+"HCP","Dr. Alice Colombo","CLMLCL88H15F205H","Ospedale Molinette (Torino)","Anestesiologia","PRESENTATION","2026-02-16","Padova","Presentazione di prodotto farmaceutico","Fattura IT-20260216-396",229
+"HCP","Dr. Sofia Barbier","BRBSFS79S01F205H","Ospedale Sant'Orsola (Bologna)","Chirurgia Generale","CONVENZIONI","2026-02-24","Napoli","Accordo di consulenza scientifica","Fattura IT-20260224-397",1292
+"HCP","Dr. Francesca Esposito","SPSFRN81B06F205H","Ospedale San Raffaele (Milano)","Dermatologia","CONVENZIONI","2026-02-26","Firenze","Incarico di docenza per seminario","Fattura IT-20260226-398",692
+"HCP","Dr. Gabriele Gallo","GLLGBR52L27F205H","Policlinico Gemelli (Roma)","Anestesiologia","PRESENTATION","2026-02-25","Roma","Briefing scientifico aziendale","Fattura IT-20260225-399",780
+"HCP","Dr. Aurora Giordano","GRDRRR56D04F205H","Policlinico Gemelli (Roma)","Cardiologia","PRESENTATION","2026-01-11","Roma","Briefing scientifico aziendale","Fattura IT-20260111-400",707
+"HCP","Dr. Antonio Greco","GRCNTN67L13F205H","Ospedale San Martino (Genova)","Dermatologia","PRESENTATION","2026-01-10","Palermo","Presentazione di prodotto farmaceutico","Fattura IT-20260110-401",756
+"INSTITUTION","Policlinico Gemelli (Roma)","PI186777307","","","CONVENZIONI","2026-04-27","Milano","Accordo di consulenza scientifica","Fattura IT-20260427-402",726
+"HCP","Dr. Greta Romano","RMNGRT86S02F205H","Policlinico di Bari","Radiologia","CONFERENCE_SUPPORT","2026-01-16","Torino","Rimborso spese viaggio e alloggio","Fattura IT-20260116-403",532
+"HCP","Dr. Alice Gallo","GLLLCL69A24F205H","Ospedale Careggi (Firenze)","Neurologia","DONAZIONI","2026-04-30","Bologna","Donazione apparecchio ecografico","Fattura IT-20260430-404",2410
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI607982815","","","CONVENZIONI","2026-03-11","Roma","Accordo di consulenza scientifica","Fattura IT-20260311-405",174
+"HCP","Dr. Alice Mancini","MNCLCL73A25F205H","Ospedale Careggi (Firenze)","Oncologia","DONAZIONI","2026-03-28","Bologna","Supporto liberale borse di studio","Fattura IT-20260328-406",1925
+"HCP","Dr. Pietro Rossi","RSSPTR88H13F205H","Ospedale Civile di Padova","Pediatria","CONVENZIONI","2026-03-03","Genova","Accordo di consulenza scientifica","Fattura IT-20260303-407",309
+"HCP","Dr. Francesco Romano","RMNFRN60M17F205H","Ospedale Sant'Orsola (Bologna)","Medicina Interna","CONVENZIONI","2026-01-21","Napoli","Contratto di advisory board","Fattura IT-20260121-408",576
+"HCP","Dr. Francesca Caruso","CRSFRN82A10F205H","Ospedale Sant'Orsola (Bologna)","Anestesiologia","CONSULTANCY","2026-02-18","Napoli","Consulenza tecnica di prodotto","Fattura IT-20260218-409",188
+"HCP","Dr. Ludovica Pellegrini","PLLLDV86S13F205H","Ospedale San Raffaele (Milano)","Oncologia","CONVENZIONI","2026-03-31","Firenze","Contratto di advisory board","Fattura IT-20260331-410",228
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI963196606","","","CONFERENCE_SUPPORT","2026-03-31","Firenze","Copertura spese di ospitalità","Fattura IT-20260331-411",128
+"HCP","Dr. Davide Gatti","GTTDVD87D12F205H","Ospedale San Raffaele (Milano)","Dermatologia","CONSULTANCY","2026-04-03","Firenze","Partecipazione tavola rotonda","Fattura IT-20260403-412",614
+"HCP","Dr. Marco Marino","MRNMRC78R25F205H","Ospedale San Martino (Genova)","Anestesiologia","PRESENTATION","2026-03-03","Palermo","Briefing scientifico aziendale","Fattura IT-20260303-413",404
+"HCP","Dr. Aurora Bruno","BRNRRR67S20F205H","Policlinico di Bari","Neurologia","CONSULTANCY","2026-04-27","Torino","Consulenza tecnica di prodotto","Fattura IT-20260427-414",682
+"HCP","Dr. Ludovica Rizzo","RZZLDV60L07F205H","Ospedale Cardarelli (Napoli)","Cardiologia","PRESENTATION","2026-04-15","Bari","Briefing scientifico aziendale","Fattura IT-20260415-415",597
+"HCP","Dr. Ludovica Costa","CSTLDV79D22F205H","Ospedale San Martino (Genova)","Oncologia","CONFERENCE_SUPPORT","2026-05-10","Palermo","Copertura spese di ospitalità","Fattura IT-20260510-416",267
+"HCP","Dr. Giorgia Moretti","MRTGRG88D14F205H","Ospedale Niguarda (Milano)","Radiologia","CONFERENCE_SUPPORT","2026-05-24","Milano","Rimborso spese viaggio e alloggio","Fattura IT-20260524-417",129
+"INSTITUTION","Ospedale San Martino (Genova)","PI314173398","","","CONVENZIONI","2026-04-11","Roma","Accordo di consulenza scientifica","Fattura IT-20260411-418",682
+"HCP","Dr. Beatrice Bianchi","BNCBTR61H23F205H","Policlinico Gemelli (Roma)","Cardiologia","CONFERENCE_SUPPORT","2026-02-06","Roma","Copertura spese di ospitalità","Fattura IT-20260206-419",743
+"HCP","Dr. Davide Bruno","BRNDVD56D15F205H","Policlinico di Bari","Cardiologia","DONAZIONI","2026-03-22","Torino","Supporto liberale borse di studio","Fattura IT-20260322-420",1082
+"HCP","Dr. Lorenzo De Luca","DLCLRN78H05F205H","Ospedale Civile di Padova","Medicina Interna","DONAZIONI","2026-04-15","Genova","Donazione apparecchio ecografico","Fattura IT-20260415-421",1987
+"HCP","Dr. Pietro Bruno","BRNPTR56C19F205H","Policlinico Gemelli (Roma)","Oncologia","CONFERENCE_SUPPORT","2026-01-05","Roma","Rimborso spese viaggio e alloggio","Fattura IT-20260105-422",122
+"HCP","Dr. Leonardo Bruno","BRNLNR68L07F205H","Ospedale Cardarelli (Napoli)","Dermatologia","PRESENTATION","2026-05-01","Bari","Presentazione di prodotto farmaceutico","Fattura IT-20260501-423",321
+"HCP","Dr. Davide Colombo","CLMDVD80S13F205H","Ospedale Molinette (Torino)","Radiologia","CONSULTANCY","2026-01-07","Padova","Partecipazione tavola rotonda","Fattura IT-20260107-424",600
+"HCP","Dr. Mattia Santoro","SNTMTT52D12F205H","Ospedale Niguarda (Milano)","Dermatologia","DONAZIONI","2026-03-02","Milano","Donazione apparecchio ecografico","Fattura IT-20260302-425",1301
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI618148581","","","CONSULTANCY","2026-04-22","Padova","Relazione scientifica convegno","Fattura IT-20260422-426",66
+"HCP","Dr. Alice Vinci","VNCLCL59P17F205H","Ospedale San Raffaele (Milano)","Cardiologia","DONAZIONI","2026-01-29","Firenze","Erogazione per attrezzature di reparto","Fattura IT-20260129-427",1676
+"HCP","Dr. Pietro Rinaldi","RNLPTR73S27F205H","Ospedale Molinette (Torino)","Neurologia","PRESENTATION","2026-04-24","Padova","Briefing scientifico aziendale","Fattura IT-20260424-428",728
+"HCP","Dr. Alice Rizzo","RZZLCL81R19F205H","Ospedale Civile di Padova","Dermatologia","CONSULTANCY","2026-04-15","Genova","Consulenza tecnica di prodotto","Fattura IT-20260415-429",206
+"HCP","Dr. Paola Esposito","SPSPLP57D20F205H","Policlinico di Bari","Cardiologia","CONFERENCE_SUPPORT","2026-01-22","Torino","Rimborso spese viaggio e alloggio","Fattura IT-20260122-430",619
+"HCP","Dr. Chiara Colombo","CLMCHR82E03F205H","Ospedale Niguarda (Milano)","Medicina Interna","DONAZIONI","2026-05-02","Milano","Erogazione per attrezzature di reparto","Fattura IT-20260502-431",6725
+"HCP","Dr. Antonio Fontana","FNTNTN51A12F205H","Ospedale San Raffaele (Milano)","Medicina Interna","CONFERENCE_SUPPORT","2026-02-20","Firenze","Rimborso spese viaggio e alloggio","Fattura IT-20260220-432",497
+"HCP","Dr. Filippo Barbier","BRBFLP62H13F205H","Ospedale Molinette (Torino)","Ginecologia","CONSULTANCY","2026-03-06","Padova","Relazione scientifica convegno","Fattura IT-20260306-433",825
+"HCP","Dr. Pietro Mariani","MRNPTR88B12F205H","Ospedale Civile di Padova","Dermatologia","CONFERENCE_SUPPORT","2026-01-03","Genova","Rimborso spese viaggio e alloggio","Fattura IT-20260103-434",400
+"HCP","Dr. Silvia Bruno","BRNSLV82R01F205H","Policlinico Gemelli (Roma)","Ginecologia","PRESENTATION","2026-05-19","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260519-435",77
+"HCP","Dr. Giovanni Giordano","GRDGVN70E26F205H","Ospedale Civile di Padova","Cardiologia","CONFERENCE_SUPPORT","2026-03-30","Genova","Rimborso spese viaggio e alloggio","Fattura IT-20260330-436",488
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI689549106","","","CONSULTANCY","2026-04-07","Bologna","Partecipazione tavola rotonda","Fattura IT-20260407-437",315
+"HCP","Dr. Emma Giordano","GRDMMM77L24F205H","Ospedale Molinette (Torino)","Ginecologia","DONAZIONI","2026-01-25","Padova","Supporto liberale borse di studio","Fattura IT-20260125-438",2252
+"HCP","Dr. Davide Gallo","GLLDVD55H22F205H","Ospedale Molinette (Torino)","Chirurgia Generale","CONFERENCE_SUPPORT","2026-01-01","Padova","Rimborso spese viaggio e alloggio","Fattura IT-20260101-439",366
+"HCP","Dr. Silvia Colombo","CLMSLV63E22F205H","Ospedale San Martino (Genova)","Oncologia","PRESENTATION","2026-01-09","Palermo","Presentazione di prodotto farmaceutico","Fattura IT-20260109-440",595
+"HCP","Dr. Greta Mancini","MNCGRT87T15F205H","Ospedale Civile di Padova","Cardiologia","CONSULTANCY","2026-03-21","Genova","Consulenza tecnica di prodotto","Fattura IT-20260321-441",545
+"INSTITUTION","Policlinico Gemelli (Roma)","PI258009698","","","CONVENZIONI","2026-03-14","Padova","Contratto di advisory board","Fattura IT-20260314-442",1221
+"HCP","Dr. Mattia Russo","RSSMTT57B03F205H","Ospedale San Raffaele (Milano)","Ginecologia","DONAZIONI","2026-03-22","Firenze","Erogazione per attrezzature di reparto","Fattura IT-20260322-443",571
+"HCP","Dr. Aurora Barbier","BRBRRR62E06F205H","Policlinico Gemelli (Roma)","Pediatria","DONAZIONI","2026-03-07","Roma","Donazione materiale didattico","Fattura IT-20260307-444",2266
+"HCP","Dr. Riccardo Gatti","GTTRCC65D16F205H","Ospedale Sant'Orsola (Bologna)","Radiologia","DONAZIONI","2026-03-30","Napoli","Erogazione per attrezzature di reparto","Fattura IT-20260330-445",2209
+"HCP","Dr. Lorenzo Gatti","GTTLRN72E10F205H","Ospedale San Martino (Genova)","Pediatria","DONAZIONI","2026-01-16","Palermo","Donazione apparecchio ecografico","Fattura IT-20260116-446",8711
+"HCP","Dr. Lorenzo Rossi","RSSLRN81H11F205H","Ospedale Cardarelli (Napoli)","Chirurgia Generale","CONFERENCE_SUPPORT","2026-04-19","Bari","Rimborso spese viaggio e alloggio","Fattura IT-20260419-447",718
+"HCP","Dr. Pietro Romano","RMNPTR52T02F205H","Policlinico di Bari","Medicina Interna","PRESENTATION","2026-05-13","Torino","Briefing scientifico aziendale","Fattura IT-20260513-448",63
+"HCP","Dr. Valeria Bianchi","BNCVLR68S02F205H","Ospedale Careggi (Firenze)","Neurologia","CONFERENCE_SUPPORT","2026-01-26","Bologna","Copertura spese di ospitalità","Fattura IT-20260126-449",137
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI228894888","","","CONFERENCE_SUPPORT","2026-01-30","Genova","Quota di iscrizione congresso","Fattura IT-20260130-450",818
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI177925402","","","CONFERENCE_SUPPORT","2026-05-01","Bari","Quota di iscrizione congresso","Fattura IT-20260501-451",258
+"HCP","Dr. Gabriele Gatti","GTTGBR67S10F205H","Policlinico Gemelli (Roma)","Oncologia","CONFERENCE_SUPPORT","2026-02-13","Roma","Quota di iscrizione congresso","Fattura IT-20260213-452",331
+"HCP","Dr. Marco Santoro","SNTMRC73E14F205H","Ospedale Molinette (Torino)","Ginecologia","PRESENTATION","2026-02-14","Padova","Briefing scientifico aziendale","Fattura IT-20260214-453",568
+"HCP","Dr. Filippo Greco","GRCFLP61P04F205H","Ospedale Civile di Padova","Chirurgia Generale","DONAZIONI","2026-05-18","Genova","Donazione apparecchio ecografico","Fattura IT-20260518-454",1955
+"HCP","Dr. Alessandro Mancini","MNCLSS68B16F205H","Ospedale Careggi (Firenze)","Pediatria","PRESENTATION","2026-03-21","Bologna","Presentazione di prodotto farmaceutico","Fattura IT-20260321-455",724
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI834763255","","","CONSULTANCY","2025-12-30","Palermo","Partecipazione tavola rotonda","Fattura IT-20251230-456",344
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI415543988","","","CONFERENCE_SUPPORT","2026-04-20","Roma","Rimborso spese viaggio e alloggio","Fattura IT-20260420-457",489
+"HCP","Dr. Sofia Vinci","VNCSFS63C26F205H","Ospedale Molinette (Torino)","Pediatria","CONVENZIONI","2026-03-13","Padova","Incarico di docenza per seminario","Fattura IT-20260313-458",1372
+"HCP","Dr. Beatrice Rizzo","RZZBTR75T02F205H","Ospedale Cardarelli (Napoli)","Radiologia","CONVENZIONI","2026-04-01","Bari","Incarico di docenza per seminario","Fattura IT-20260401-459",459
+"HCP","Dr. Lorenzo Costa","CSTLRN88E16F205H","Ospedale Careggi (Firenze)","Dermatologia","CONFERENCE_SUPPORT","2026-01-14","Bologna","Copertura spese di ospitalità","Fattura IT-20260114-460",390
+"HCP","Dr. Luca Mancini","MNCLCL78P09F205H","Ospedale Sant'Orsola (Bologna)","Medicina Interna","CONVENZIONI","2026-05-16","Napoli","Incarico di docenza per seminario","Fattura IT-20260516-461",384
+"HCP","Dr. Silvia Barbier","BRBSLV55A28F205H","Policlinico Gemelli (Roma)","Radiologia","CONSULTANCY","2026-01-05","Roma","Partecipazione tavola rotonda","Fattura IT-20260105-462",73
+"HCP","Dr. Riccardo Caruso","CRSRCC79P02F205H","Ospedale Civile di Padova","Oncologia","DONAZIONI","2026-04-03","Genova","Erogazione per attrezzature di reparto","Fattura IT-20260403-463",2096
+"INSTITUTION","Ospedale Careggi (Firenze)","PI705094219","","","CONFERENCE_SUPPORT","2026-05-03","Milano","Quota di iscrizione congresso","Fattura IT-20260503-464",506
+"HCP","Dr. Francesco Fontana","FNTFRN78H04F205H","Policlinico di Bari","Chirurgia Generale","PRESENTATION","2026-03-29","Torino","Briefing scientifico aziendale","Fattura IT-20260329-465",700
+"HCP","Dr. Matteo Colombo","CLMMTT71A14F205H","Ospedale Molinette (Torino)","Pediatria","CONVENZIONI","2026-04-30","Padova","Supporto alla ricerca clinica","Fattura IT-20260430-466",357
+"HCP","Dr. Ludovica Rossi","RSSLDV58R03F205H","Ospedale Molinette (Torino)","Pediatria","DONAZIONI","2026-02-21","Padova","Donazione materiale didattico","Fattura IT-20260221-467",1833
+"HCP","Dr. Valeria Russo","RSSVLR85H09F205H","Policlinico di Bari","Neurologia","DONAZIONI","2026-02-28","Torino","Donazione apparecchio ecografico","Fattura IT-20260228-468",843
+"HCP","Dr. Sofia Colombo","CLMSFS65H18F205H","Ospedale San Martino (Genova)","Radiologia","CONFERENCE_SUPPORT","2026-02-21","Palermo","Copertura spese di ospitalità","Fattura IT-20260221-469",361
+"HCP","Dr. Antonio Russo","RSSNTN88E13F205H","Ospedale San Martino (Genova)","Cardiologia","CONVENZIONI","2026-03-31","Palermo","Contratto di advisory board","Fattura IT-20260331-470",698
+"INSTITUTION","Policlinico Gemelli (Roma)","PI408755566","","","CONVENZIONI","2026-02-25","Palermo","Supporto alla ricerca clinica","Fattura IT-20260225-471",1606
+"HCP","Dr. Luca Santoro","SNTLCL70T05F205H","Ospedale Sant'Orsola (Bologna)","Pediatria","CONVENZIONI","2026-01-02","Napoli","Supporto alla ricerca clinica","Fattura IT-20260102-472",1834
+"HCP","Dr. Chiara Marino","MRNCHR85C03F205H","Policlinico Gemelli (Roma)","Radiologia","CONSULTANCY","2026-05-06","Roma","Partecipazione tavola rotonda","Fattura IT-20260506-473",353
+"HCP","Dr. Luca Giordano","GRDLCL62T18F205H","Policlinico Gemelli (Roma)","Anestesiologia","CONFERENCE_SUPPORT","2026-02-22","Roma","Copertura spese di ospitalità","Fattura IT-20260222-474",757
+"HCP","Dr. Gabriele Rizzo","RZZGBR60T08F205H","Ospedale San Raffaele (Milano)","Pediatria","CONSULTANCY","2025-12-27","Firenze","Partecipazione tavola rotonda","Fattura IT-20251227-475",531
+"HCP","Dr. Lorenzo Caruso","CRSLRN50B16F205H","Ospedale Sant'Orsola (Bologna)","Neurologia","CONFERENCE_SUPPORT","2026-05-18","Napoli","Copertura spese di ospitalità","Fattura IT-20260518-476",556
+"HCP","Dr. Mattia Vinci","VNCMTT57L23F205H","Ospedale Niguarda (Milano)","Dermatologia","DONAZIONI","2026-05-17","Milano","Donazione materiale didattico","Fattura IT-20260517-477",1819
+"HCP","Dr. Sofia Rizzo","RZZSFS87H28F205H","Ospedale San Martino (Genova)","Neurologia","DONAZIONI","2026-02-24","Palermo","Erogazione per attrezzature di reparto","Fattura IT-20260224-478",953
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI955030896","","","CONVENZIONI","2026-05-15","Milano","Accordo di consulenza scientifica","Fattura IT-20260515-479",1441
+"HCP","Dr. Pietro Rinaldi","RNLPTR53S23F205H","Ospedale Niguarda (Milano)","Anestesiologia","DONAZIONI","2026-01-17","Milano","Erogazione per attrezzature di reparto","Fattura IT-20260117-480",639
+"HCP","Dr. Silvia Santoro","SNTSLV57D10F205H","Ospedale Careggi (Firenze)","Medicina Interna","DONAZIONI","2026-05-03","Bologna","Supporto liberale borse di studio","Fattura IT-20260503-481",2185
+"HCP","Dr. Sofia Ferrari","FRRSFS75L04F205H","Ospedale Careggi (Firenze)","Cardiologia","CONFERENCE_SUPPORT","2026-03-21","Bologna","Quota di iscrizione congresso","Fattura IT-20260321-482",253
+"HCP","Dr. Pietro Romano","RMNPTR54T05F205H","Ospedale San Martino (Genova)","Dermatologia","DONAZIONI","2026-03-22","Palermo","Donazione materiale didattico","Fattura IT-20260322-483",712
+"HCP","Dr. Riccardo Fontana","FNTRCC85C26F205H","Policlinico Gemelli (Roma)","Anestesiologia","CONFERENCE_SUPPORT","2026-03-11","Roma","Copertura spese di ospitalità","Fattura IT-20260311-484",207
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI149593351","","","DONAZIONI","2026-01-03","Milano","Donazione materiale didattico","Fattura IT-20260103-485",2145
+"HCP","Dr. Sofia Ricci","RCCSFS62B26F205H","Policlinico Gemelli (Roma)","Pediatria","CONFERENCE_SUPPORT","2026-02-07","Roma","Quota di iscrizione congresso","Fattura IT-20260207-486",206
+"HCP","Dr. Riccardo De Luca","DLCRCC85P12F205H","Ospedale Niguarda (Milano)","Cardiologia","PRESENTATION","2026-03-20","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260320-487",730
+"HCP","Dr. Andrea Santoro","SNTNDR76A05F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","DONAZIONI","2026-04-30","Roma","Erogazione per attrezzature di reparto","Fattura IT-20260430-488",1874
+"HCP","Dr. Alessandro Russo","RSSLSS63M24F205H","Ospedale Cardarelli (Napoli)","Medicina Interna","CONSULTANCY","2026-04-12","Bari","Consulenza tecnica di prodotto","Fattura IT-20260412-489",295
+"HCP","Dr. Sofia Colombo","CLMSFS79H04F205H","Ospedale Niguarda (Milano)","Anestesiologia","CONVENZIONI","2026-01-09","Milano","Contratto di advisory board","Fattura IT-20260109-490",417
+"HCP","Dr. Silvia Rinaldi","RNLSLV55B11F205H","Ospedale Careggi (Firenze)","Neurologia","CONSULTANCY","2026-03-09","Bologna","Partecipazione tavola rotonda","Fattura IT-20260309-491",185
+"HCP","Dr. Giorgia Caruso","CRSGRG58L05F205H","Policlinico Gemelli (Roma)","Cardiologia","CONVENZIONI","2026-03-27","Roma","Incarico di docenza per seminario","Fattura IT-20260327-492",469
+"HCP","Dr. Beatrice Caruso","CRSBTR81R01F205H","Policlinico Gemelli (Roma)","Pediatria","CONVENZIONI","2026-02-16","Roma","Incarico di docenza per seminario","Fattura IT-20260216-493",832
+"HCP","Dr. Alice Mariani","MRNLCL62R15F205H","Ospedale San Martino (Genova)","Anestesiologia","DONAZIONI","2026-01-22","Palermo","Supporto liberale borse di studio","Fattura IT-20260122-494",1547
+"INSTITUTION","Policlinico di Bari","PI186631986","","","CONVENZIONI","2026-03-17","Milano","Supporto alla ricerca clinica","Fattura IT-20260317-495",457
+"INSTITUTION","Ospedale Niguarda (Milano)","PI762329965","","","CONVENZIONI","2026-03-10","Torino","Supporto alla ricerca clinica","Fattura IT-20260310-496",500
+"HCP","Dr. Ludovica Rizzo","RZZLDV62L26F205H","Policlinico Gemelli (Roma)","Pediatria","DONAZIONI","2026-02-06","Roma","Donazione apparecchio ecografico","Fattura IT-20260206-497",1823
+"HCP","Dr. Antonio Esposito","SPSNTN89S11F205H","Ospedale San Martino (Genova)","Pediatria","CONFERENCE_SUPPORT","2026-02-19","Palermo","Copertura spese di ospitalità","Fattura IT-20260219-498",447
+"HCP","Dr. Silvia Moretti","MRTSLV50M19F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","CONSULTANCY","2026-04-01","Milano","Relazione scientifica convegno","Fattura IT-20260401-499",540
+"HCP","Dr. Emma Marino","MRNMMM53S17F205H","Ospedale San Martino (Genova)","Cardiologia","PRESENTATION","2026-04-23","Palermo","Presentazione di prodotto farmaceutico","Fattura IT-20260423-500",210
+"HCP","Dr. Riccardo Ferraro","FRRRCC58T03F205H","Ospedale San Martino (Genova)","Pediatria","CONSULTANCY","2026-04-07","Palermo","Consulenza tecnica di prodotto","Fattura IT-20260407-501",678
+"HCP","Dr. Alessandro Moretti","MRTLSS69E02F205H","Ospedale Careggi (Firenze)","Pediatria","CONFERENCE_SUPPORT","2025-12-27","Bologna","Rimborso spese viaggio e alloggio","Fattura IT-20251227-502",700
+"HCP","Dr. Aurora Russo","RSSRRR72D13F205H","Policlinico di Bari","Dermatologia","PRESENTATION","2026-04-13","Torino","Briefing scientifico aziendale","Fattura IT-20260413-503",81
+"HCP","Dr. Lorenzo Bianchi","BNCLRN83D19F205H","Ospedale San Raffaele (Milano)","Neurologia","CONVENZIONI","2026-05-09","Firenze","Contratto di advisory board","Fattura IT-20260509-504",1432
+"HCP","Dr. Valeria Mancini","MNCVLR57B08F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","CONVENZIONI","2026-03-08","Roma","Accordo di consulenza scientifica","Fattura IT-20260308-505",786
+"HCP","Dr. Paola Greco","GRCPLP82D02F205H","Policlinico Gemelli (Roma)","Dermatologia","DONAZIONI","2026-04-11","Roma","Erogazione per attrezzature di reparto","Fattura IT-20260411-506",5660
+"HCP","Dr. Alessandro Vinci","VNCLSS72M10F205H","Ospedale Molinette (Torino)","Medicina Interna","CONFERENCE_SUPPORT","2026-03-13","Padova","Copertura spese di ospitalità","Fattura IT-20260313-507",98
+"INSTITUTION","Ospedale Niguarda (Milano)","PI121134095","","","PRESENTATION","2026-05-09","Napoli","Briefing scientifico aziendale","Fattura IT-20260509-508",640
+"HCP","Dr. Marco Ricci","RCCMRC67D25F205H","Policlinico Gemelli (Roma)","Anestesiologia","CONSULTANCY","2026-04-15","Roma","Consulenza tecnica di prodotto","Fattura IT-20260415-509",464
+"HCP","Dr. Giorgia Greco","GRCGRG81S07F205H","Ospedale Niguarda (Milano)","Medicina Interna","DONAZIONI","2026-01-25","Milano","Erogazione per attrezzature di reparto","Fattura IT-20260125-510",7272
+"HCP","Dr. Matteo Costa","CSTMTT73S03F205H","Ospedale San Martino (Genova)","Neurologia","CONSULTANCY","2026-03-04","Palermo","Consulenza tecnica di prodotto","Fattura IT-20260304-511",138
+"HCP","Dr. Greta Santoro","SNTGRT86T04F205H","Ospedale San Raffaele (Milano)","Cardiologia","CONFERENCE_SUPPORT","2026-01-28","Firenze","Quota di iscrizione congresso","Fattura IT-20260128-512",683
+"INSTITUTION","Ospedale Niguarda (Milano)","PI763475800","","","DONAZIONI","2026-01-11","Milano","Donazione materiale didattico","Fattura IT-20260111-513",880
+"HCP","Dr. Pietro Mancini","MNCPTR63H04F205H","Ospedale Molinette (Torino)","Pediatria","PRESENTATION","2026-03-11","Padova","Presentazione di prodotto farmaceutico","Fattura IT-20260311-514",716
+"HCP","Dr. Francesca Pellegrini","PLLFRN82D18F205H","Ospedale Molinette (Torino)","Neurologia","PRESENTATION","2026-01-27","Padova","Presentazione di prodotto farmaceutico","Fattura IT-20260127-515",661
+"HCP","Dr. Luca Ferraro","FRRLCL88B03F205H","Policlinico di Bari","Anestesiologia","DONAZIONI","2026-01-16","Torino","Donazione apparecchio ecografico","Fattura IT-20260116-516",1880
+"HCP","Dr. Filippo De Luca","DLCFLP56H08F205H","Ospedale San Martino (Genova)","Neurologia","DONAZIONI","2026-05-04","Palermo","Donazione apparecchio ecografico","Fattura IT-20260504-517",8272
+"INSTITUTION","Ospedale Molinette (Torino)","PI517742665","","","PRESENTATION","2026-01-22","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260122-518",168
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI434999946","","","CONFERENCE_SUPPORT","2026-01-28","Roma","Copertura spese di ospitalità","Fattura IT-20260128-519",581
+"HCP","Dr. Valeria Pellegrini","PLLVLR60S13F205H","Policlinico Gemelli (Roma)","Anestesiologia","CONFERENCE_SUPPORT","2026-01-13","Roma","Quota di iscrizione congresso","Fattura IT-20260113-520",123
+"HCP","Dr. Giovanni Rizzo","RZZGVN78H25F205H","Ospedale Sant'Orsola (Bologna)","Ginecologia","CONFERENCE_SUPPORT","2026-01-23","Napoli","Copertura spese di ospitalità","Fattura IT-20260123-521",268
+"HCP","Dr. Riccardo Costa","CSTRCC84S06F205H","Ospedale Molinette (Torino)","Cardiologia","CONFERENCE_SUPPORT","2026-05-07","Padova","Copertura spese di ospitalità","Fattura IT-20260507-522",230
+"HCP","Dr. Silvia Colombo","CLMSLV87L09F205H","Ospedale San Martino (Genova)","Cardiologia","CONVENZIONI","2026-05-04","Palermo","Contratto di advisory board","Fattura IT-20260504-523",179
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI922935912","","","CONSULTANCY","2026-05-24","Milano","Relazione scientifica convegno","Fattura IT-20260524-524",328
+"HCP","Dr. Filippo Ferraro","FRRFLP72E16F205H","Ospedale San Martino (Genova)","Ginecologia","CONVENZIONI","2026-03-14","Palermo","Contratto di advisory board","Fattura IT-20260314-525",1899
+"HCP","Dr. Beatrice Mariani","MRNBTR54E03F205H","Ospedale San Raffaele (Milano)","Anestesiologia","CONFERENCE_SUPPORT","2026-03-27","Firenze","Rimborso spese viaggio e alloggio","Fattura IT-20260327-526",294
+"HCP","Dr. Luca Conti","CNTLCL60A01F205H","Ospedale San Raffaele (Milano)","Ginecologia","CONFERENCE_SUPPORT","2026-01-05","Firenze","Quota di iscrizione congresso","Fattura IT-20260105-527",583
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI241743336","","","PRESENTATION","2026-01-10","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20260110-528",657
+"HCP","Dr. Aurora Santoro","SNTRRR78T22F205H","Ospedale Molinette (Torino)","Ginecologia","CONFERENCE_SUPPORT","2026-01-27","Padova","Quota di iscrizione congresso","Fattura IT-20260127-529",566
+"HCP","Dr. Valeria Moretti","MRTVLR64E26F205H","Policlinico di Bari","Medicina Interna","CONSULTANCY","2026-04-13","Torino","Relazione scientifica convegno","Fattura IT-20260413-530",150
+"HCP","Dr. Emma Rossi","RSSMMM68D02F205H","Policlinico di Bari","Oncologia","CONVENZIONI","2026-01-30","Torino","Contratto di advisory board","Fattura IT-20260130-531",828
+"HCP","Dr. Giorgia Ricci","RCCGRG65T28F205H","Ospedale Civile di Padova","Cardiologia","CONSULTANCY","2026-02-15","Genova","Relazione scientifica convegno","Fattura IT-20260215-532",530
+"HCP","Dr. Gabriele Russo","RSSGBR56P14F205H","Ospedale Sant'Orsola (Bologna)","Dermatologia","PRESENTATION","2026-05-15","Napoli","Briefing scientifico aziendale","Fattura IT-20260515-533",258
+"HCP","Dr. Pietro Rizzo","RZZPTR56H04F205H","Ospedale Careggi (Firenze)","Radiologia","CONFERENCE_SUPPORT","2026-05-22","Bologna","Copertura spese di ospitalità","Fattura IT-20260522-534",190
+"HCP","Dr. Matteo Ricci","RCCMTT89E07F205H","Ospedale San Raffaele (Milano)","Neurologia","CONFERENCE_SUPPORT","2026-03-31","Firenze","Quota di iscrizione congresso","Fattura IT-20260331-535",444
+"HCP","Dr. Matteo Rossi","RSSMTT82P02F205H","Ospedale San Raffaele (Milano)","Medicina Interna","DONAZIONI","2026-02-17","Firenze","Donazione materiale didattico","Fattura IT-20260217-536",8523
+"INSTITUTION","Policlinico di Bari","PI471037260","","","DONAZIONI","2026-01-30","Milano","Supporto liberale borse di studio","Fattura IT-20260130-537",1641
+"HCP","Dr. Beatrice Mariani","MRNBTR81L09F205H","Ospedale Civile di Padova","Pediatria","PRESENTATION","2026-01-05","Genova","Presentazione di prodotto farmaceutico","Fattura IT-20260105-538",354
+"HCP","Dr. Lorenzo Giordano","GRDLRN82M27F205H","Ospedale Civile di Padova","Neurologia","CONVENZIONI","2026-03-13","Genova","Contratto di advisory board","Fattura IT-20260313-539",722
+"HCP","Dr. Greta Bianchi","BNCGRT83D18F205H","Policlinico di Bari","Radiologia","CONFERENCE_SUPPORT","2026-03-11","Torino","Copertura spese di ospitalità","Fattura IT-20260311-540",665
+"HCP","Dr. Riccardo Rinaldi","RNLRCC81B03F205H","Ospedale Sant'Orsola (Bologna)","Pediatria","CONSULTANCY","2026-01-16","Napoli","Consulenza tecnica di prodotto","Fattura IT-20260116-541",278
+"HCP","Dr. Leonardo Colombo","CLMLNR72P24F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","CONSULTANCY","2026-05-17","Napoli","Consulenza tecnica di prodotto","Fattura IT-20260517-542",372
+"HCP","Dr. Luca Bianchi","BNCLCL58R14F205H","Ospedale Molinette (Torino)","Radiologia","DONAZIONI","2026-04-21","Padova","Erogazione per attrezzature di reparto","Fattura IT-20260421-543",5986
+"HCP","Dr. Sofia Bruno","BRNSFS77A24F205H","Ospedale Molinette (Torino)","Neurologia","PRESENTATION","2026-01-02","Padova","Presentazione di prodotto farmaceutico","Fattura IT-20260102-544",432
+"HCP","Dr. Emma Mariani","MRNMMM69R14F205H","Ospedale Careggi (Firenze)","Chirurgia Generale","DONAZIONI","2026-03-06","Bologna","Supporto liberale borse di studio","Fattura IT-20260306-545",1786
+"HCP","Dr. Silvia Vinci","VNCSLV80A02F205H","Ospedale Niguarda (Milano)","Radiologia","CONFERENCE_SUPPORT","2026-02-05","Milano","Quota di iscrizione congresso","Fattura IT-20260205-546",364
+"HCP","Dr. Sofia Ricci","RCCSFS89L10F205H","Ospedale Niguarda (Milano)","Pediatria","CONSULTANCY","2026-02-25","Milano","Relazione scientifica convegno","Fattura IT-20260225-547",336
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI894475831","","","CONVENZIONI","2026-03-23","Bologna","Accordo di consulenza scientifica","Fattura IT-20260323-548",585
+"HCP","Dr. Ludovica Ferrari","FRRLDV56R03F205H","Policlinico Gemelli (Roma)","Anestesiologia","DONAZIONI","2026-03-26","Roma","Donazione materiale didattico","Fattura IT-20260326-549",1966
+"HCP","Dr. Paola Rossi","RSSPLP86P23F205H","Policlinico Gemelli (Roma)","Anestesiologia","PRESENTATION","2026-05-07","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260507-550",537
+"INSTITUTION","Policlinico Gemelli (Roma)","PI712584196","","","CONVENZIONI","2026-03-28","Padova","Contratto di advisory board","Fattura IT-20260328-551",228
+"HCP","Dr. Mattia Gatti","GTTMTT79A08F205H","Policlinico di Bari","Anestesiologia","CONSULTANCY","2026-05-12","Torino","Relazione scientifica convegno","Fattura IT-20260512-552",184
+"HCP","Dr. Giovanni Marino","MRNGVN82B18F205H","Ospedale Niguarda (Milano)","Anestesiologia","DONAZIONI","2026-04-08","Milano","Donazione apparecchio ecografico","Fattura IT-20260408-553",1460
+"HCP","Dr. Lorenzo Giordano","GRDLRN50C05F205H","Ospedale Molinette (Torino)","Pediatria","PRESENTATION","2026-05-13","Padova","Briefing scientifico aziendale","Fattura IT-20260513-554",565
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI101681073","","","DONAZIONI","2026-02-15","Roma","Supporto liberale borse di studio","Fattura IT-20260215-555",1046
+"HCP","Dr. Andrea Russo","RSSNDR74D17F205H","Policlinico Gemelli (Roma)","Dermatologia","DONAZIONI","2026-01-29","Roma","Erogazione per attrezzature di reparto","Fattura IT-20260129-556",8648
+"HCP","Dr. Andrea Bianchi","BNCNDR72A20F205H","Ospedale Civile di Padova","Radiologia","CONFERENCE_SUPPORT","2026-02-04","Genova","Copertura spese di ospitalità","Fattura IT-20260204-557",457
+"HCP","Dr. Ludovica Gallo","GLLLDV55E24F205H","Ospedale Civile di Padova","Cardiologia","PRESENTATION","2026-01-04","Genova","Presentazione di prodotto farmaceutico","Fattura IT-20260104-558",231
+"HCP","Dr. Valeria Giordano","GRDVLR64E14F205H","Ospedale Niguarda (Milano)","Cardiologia","CONSULTANCY","2026-01-16","Milano","Relazione scientifica convegno","Fattura IT-20260116-559",435
+"INSTITUTION","Policlinico di Bari","PI481038570","","","CONFERENCE_SUPPORT","2026-02-10","Firenze","Rimborso spese viaggio e alloggio","Fattura IT-20260210-560",318
+"HCP","Dr. Giulia Lombardi","LMBGLG74B16F205H","Ospedale Molinette (Torino)","Oncologia","CONFERENCE_SUPPORT","2026-02-22","Padova","Quota di iscrizione congresso","Fattura IT-20260222-561",66
+"HCP","Dr. Paola Marino","MRNPLP83L27F205H","Policlinico Gemelli (Roma)","Pediatria","PRESENTATION","2026-02-03","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260203-562",798
+"HCP","Dr. Silvia Rizzo","RZZSLV82H02F205H","Ospedale Niguarda (Milano)","Radiologia","DONAZIONI","2026-01-13","Milano","Donazione materiale didattico","Fattura IT-20260113-563",1598
+"INSTITUTION","Policlinico di Bari","PI446852302","","","CONVENZIONI","2026-02-10","Milano","Incarico di docenza per seminario","Fattura IT-20260210-564",258
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI961437932","","","DONAZIONI","2026-03-24","Milano","Donazione apparecchio ecografico","Fattura IT-20260324-565",1758
+"HCP","Dr. Giovanni Bruno","BRNGVN78E26F205H","Ospedale Sant'Orsola (Bologna)","Medicina Interna","PRESENTATION","2026-03-23","Napoli","Briefing scientifico aziendale","Fattura IT-20260323-566",558
+"HCP","Dr. Greta Rinaldi","RNLGRT63D05F205H","Policlinico di Bari","Oncologia","DONAZIONI","2026-04-20","Torino","Donazione materiale didattico","Fattura IT-20260420-567",706
+"HCP","Dr. Valeria Gatti","GTTVLR84D04F205H","Policlinico Gemelli (Roma)","Pediatria","CONSULTANCY","2026-01-05","Roma","Partecipazione tavola rotonda","Fattura IT-20260105-568",729
+"HCP","Dr. Francesca Fontana","FNTFRN51H27F205H","Ospedale Molinette (Torino)","Anestesiologia","CONSULTANCY","2026-04-05","Padova","Partecipazione tavola rotonda","Fattura IT-20260405-569",584
+"HCP","Dr. Sofia Moretti","MRTSFS55A23F205H","Ospedale San Martino (Genova)","Radiologia","CONFERENCE_SUPPORT","2026-03-01","Palermo","Copertura spese di ospitalità","Fattura IT-20260301-570",392
+"HCP","Dr. Alessandro Santoro","SNTLSS54S24F205H","Policlinico Gemelli (Roma)","Radiologia","CONSULTANCY","2026-03-31","Roma","Partecipazione tavola rotonda","Fattura IT-20260331-571",478
+"INSTITUTION","Ospedale San Martino (Genova)","PI631522571","","","DONAZIONI","2026-03-01","Padova","Donazione materiale didattico","Fattura IT-20260301-572",6748
+"HCP","Dr. Marco Santoro","SNTMRC57H14F205H","Ospedale Careggi (Firenze)","Cardiologia","DONAZIONI","2026-01-16","Bologna","Donazione apparecchio ecografico","Fattura IT-20260116-573",1125
+"HCP","Dr. Lorenzo Santoro","SNTLRN58D05F205H","Policlinico di Bari","Cardiologia","CONSULTANCY","2025-12-27","Torino","Relazione scientifica convegno","Fattura IT-20251227-574",264
+"HCP","Dr. Andrea Giordano","GRDNDR64M14F205H","Ospedale Molinette (Torino)","Chirurgia Generale","DONAZIONI","2026-02-10","Padova","Donazione materiale didattico","Fattura IT-20260210-575",876
+"INSTITUTION","Ospedale Niguarda (Milano)","PI453089373","","","CONVENZIONI","2026-02-21","Bologna","Contratto di advisory board","Fattura IT-20260221-576",673
+"HCP","Dr. Antonio Ricci","RCCNTN54A17F205H","Ospedale Molinette (Torino)","Chirurgia Generale","CONSULTANCY","2026-05-12","Padova","Partecipazione tavola rotonda","Fattura IT-20260512-577",684
+"HCP","Dr. Greta Caruso","CRSGRT66E22F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","CONVENZIONI","2026-01-05","Milano","Contratto di advisory board","Fattura IT-20260105-578",732
+"HCP","Dr. Alessandro Rinaldi","RNLLSS83D12F205H","Ospedale San Raffaele (Milano)","Chirurgia Generale","CONSULTANCY","2026-02-16","Firenze","Partecipazione tavola rotonda","Fattura IT-20260216-579",150
+"HCP","Dr. Lorenzo Rizzo","RZZLRN83S02F205H","Ospedale Cardarelli (Napoli)","Anestesiologia","CONFERENCE_SUPPORT","2026-03-26","Bari","Quota di iscrizione congresso","Fattura IT-20260326-580",498
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI966744629","","","DONAZIONI","2026-04-06","Bologna","Donazione apparecchio ecografico","Fattura IT-20260406-581",1462
+"HCP","Dr. Giorgia Gatti","GTTGRG69B04F205H","Ospedale Molinette (Torino)","Oncologia","DONAZIONI","2026-02-19","Padova","Donazione materiale didattico","Fattura IT-20260219-582",2261
+"HCP","Dr. Aurora Fontana","FNTRRR54R08F205H","Policlinico Gemelli (Roma)","Anestesiologia","CONSULTANCY","2026-01-06","Roma","Relazione scientifica convegno","Fattura IT-20260106-583",96
+"HCP","Dr. Filippo Bianchi","BNCFLP84T18F205H","Ospedale Niguarda (Milano)","Anestesiologia","DONAZIONI","2026-05-20","Milano","Supporto liberale borse di studio","Fattura IT-20260520-584",6079
+"HCP","Dr. Davide Ferrari","FRRDVD66T27F205H","Ospedale Careggi (Firenze)","Cardiologia","CONVENZIONI","2026-03-26","Bologna","Incarico di docenza per seminario","Fattura IT-20260326-585",1973
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI401831319","","","DONAZIONI","2026-05-04","Palermo","Donazione materiale didattico","Fattura IT-20260504-586",2323
+"HCP","Dr. Antonio Lombardi","LMBNTN83B16F205H","Ospedale Careggi (Firenze)","Radiologia","CONFERENCE_SUPPORT","2026-03-23","Bologna","Rimborso spese viaggio e alloggio","Fattura IT-20260323-587",839
+"HCP","Dr. Beatrice Ferraro","FRRBTR68C02F205H","Ospedale Civile di Padova","Dermatologia","DONAZIONI","2026-04-08","Genova","Supporto liberale borse di studio","Fattura IT-20260408-588",2089
+"HCP","Dr. Giorgia Giordano","GRDGRG58S19F205H","Ospedale San Martino (Genova)","Medicina Interna","PRESENTATION","2026-04-23","Palermo","Presentazione di prodotto farmaceutico","Fattura IT-20260423-589",375
+"HCP","Dr. Davide Bianchi","BNCDVD71R21F205H","Ospedale Niguarda (Milano)","Anestesiologia","PRESENTATION","2026-02-07","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260207-590",406
+"HCP","Dr. Andrea De Luca","DLCNDR61P06F205H","Ospedale San Martino (Genova)","Radiologia","DONAZIONI","2026-03-30","Palermo","Donazione apparecchio ecografico","Fattura IT-20260330-591",1612
+"HCP","Dr. Sofia Rinaldi","RNLSFS57A02F205H","Ospedale Cardarelli (Napoli)","Chirurgia Generale","DONAZIONI","2026-02-07","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260207-592",8781
+"HCP","Dr. Andrea Bianchi","BNCNDR81D24F205H","Ospedale Civile di Padova","Anestesiologia","PRESENTATION","2026-05-15","Genova","Briefing scientifico aziendale","Fattura IT-20260515-593",502
+"HCP","Dr. Francesco Gallo","GLLFRN50M15F205H","Ospedale Molinette (Torino)","Cardiologia","CONVENZIONI","2026-03-31","Padova","Incarico di docenza per seminario","Fattura IT-20260331-594",760
+"HCP","Dr. Ludovica Russo","RSSLDV51D17F205H","Ospedale Molinette (Torino)","Cardiologia","CONVENZIONI","2026-02-28","Padova","Accordo di consulenza scientifica","Fattura IT-20260228-595",551
+"HCP","Dr. Luca Giordano","GRDLCL89E12F205H","Ospedale San Martino (Genova)","Oncologia","PRESENTATION","2026-04-17","Palermo","Presentazione di prodotto farmaceutico","Fattura IT-20260417-596",701
+"HCP","Dr. Giulia Marino","MRNGLG82A01F205H","Ospedale Civile di Padova","Radiologia","CONVENZIONI","2026-02-04","Genova","Contratto di advisory board","Fattura IT-20260204-597",470
+"HCP","Dr. Antonio Ferraro","FRRNTN59R25F205H","Ospedale Careggi (Firenze)","Oncologia","DONAZIONI","2026-02-11","Bologna","Donazione materiale didattico","Fattura IT-20260211-598",1376
+"HCP","Dr. Antonio De Luca","DLCNTN72R14F205H","Policlinico di Bari","Chirurgia Generale","PRESENTATION","2026-02-07","Torino","Briefing scientifico aziendale","Fattura IT-20260207-599",791
+"HCP","Dr. Aurora Mancini","MNCRRR66A08F205H","Ospedale Careggi (Firenze)","Chirurgia Generale","CONSULTANCY","2026-02-06","Bologna","Partecipazione tavola rotonda","Fattura IT-20260206-600",226
+"INSTITUTION","Ospedale Careggi (Firenze)","PI656439148","","","CONSULTANCY","2026-04-07","Roma","Relazione scientifica convegno","Fattura IT-20260407-601",750
+"HCP","Dr. Marco Gallo","GLLMRC73A16F205H","Ospedale San Raffaele (Milano)","Ginecologia","PRESENTATION","2026-05-14","Firenze","Briefing scientifico aziendale","Fattura IT-20260514-602",116
+"HCP","Dr. Leonardo Romano","RMNLNR76H22F205H","Ospedale Careggi (Firenze)","Medicina Interna","PRESENTATION","2026-05-03","Bologna","Briefing scientifico aziendale","Fattura IT-20260503-603",664
+"HCP","Dr. Pietro Caruso","CRSPTR51L21F205H","Ospedale Civile di Padova","Neurologia","CONVENZIONI","2026-01-27","Genova","Contratto di advisory board","Fattura IT-20260127-604",1801
+"HCP","Dr. Beatrice Mariani","MRNBTR74P02F205H","Policlinico di Bari","Medicina Interna","CONSULTANCY","2026-04-05","Torino","Partecipazione tavola rotonda","Fattura IT-20260405-605",364
+"HCP","Dr. Leonardo Greco","GRCLNR54E26F205H","Ospedale Civile di Padova","Chirurgia Generale","CONFERENCE_SUPPORT","2026-01-08","Genova","Copertura spese di ospitalità","Fattura IT-20260108-606",814
+"HCP","Dr. Giorgia Lombardi","LMBGRG66B21F205H","Ospedale San Raffaele (Milano)","Oncologia","DONAZIONI","2026-01-06","Firenze","Supporto liberale borse di studio","Fattura IT-20260106-607",1946
+"HCP","Dr. Greta Gallo","GLLGRT54H15F205H","Ospedale San Martino (Genova)","Dermatologia","DONAZIONI","2026-04-30","Palermo","Erogazione per attrezzature di reparto","Fattura IT-20260430-608",1947
+"HCP","Dr. Leonardo Rinaldi","RNLLNR82R23F205H","Ospedale Molinette (Torino)","Ginecologia","CONSULTANCY","2026-01-18","Padova","Relazione scientifica convegno","Fattura IT-20260118-609",316
+"HCP","Dr. Giorgia Costa","CSTGRG84A17F205H","Policlinico Gemelli (Roma)","Cardiologia","CONVENZIONI","2026-03-18","Roma","Contratto di advisory board","Fattura IT-20260318-610",1263
+"HCP","Dr. Antonio Vinci","VNCNTN59D27F205H","Ospedale Careggi (Firenze)","Chirurgia Generale","CONSULTANCY","2026-01-04","Bologna","Partecipazione tavola rotonda","Fattura IT-20260104-611",423
+"HCP","Dr. Alice Marino","MRNLCL80C15F205H","Ospedale Niguarda (Milano)","Neurologia","PRESENTATION","2026-03-12","Milano","Briefing scientifico aziendale","Fattura IT-20260312-612",413
+"HCP","Dr. Matteo Barbier","BRBMTT51R11F205H","Ospedale Civile di Padova","Anestesiologia","DONAZIONI","2026-03-27","Genova","Donazione materiale didattico","Fattura IT-20260327-613",2125
+"HCP","Dr. Alessandro Ferraro","FRRLSS72B16F205H","Ospedale Molinette (Torino)","Dermatologia","CONVENZIONI","2026-03-11","Padova","Incarico di docenza per seminario","Fattura IT-20260311-614",1355
+"HCP","Dr. Mattia Costa","CSTMTT78P01F205H","Ospedale Niguarda (Milano)","Anestesiologia","PRESENTATION","2026-03-01","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260301-615",454
+"HCP","Dr. Paola Greco","GRCPLP56E03F205H","Ospedale San Raffaele (Milano)","Oncologia","CONSULTANCY","2026-05-01","Firenze","Partecipazione tavola rotonda","Fattura IT-20260501-616",72
+"HCP","Dr. Antonio Caruso","CRSNTN74D22F205H","Ospedale San Raffaele (Milano)","Pediatria","DONAZIONI","2026-01-23","Firenze","Donazione apparecchio ecografico","Fattura IT-20260123-617",2056
+"HCP","Dr. Alice Fontana","FNTLCL75H11F205H","Policlinico di Bari","Neurologia","PRESENTATION","2026-04-01","Torino","Presentazione di prodotto farmaceutico","Fattura IT-20260401-618",446
+"HCP","Dr. Paola Bianchi","BNCPLP80E03F205H","Ospedale Careggi (Firenze)","Chirurgia Generale","PRESENTATION","2026-04-06","Bologna","Briefing scientifico aziendale","Fattura IT-20260406-619",248
+"HCP","Dr. Giulia Russo","RSSGLG66B03F205H","Ospedale Molinette (Torino)","Medicina Interna","CONVENZIONI","2026-03-11","Padova","Supporto alla ricerca clinica","Fattura IT-20260311-620",836
+"HCP","Dr. Francesca Greco","GRCFRN53D14F205H","Ospedale Molinette (Torino)","Chirurgia Generale","PRESENTATION","2026-03-28","Padova","Briefing scientifico aziendale","Fattura IT-20260328-621",623
+"INSTITUTION","Ospedale Niguarda (Milano)","PI591187203","","","CONFERENCE_SUPPORT","2026-01-09","Bologna","Quota di iscrizione congresso","Fattura IT-20260109-622",454
+"HCP","Dr. Lorenzo Gallo","GLLLRN83T20F205H","Ospedale Civile di Padova","Anestesiologia","PRESENTATION","2026-04-26","Genova","Presentazione di prodotto farmaceutico","Fattura IT-20260426-623",458
+"HCP","Dr. Giulia Santoro","SNTGLG79L27F205H","Ospedale San Raffaele (Milano)","Oncologia","CONFERENCE_SUPPORT","2026-03-30","Firenze","Rimborso spese viaggio e alloggio","Fattura IT-20260330-624",185
+"HCP","Dr. Valeria Colombo","CLMVLR62S12F205H","Ospedale Niguarda (Milano)","Cardiologia","CONFERENCE_SUPPORT","2026-03-25","Milano","Rimborso spese viaggio e alloggio","Fattura IT-20260325-625",543
+"HCP","Dr. Mattia Rossi","RSSMTT88B17F205H","Policlinico Gemelli (Roma)","Medicina Interna","PRESENTATION","2026-03-10","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260310-626",652
+"HCP","Dr. Giovanni Bianchi","BNCGVN67T13F205H","Ospedale Niguarda (Milano)","Anestesiologia","CONVENZIONI","2026-01-30","Milano","Accordo di consulenza scientifica","Fattura IT-20260130-627",1368
+"HCP","Dr. Silvia Santoro","SNTSLV78A09F205H","Ospedale Cardarelli (Napoli)","Radiologia","PRESENTATION","2026-05-19","Bari","Briefing scientifico aziendale","Fattura IT-20260519-628",344
+"HCP","Dr. Giorgia Moretti","MRTGRG79M17F205H","Ospedale Cardarelli (Napoli)","Radiologia","DONAZIONI","2026-03-25","Bari","Donazione materiale didattico","Fattura IT-20260325-629",1326
+"HCP","Dr. Giorgia Rizzo","RZZGRG70R06F205H","Ospedale Careggi (Firenze)","Cardiologia","CONFERENCE_SUPPORT","2026-02-24","Bologna","Rimborso spese viaggio e alloggio","Fattura IT-20260224-630",590
+"HCP","Dr. Giulia Ferraro","FRRGLG73P02F205H","Ospedale Sant'Orsola (Bologna)","Dermatologia","DONAZIONI","2026-03-27","Napoli","Erogazione per attrezzature di reparto","Fattura IT-20260327-631",8601
+"HCP","Dr. Filippo Santoro","SNTFLP51T09F205H","Ospedale San Martino (Genova)","Neurologia","CONSULTANCY","2026-03-25","Palermo","Relazione scientifica convegno","Fattura IT-20260325-632",626
+"HCP","Dr. Sofia Bianchi","BNCSFS51M01F205H","Ospedale Molinette (Torino)","Oncologia","CONSULTANCY","2026-01-24","Padova","Consulenza tecnica di prodotto","Fattura IT-20260124-633",375
+"HCP","Dr. Beatrice Giordano","GRDBTR80A03F205H","Ospedale San Raffaele (Milano)","Pediatria","CONSULTANCY","2026-05-24","Firenze","Relazione scientifica convegno","Fattura IT-20260524-634",689
+"HCP","Dr. Greta Greco","GRCGRT50S19F205H","Ospedale Careggi (Firenze)","Radiologia","DONAZIONI","2026-03-18","Bologna","Donazione apparecchio ecografico","Fattura IT-20260318-635",623
+"HCP","Dr. Davide Moretti","MRTDVD80B27F205H","Ospedale Careggi (Firenze)","Pediatria","CONVENZIONI","2026-02-01","Bologna","Supporto alla ricerca clinica","Fattura IT-20260201-636",535
+"HCP","Dr. Ludovica Mancini","MNCLDV57A05F205H","Ospedale Careggi (Firenze)","Anestesiologia","CONVENZIONI","2026-04-12","Bologna","Contratto di advisory board","Fattura IT-20260412-637",1356
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI748968408","","","DONAZIONI","2026-05-01","Milano","Donazione materiale didattico","Fattura IT-20260501-638",1777
+"HCP","Dr. Alice Mariani","MRNLCL54E13F205H","Policlinico di Bari","Pediatria","CONVENZIONI","2026-03-05","Torino","Accordo di consulenza scientifica","Fattura IT-20260305-639",1212
+"HCP","Dr. Silvia Bianchi","BNCSLV51A06F205H","Ospedale San Raffaele (Milano)","Dermatologia","CONFERENCE_SUPPORT","2026-05-16","Firenze","Quota di iscrizione congresso","Fattura IT-20260516-640",773
+"HCP","Dr. Mattia Mariani","MRNMTT85B15F205H","Ospedale San Raffaele (Milano)","Pediatria","PRESENTATION","2026-04-14","Firenze","Presentazione di prodotto farmaceutico","Fattura IT-20260414-641",812
+"HCP","Dr. Pietro Costa","CSTPTR53A28F205H","Ospedale Cardarelli (Napoli)","Ginecologia","CONSULTANCY","2026-02-16","Bari","Partecipazione tavola rotonda","Fattura IT-20260216-642",267
+"INSTITUTION","Ospedale Molinette (Torino)","PI163193675","","","DONAZIONI","2026-04-09","Palermo","Erogazione per attrezzature di reparto","Fattura IT-20260409-643",9293
+"HCP","Dr. Gabriele Fontana","FNTGBR57D27F205H","Ospedale Sant'Orsola (Bologna)","Radiologia","CONFERENCE_SUPPORT","2026-05-21","Napoli","Copertura spese di ospitalità","Fattura IT-20260521-644",711
+"HCP","Dr. Paola Greco","GRCPLP55C14F205H","Ospedale Civile di Padova","Dermatologia","PRESENTATION","2026-01-02","Genova","Presentazione di prodotto farmaceutico","Fattura IT-20260102-645",481
+"HCP","Dr. Gabriele Bianchi","BNCGBR57R20F205H","Ospedale Cardarelli (Napoli)","Ginecologia","CONVENZIONI","2026-04-18","Bari","Contratto di advisory board","Fattura IT-20260418-646",214
+"HCP","Dr. Silvia Fontana","FNTSLV68A18F205H","Ospedale Niguarda (Milano)","Ginecologia","CONSULTANCY","2026-01-02","Milano","Relazione scientifica convegno","Fattura IT-20260102-647",738
+"HCP","Dr. Riccardo Fontana","FNTRCC75T20F205H","Policlinico Gemelli (Roma)","Radiologia","CONVENZIONI","2026-03-24","Roma","Incarico di docenza per seminario","Fattura IT-20260324-648",308
+"HCP","Dr. Valeria Fontana","FNTVLR73M16F205H","Ospedale San Raffaele (Milano)","Cardiologia","CONVENZIONI","2026-02-18","Firenze","Accordo di consulenza scientifica","Fattura IT-20260218-649",694
+"HCP","Dr. Giovanni Fontana","FNTGVN51B06F205H","Ospedale Cardarelli (Napoli)","Anestesiologia","DONAZIONI","2026-02-26","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260226-650",2285
+"HCP","Dr. Gabriele Bianchi","BNCGBR86T14F205H","Ospedale Careggi (Firenze)","Pediatria","PRESENTATION","2026-04-23","Bologna","Presentazione di prodotto farmaceutico","Fattura IT-20260423-651",77
+"HCP","Dr. Ludovica Moretti","MRTLDV60E03F205H","Ospedale Niguarda (Milano)","Anestesiologia","PRESENTATION","2026-04-24","Milano","Briefing scientifico aziendale","Fattura IT-20260424-652",463
+"HCP","Dr. Pietro Rizzo","RZZPTR71M18F205H","Ospedale Sant'Orsola (Bologna)","Dermatologia","CONSULTANCY","2025-12-29","Napoli","Partecipazione tavola rotonda","Fattura IT-20251229-653",165
+"HCP","Dr. Aurora Bruno","BRNRRR58A14F205H","Ospedale Civile di Padova","Chirurgia Generale","CONVENZIONI","2026-03-14","Genova","Supporto alla ricerca clinica","Fattura IT-20260314-654",1732
+"HCP","Dr. Leonardo Conti","CNTLNR50E24F205H","Policlinico Gemelli (Roma)","Oncologia","CONSULTANCY","2026-01-18","Roma","Partecipazione tavola rotonda","Fattura IT-20260118-655",438
+"HCP","Dr. Sofia Rossi","RSSSFS80M16F205H","Ospedale Molinette (Torino)","Cardiologia","CONFERENCE_SUPPORT","2026-04-25","Padova","Copertura spese di ospitalità","Fattura IT-20260425-656",712
+"HCP","Dr. Marco Conti","CNTMRC89L06F205H","Ospedale Niguarda (Milano)","Neurologia","CONSULTANCY","2026-01-22","Milano","Partecipazione tavola rotonda","Fattura IT-20260122-657",292
+"HCP","Dr. Gabriele Moretti","MRTGBR79R19F205H","Ospedale San Raffaele (Milano)","Ginecologia","DONAZIONI","2026-05-14","Firenze","Erogazione per attrezzature di reparto","Fattura IT-20260514-658",7060
+"HCP","Dr. Andrea De Luca","DLCNDR75B11F205H","Ospedale Molinette (Torino)","Pediatria","PRESENTATION","2026-01-29","Padova","Briefing scientifico aziendale","Fattura IT-20260129-659",646
+"HCP","Dr. Emma Ferraro","FRRMMM72T06F205H","Ospedale San Martino (Genova)","Anestesiologia","CONSULTANCY","2026-05-11","Palermo","Partecipazione tavola rotonda","Fattura IT-20260511-660",818
+"HCP","Dr. Greta Giordano","GRDGRT77T09F205H","Ospedale Careggi (Firenze)","Oncologia","CONVENZIONI","2026-03-02","Bologna","Incarico di docenza per seminario","Fattura IT-20260302-661",546
+"HCP","Dr. Mattia Caruso","CRSMTT57A07F205H","Ospedale Careggi (Firenze)","Oncologia","DONAZIONI","2026-01-06","Bologna","Donazione materiale didattico","Fattura IT-20260106-662",1257
+"HCP","Dr. Alice Mancini","MNCLCL83E19F205H","Ospedale Niguarda (Milano)","Anestesiologia","PRESENTATION","2026-02-16","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260216-663",119
+"HCP","Dr. Aurora Santoro","SNTRRR59L11F205H","Policlinico Gemelli (Roma)","Medicina Interna","PRESENTATION","2026-02-01","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260201-664",418
+"HCP","Dr. Riccardo Santoro","SNTRCC73E16F205H","Ospedale Careggi (Firenze)","Anestesiologia","PRESENTATION","2026-02-02","Bologna","Presentazione di prodotto farmaceutico","Fattura IT-20260202-665",564
+"HCP","Dr. Leonardo Pellegrini","PLLLNR67H10F205H","Ospedale Careggi (Firenze)","Cardiologia","CONSULTANCY","2026-01-31","Bologna","Consulenza tecnica di prodotto","Fattura IT-20260131-666",503
+"HCP","Dr. Mattia Bianchi","BNCMTT50H24F205H","Policlinico Gemelli (Roma)","Pediatria","DONAZIONI","2026-05-15","Roma","Donazione apparecchio ecografico","Fattura IT-20260515-667",2173
+"HCP","Dr. Alice Esposito","SPSLCL74P01F205H","Ospedale Cardarelli (Napoli)","Radiologia","PRESENTATION","2026-04-20","Bari","Briefing scientifico aziendale","Fattura IT-20260420-668",698
+"INSTITUTION","Ospedale Civile di Padova","PI318395841","","","CONFERENCE_SUPPORT","2026-01-22","Firenze","Quota di iscrizione congresso","Fattura IT-20260122-669",274
+"HCP","Dr. Sofia Russo","RSSSFS68S01F205H","Ospedale Careggi (Firenze)","Oncologia","CONVENZIONI","2026-05-17","Bologna","Accordo di consulenza scientifica","Fattura IT-20260517-670",560
+"HCP","Dr. Matteo Rizzo","RZZMTT79C08F205H","Ospedale San Raffaele (Milano)","Dermatologia","CONFERENCE_SUPPORT","2026-01-09","Firenze","Rimborso spese viaggio e alloggio","Fattura IT-20260109-671",284
+"HCP","Dr. Luca Rinaldi","RNLLCL79H26F205H","Ospedale Cardarelli (Napoli)","Neurologia","CONFERENCE_SUPPORT","2026-01-26","Bari","Rimborso spese viaggio e alloggio","Fattura IT-20260126-672",685
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI863008057","","","DONAZIONI","2026-04-06","Padova","Supporto liberale borse di studio","Fattura IT-20260406-673",1506
+"HCP","Dr. Emma Gallo","GLLMMM51E10F205H","Ospedale San Raffaele (Milano)","Ginecologia","CONSULTANCY","2026-04-22","Firenze","Relazione scientifica convegno","Fattura IT-20260422-674",370
+"HCP","Dr. Mattia Romano","RMNMTT63H19F205H","Ospedale Sant'Orsola (Bologna)","Anestesiologia","CONVENZIONI","2026-05-22","Napoli","Accordo di consulenza scientifica","Fattura IT-20260522-675",571
+"HCP","Dr. Matteo Rossi","RSSMTT82M01F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","PRESENTATION","2026-03-12","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260312-676",276
+"INSTITUTION","Ospedale San Martino (Genova)","PI825748484","","","CONFERENCE_SUPPORT","2026-03-06","Palermo","Quota di iscrizione congresso","Fattura IT-20260306-677",353
+"HCP","Dr. Ludovica Esposito","SPSLDV80P25F205H","Ospedale San Martino (Genova)","Medicina Interna","CONVENZIONI","2026-05-02","Palermo","Contratto di advisory board","Fattura IT-20260502-678",1276
+"HCP","Dr. Andrea Greco","GRCNDR54R22F205H","Ospedale Niguarda (Milano)","Medicina Interna","CONFERENCE_SUPPORT","2026-03-13","Milano","Copertura spese di ospitalità","Fattura IT-20260313-679",747
+"HCP","Dr. Ludovica Gallo","GLLLDV78S17F205H","Ospedale Cardarelli (Napoli)","Dermatologia","DONAZIONI","2026-02-28","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260228-680",8510
+"HCP","Dr. Beatrice Barbier","BRBBTR50H04F205H","Ospedale San Martino (Genova)","Chirurgia Generale","PRESENTATION","2026-04-12","Palermo","Briefing scientifico aziendale","Fattura IT-20260412-681",424
+"HCP","Dr. Davide Rizzo","RZZDVD72R15F205H","Ospedale Careggi (Firenze)","Radiologia","CONSULTANCY","2026-02-10","Bologna","Relazione scientifica convegno","Fattura IT-20260210-682",315
+"HCP","Dr. Pietro Greco","GRCPTR72E15F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","PRESENTATION","2026-02-17","Napoli","Briefing scientifico aziendale","Fattura IT-20260217-683",657
+"HCP","Dr. Luca Santoro","SNTLCL79C01F205H","Ospedale Molinette (Torino)","Cardiologia","CONFERENCE_SUPPORT","2026-03-29","Padova","Rimborso spese viaggio e alloggio","Fattura IT-20260329-684",688
+"HCP","Dr. Leonardo Bianchi","BNCLNR68D11F205H","Ospedale Civile di Padova","Ginecologia","CONSULTANCY","2026-02-25","Genova","Partecipazione tavola rotonda","Fattura IT-20260225-685",716
+"HCP","Dr. Alessandro Ferraro","FRRLSS68L16F205H","Ospedale Niguarda (Milano)","Anestesiologia","DONAZIONI","2025-12-31","Milano","Donazione materiale didattico","Fattura IT-20251231-686",6097
+"HCP","Dr. Alessandro Greco","GRCLSS71E19F205H","Ospedale Niguarda (Milano)","Medicina Interna","PRESENTATION","2026-04-09","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260409-687",539
+"HCP","Dr. Emma Rossi","RSSMMM67T03F205H","Policlinico Gemelli (Roma)","Ginecologia","PRESENTATION","2026-02-16","Roma","Briefing scientifico aziendale","Fattura IT-20260216-688",705
+"HCP","Dr. Aurora Romano","RMNRRR57E12F205H","Ospedale San Martino (Genova)","Pediatria","PRESENTATION","2026-02-20","Palermo","Presentazione di prodotto farmaceutico","Fattura IT-20260220-689",665
+"HCP","Dr. Paola Rossi","RSSPLP87R16F205H","Ospedale San Raffaele (Milano)","Pediatria","CONSULTANCY","2026-04-06","Firenze","Consulenza tecnica di prodotto","Fattura IT-20260406-690",563
+"HCP","Dr. Davide Fontana","FNTDVD77E22F205H","Ospedale Careggi (Firenze)","Pediatria","DONAZIONI","2026-05-23","Bologna","Erogazione per attrezzature di reparto","Fattura IT-20260523-691",1406
+"HCP","Dr. Giulia Costa","CSTGLG77A18F205H","Ospedale San Raffaele (Milano)","Pediatria","PRESENTATION","2026-01-19","Firenze","Presentazione di prodotto farmaceutico","Fattura IT-20260119-692",183
+"HCP","Dr. Antonio Fontana","FNTNTN80R02F205H","Ospedale Careggi (Firenze)","Dermatologia","DONAZIONI","2026-02-24","Bologna","Supporto liberale borse di studio","Fattura IT-20260224-693",1432
+"HCP","Dr. Riccardo Costa","CSTRCC78R24F205H","Ospedale Careggi (Firenze)","Ginecologia","CONVENZIONI","2026-01-27","Bologna","Incarico di docenza per seminario","Fattura IT-20260127-694",1285
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI994285654","","","CONFERENCE_SUPPORT","2026-02-07","Firenze","Rimborso spese viaggio e alloggio","Fattura IT-20260207-695",381
+"HCP","Dr. Valeria Bianchi","BNCVLR51E06F205H","Policlinico di Bari","Neurologia","DONAZIONI","2026-04-27","Torino","Donazione materiale didattico","Fattura IT-20260427-696",1707
+"HCP","Dr. Aurora Esposito","SPSRRR81M23F205H","Ospedale Civile di Padova","Chirurgia Generale","CONVENZIONI","2026-03-20","Genova","Accordo di consulenza scientifica","Fattura IT-20260320-697",540
+"HCP","Dr. Pietro Rinaldi","RNLPTR72B02F205H","Ospedale Sant'Orsola (Bologna)","Chirurgia Generale","DONAZIONI","2026-03-16","Napoli","Donazione materiale didattico","Fattura IT-20260316-698",599
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI550106653","","","CONFERENCE_SUPPORT","2025-12-29","Bologna","Copertura spese di ospitalità","Fattura IT-20251229-699",144
+"HCP","Dr. Beatrice Gallo","GLLBTR78M21F205H","Ospedale Sant'Orsola (Bologna)","Dermatologia","CONSULTANCY","2026-05-06","Napoli","Partecipazione tavola rotonda","Fattura IT-20260506-700",616
+"HCP","Dr. Davide Ferraro","FRRDVD50S12F205H","Ospedale Molinette (Torino)","Dermatologia","CONVENZIONI","2026-04-02","Padova","Contratto di advisory board","Fattura IT-20260402-701",493
+"HCP","Dr. Emma Pellegrini","PLLMMM59E12F205H","Ospedale San Raffaele (Milano)","Medicina Interna","CONSULTANCY","2026-04-03","Firenze","Partecipazione tavola rotonda","Fattura IT-20260403-702",798
+"HCP","Dr. Emma Fontana","FNTMMM84T20F205H","Ospedale San Martino (Genova)","Medicina Interna","DONAZIONI","2026-02-08","Palermo","Erogazione per attrezzature di reparto","Fattura IT-20260208-703",2174
+"HCP","Dr. Leonardo Gallo","GLLLNR63H09F205H","Ospedale Niguarda (Milano)","Cardiologia","CONVENZIONI","2026-02-10","Milano","Contratto di advisory board","Fattura IT-20260210-704",1784
+"HCP","Dr. Andrea Pellegrini","PLLNDR80M19F205H","Ospedale Cardarelli (Napoli)","Dermatologia","CONSULTANCY","2026-03-21","Bari","Partecipazione tavola rotonda","Fattura IT-20260321-705",135
+"HCP","Dr. Emma Colombo","CLMMMM51A15F205H","Ospedale Cardarelli (Napoli)","Anestesiologia","DONAZIONI","2026-02-17","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260217-706",8964
+"HCP","Dr. Gabriele Bianchi","BNCGBR80L12F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","CONFERENCE_SUPPORT","2026-01-10","Napoli","Quota di iscrizione congresso","Fattura IT-20260110-707",703
+"HCP","Dr. Sofia Rossi","RSSSFS58R26F205H","Policlinico Gemelli (Roma)","Cardiologia","PRESENTATION","2026-02-21","Roma","Briefing scientifico aziendale","Fattura IT-20260221-708",550
+"HCP","Dr. Giovanni Lombardi","LMBGVN85B08F205H","Ospedale Sant'Orsola (Bologna)","Pediatria","PRESENTATION","2026-04-08","Napoli","Briefing scientifico aziendale","Fattura IT-20260408-709",84
+"HCP","Dr. Francesco Rossi","RSSFRN71M22F205H","Ospedale Careggi (Firenze)","Cardiologia","PRESENTATION","2026-03-19","Bologna","Presentazione di prodotto farmaceutico","Fattura IT-20260319-710",234
+"HCP","Dr. Valeria Romano","RMNVLR83A10F205H","Ospedale San Martino (Genova)","Anestesiologia","CONFERENCE_SUPPORT","2026-02-13","Palermo","Copertura spese di ospitalità","Fattura IT-20260213-711",268
+"HCP","Dr. Andrea Rossi","RSSNDR79L26F205H","Ospedale Careggi (Firenze)","Medicina Interna","CONSULTANCY","2026-04-27","Bologna","Consulenza tecnica di prodotto","Fattura IT-20260427-712",419
+"HCP","Dr. Giorgia Pellegrini","PLLGRG73D25F205H","Ospedale Civile di Padova","Chirurgia Generale","PRESENTATION","2026-05-06","Genova","Presentazione di prodotto farmaceutico","Fattura IT-20260506-713",745
+"HCP","Dr. Silvia Caruso","CRSSLV68R07F205H","Policlinico di Bari","Dermatologia","CONSULTANCY","2026-05-05","Torino","Consulenza tecnica di prodotto","Fattura IT-20260505-714",279
+"HCP","Dr. Luca Gatti","GTTLCL72E22F205H","Ospedale Careggi (Firenze)","Radiologia","CONVENZIONI","2026-05-12","Bologna","Contratto di advisory board","Fattura IT-20260512-715",182
+"HCP","Dr. Silvia Fontana","FNTSLV55M06F205H","Ospedale Molinette (Torino)","Neurologia","DONAZIONI","2026-01-13","Padova","Donazione apparecchio ecografico","Fattura IT-20260113-716",5788
+"HCP","Dr. Alice Santoro","SNTLCL58C03F205H","Ospedale Careggi (Firenze)","Medicina Interna","CONVENZIONI","2026-04-08","Bologna","Supporto alla ricerca clinica","Fattura IT-20260408-717",570
+"HCP","Dr. Sofia Giordano","GRDSFS80P10F205H","Ospedale Niguarda (Milano)","Medicina Interna","DONAZIONI","2026-04-03","Milano","Supporto liberale borse di studio","Fattura IT-20260403-718",1931
+"HCP","Dr. Paola Esposito","SPSPLP76A10F205H","Ospedale Niguarda (Milano)","Ginecologia","CONSULTANCY","2026-05-07","Milano","Relazione scientifica convegno","Fattura IT-20260507-719",829
+"HCP","Dr. Francesco Gatti","GTTFRN64M02F205H","Ospedale Niguarda (Milano)","Cardiologia","PRESENTATION","2026-01-01","Milano","Presentazione di prodotto farmaceutico","Fattura IT-20260101-720",388
+"HCP","Dr. Filippo Santoro","SNTFLP51B13F205H","Ospedale Molinette (Torino)","Neurologia","DONAZIONI","2026-03-02","Padova","Supporto liberale borse di studio","Fattura IT-20260302-721",2252
+"HCP","Dr. Filippo Fontana","FNTFLP56S22F205H","Ospedale Civile di Padova","Dermatologia","CONVENZIONI","2026-04-22","Genova","Supporto alla ricerca clinica","Fattura IT-20260422-722",379
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI217760172","","","DONAZIONI","2025-12-27","Milano","Donazione materiale didattico","Fattura IT-20251227-723",674
+"HCP","Dr. Silvia Costa","CSTSLV78S01F205H","Policlinico di Bari","Pediatria","PRESENTATION","2026-01-29","Torino","Presentazione di prodotto farmaceutico","Fattura IT-20260129-724",366
+"HCP","Dr. Ludovica Gatti","GTTLDV79E03F205H","Policlinico di Bari","Chirurgia Generale","CONVENZIONI","2026-05-11","Torino","Accordo di consulenza scientifica","Fattura IT-20260511-725",583
+"HCP","Dr. Riccardo Russo","RSSRCC82M07F205H","Policlinico Gemelli (Roma)","Pediatria","PRESENTATION","2026-05-24","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260524-726",466
+"HCP","Dr. Emma Bruno","BRNMMM75C20F205H","Ospedale Molinette (Torino)","Cardiologia","CONVENZIONI","2026-05-11","Padova","Contratto di advisory board","Fattura IT-20260511-727",1364
+"HCP","Dr. Aurora Costa","CSTRRR65L12F205H","Ospedale Sant'Orsola (Bologna)","Neurologia","CONSULTANCY","2026-02-01","Napoli","Partecipazione tavola rotonda","Fattura IT-20260201-728",739
+"HCP","Dr. Sofia Pellegrini","PLLSFS62C18F205H","Ospedale Careggi (Firenze)","Neurologia","CONVENZIONI","2026-05-10","Bologna","Accordo di consulenza scientifica","Fattura IT-20260510-729",1777
+"HCP","Dr. Chiara Giordano","GRDCHR88D08F205H","Ospedale Careggi (Firenze)","Ginecologia","DONAZIONI","2025-12-28","Bologna","Erogazione per attrezzature di reparto","Fattura IT-20251228-730",1745
+"HCP","Dr. Valeria Giordano","GRDVLR50D11F205H","Ospedale Civile di Padova","Medicina Interna","CONFERENCE_SUPPORT","2026-02-10","Genova","Copertura spese di ospitalità","Fattura IT-20260210-731",113
+"HCP","Dr. Alice Romano","RMNLCL50R15F205H","Policlinico di Bari","Ginecologia","CONVENZIONI","2026-05-11","Torino","Accordo di consulenza scientifica","Fattura IT-20260511-732",386
+"HCP","Dr. Francesca Moretti","MRTFRN89H27F205H","Ospedale Sant'Orsola (Bologna)","Medicina Interna","CONFERENCE_SUPPORT","2026-03-27","Napoli","Quota di iscrizione congresso","Fattura IT-20260327-733",836
+"HCP","Dr. Francesco Colombo","CLMFRN54D09F205H","Ospedale Civile di Padova","Pediatria","DONAZIONI","2026-05-22","Genova","Donazione materiale didattico","Fattura IT-20260522-734",1710
+"HCP","Dr. Filippo Marino","MRNFLP54E08F205H","Ospedale Niguarda (Milano)","Medicina Interna","CONFERENCE_SUPPORT","2026-01-28","Milano","Copertura spese di ospitalità","Fattura IT-20260128-735",606
+"HCP","Dr. Lorenzo Santoro","SNTLRN59T28F205H","Ospedale Molinette (Torino)","Chirurgia Generale","PRESENTATION","2026-04-04","Padova","Briefing scientifico aziendale","Fattura IT-20260404-736",268
+"HCP","Dr. Francesca Bianchi","BNCFRN74R26F205H","Policlinico di Bari","Radiologia","PRESENTATION","2026-04-18","Torino","Presentazione di prodotto farmaceutico","Fattura IT-20260418-737",598
+"HCP","Dr. Leonardo Colombo","CLMLNR71S27F205H","Ospedale San Martino (Genova)","Oncologia","CONFERENCE_SUPPORT","2026-03-02","Palermo","Rimborso spese viaggio e alloggio","Fattura IT-20260302-738",624
+"HCP","Dr. Giorgia Mariani","MRNGRG56A10F205H","Ospedale Careggi (Firenze)","Pediatria","CONFERENCE_SUPPORT","2026-04-07","Bologna","Rimborso spese viaggio e alloggio","Fattura IT-20260407-739",186
+"HCP","Dr. Sofia Giordano","GRDSFS80E13F205H","Policlinico di Bari","Neurologia","PRESENTATION","2026-03-02","Torino","Briefing scientifico aziendale","Fattura IT-20260302-740",590
+"HCP","Dr. Beatrice Colombo","CLMBTR81L10F205H","Ospedale San Martino (Genova)","Cardiologia","CONVENZIONI","2026-03-16","Palermo","Incarico di docenza per seminario","Fattura IT-20260316-741",415
+"HCP","Dr. Lorenzo Costa","CSTLRN69E06F205H","Ospedale Careggi (Firenze)","Cardiologia","PRESENTATION","2025-12-31","Bologna","Presentazione di prodotto farmaceutico","Fattura IT-20251231-742",449
+"HCP","Dr. Alice Ricci","RCCLCL62M05F205H","Ospedale San Martino (Genova)","Anestesiologia","CONSULTANCY","2026-05-18","Palermo","Relazione scientifica convegno","Fattura IT-20260518-743",185
+"HCP","Dr. Pietro Rinaldi","RNLPTR69T18F205H","Policlinico di Bari","Dermatologia","PRESENTATION","2026-05-20","Torino","Presentazione di prodotto farmaceutico","Fattura IT-20260520-744",78
+"HCP","Dr. Gabriele Lombardi","LMBGBR84D23F205H","Ospedale Careggi (Firenze)","Oncologia","PRESENTATION","2026-03-25","Bologna","Briefing scientifico aziendale","Fattura IT-20260325-745",849
+"HCP","Dr. Giulia Costa","CSTGLG88D15F205H","Ospedale Careggi (Firenze)","Ginecologia","CONFERENCE_SUPPORT","2026-02-01","Bologna","Copertura spese di ospitalità","Fattura IT-20260201-746",193
+"HCP","Dr. Emma Vinci","VNCMMM53E05F205H","Ospedale San Martino (Genova)","Radiologia","DONAZIONI","2026-02-18","Palermo","Supporto liberale borse di studio","Fattura IT-20260218-747",1965
+"HCP","Dr. Marco Fontana","FNTMRC55C14F205H","Ospedale San Martino (Genova)","Cardiologia","CONSULTANCY","2026-04-21","Palermo","Consulenza tecnica di prodotto","Fattura IT-20260421-748",86
+"HCP","Dr. Beatrice Moretti","MRTBTR78E11F205H","Ospedale Molinette (Torino)","Cardiologia","DONAZIONI","2026-01-07","Padova","Supporto liberale borse di studio","Fattura IT-20260107-749",766
+"HCP","Dr. Lorenzo Lombardi","LMBLRN77T19F205H","Policlinico Gemelli (Roma)","Radiologia","CONFERENCE_SUPPORT","2026-03-21","Roma","Copertura spese di ospitalità","Fattura IT-20260321-750",808
+"HCP","Dr. Filippo Rizzo","RZZFLP55B22F205H","Ospedale Sant'Orsola (Bologna)","Ginecologia","CONSULTANCY","2026-05-02","Napoli","Partecipazione tavola rotonda","Fattura IT-20260502-751",727
+"HCP","Dr. Emma Ferrari","FRRMMM61H07F205H","Ospedale Molinette (Torino)","Pediatria","CONFERENCE_SUPPORT","2026-05-15","Padova","Rimborso spese viaggio e alloggio","Fattura IT-20260515-752",541
+"HCP","Dr. Giorgia Conti","CNTGRG76D01F205H","Ospedale Molinette (Torino)","Chirurgia Generale","CONSULTANCY","2026-02-14","Padova","Consulenza tecnica di prodotto","Fattura IT-20260214-753",559
+"HCP","Dr. Giulia Gallo","GLLGLG73R07F205H","Policlinico Gemelli (Roma)","Cardiologia","CONFERENCE_SUPPORT","2026-03-27","Roma","Copertura spese di ospitalità","Fattura IT-20260327-754",745
+"HCP","Dr. Pietro Rizzo","RZZPTR80H13F205H","Ospedale San Martino (Genova)","Anestesiologia","DONAZIONI","2026-05-19","Palermo","Supporto liberale borse di studio","Fattura IT-20260519-755",1062
+"HCP","Dr. Leonardo Greco","GRCLNR59H05F205H","Policlinico Gemelli (Roma)","Anestesiologia","DONAZIONI","2026-02-03","Roma","Donazione apparecchio ecografico","Fattura IT-20260203-756",1408
+"HCP","Dr. Marco Giordano","GRDMRC72T06F205H","Ospedale Careggi (Firenze)","Neurologia","DONAZIONI","2026-02-18","Bologna","Supporto liberale borse di studio","Fattura IT-20260218-757",1391
+"INSTITUTION","Ospedale Molinette (Torino)","PI842572797","","","DONAZIONI","2026-01-25","Torino","Supporto liberale borse di studio","Fattura IT-20260125-758",1750
+"HCP","Dr. Gabriele Esposito","SPSGBR74P07F205H","Ospedale Cardarelli (Napoli)","Pediatria","CONVENZIONI","2026-02-12","Bari","Contratto di advisory board","Fattura IT-20260212-759",617
+"HCP","Dr. Paola Giordano","GRDPLP87B09F205H","Ospedale San Raffaele (Milano)","Pediatria","PRESENTATION","2026-03-31","Firenze","Briefing scientifico aziendale","Fattura IT-20260331-760",553
+"HCP","Dr. Andrea Russo","RSSNDR53E15F205H","Ospedale Civile di Padova","Chirurgia Generale","CONVENZIONI","2026-03-06","Genova","Incarico di docenza per seminario","Fattura IT-20260306-761",1625
+"HCP","Dr. Lorenzo Marino","MRNLRN64T27F205H","Ospedale San Raffaele (Milano)","Oncologia","PRESENTATION","2026-01-30","Firenze","Briefing scientifico aziendale","Fattura IT-20260130-762",800
+"HCP","Dr. Alessandro Fontana","FNTLSS67D16F205H","Ospedale Cardarelli (Napoli)","Pediatria","PRESENTATION","2026-01-12","Bari","Briefing scientifico aziendale","Fattura IT-20260112-763",418
+"HCP","Dr. Matteo Fontana","FNTMTT60P15F205H","Ospedale Cardarelli (Napoli)","Anestesiologia","CONSULTANCY","2026-01-08","Bari","Consulenza tecnica di prodotto","Fattura IT-20260108-764",756
+"HCP","Dr. Marco Rossi","RSSMRC78H14F205H","Ospedale Niguarda (Milano)","Medicina Interna","DONAZIONI","2026-05-06","Milano","Donazione materiale didattico","Fattura IT-20260506-765",1804
+"HCP","Dr. Gabriele Rizzo","RZZGBR51L21F205H","Ospedale Civile di Padova","Oncologia","DONAZIONI","2026-02-15","Genova","Supporto liberale borse di studio","Fattura IT-20260215-766",2228
+"INSTITUTION","Ospedale Careggi (Firenze)","PI696890525","","","CONVENZIONI","2026-03-19","Palermo","Supporto alla ricerca clinica","Fattura IT-20260319-767",152
+"HCP","Dr. Pietro Gallo","GLLPTR59P07F205H","Ospedale Civile di Padova","Neurologia","CONSULTANCY","2026-02-17","Genova","Consulenza tecnica di prodotto","Fattura IT-20260217-768",237
+"HCP","Dr. Riccardo Pellegrini","PLLRCC89P08F205H","Policlinico Gemelli (Roma)","Neurologia","CONVENZIONI","2026-05-14","Roma","Contratto di advisory board","Fattura IT-20260514-769",1833
+"HCP","Dr. Greta Costa","CSTGRT56M28F205H","Ospedale Niguarda (Milano)","Cardiologia","CONFERENCE_SUPPORT","2026-04-15","Milano","Copertura spese di ospitalità","Fattura IT-20260415-770",577
+"HCP","Dr. Matteo Gallo","GLLMTT87R15F205H","Ospedale Cardarelli (Napoli)","Radiologia","PRESENTATION","2026-03-02","Bari","Briefing scientifico aziendale","Fattura IT-20260302-771",525
+"HCP","Dr. Emma Mariani","MRNMMM71T18F205H","Ospedale San Raffaele (Milano)","Pediatria","DONAZIONI","2026-02-23","Firenze","Erogazione per attrezzature di reparto","Fattura IT-20260223-772",1193
+"HCP","Dr. Giulia Pellegrini","PLLGLG84A11F205H","Ospedale Sant'Orsola (Bologna)","Neurologia","CONSULTANCY","2026-04-01","Napoli","Relazione scientifica convegno","Fattura IT-20260401-773",202
+"HCP","Dr. Mattia Ricci","RCCMTT64P23F205H","Policlinico di Bari","Ginecologia","CONFERENCE_SUPPORT","2026-02-08","Torino","Copertura spese di ospitalità","Fattura IT-20260208-774",306
+"INSTITUTION","Ospedale Civile di Padova","PI792496378","","","DONAZIONI","2026-04-23","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260423-775",1360
+"HCP","Dr. Aurora Esposito","SPSRRR66M26F205H","Ospedale Careggi (Firenze)","Radiologia","CONSULTANCY","2026-05-09","Bologna","Partecipazione tavola rotonda","Fattura IT-20260509-776",649
+"HCP","Dr. Filippo Bruno","BRNFLP88P05F205H","Ospedale San Raffaele (Milano)","Oncologia","CONFERENCE_SUPPORT","2026-01-27","Firenze","Copertura spese di ospitalità","Fattura IT-20260127-777",101
+"HCP","Dr. Chiara Bianchi","BNCCHR68D24F205H","Ospedale Molinette (Torino)","Anestesiologia","PRESENTATION","2026-04-15","Padova","Briefing scientifico aziendale","Fattura IT-20260415-778",90
+"HCP","Dr. Silvia Russo","RSSSLV84D23F205H","Policlinico Gemelli (Roma)","Ginecologia","CONFERENCE_SUPPORT","2026-05-08","Roma","Rimborso spese viaggio e alloggio","Fattura IT-20260508-779",123
+"HCP","Dr. Gabriele Fontana","FNTGBR74S13F205H","Ospedale Civile di Padova","Medicina Interna","CONSULTANCY","2026-03-05","Genova","Relazione scientifica convegno","Fattura IT-20260305-780",302
+"HCP","Dr. Antonio Moretti","MRTNTN73D05F205H","Policlinico di Bari","Oncologia","PRESENTATION","2026-02-07","Torino","Briefing scientifico aziendale","Fattura IT-20260207-781",77
+"HCP","Dr. Gabriele Gatti","GTTGBR77E26F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","PRESENTATION","2026-05-02","Roma","Briefing scientifico aziendale","Fattura IT-20260502-782",405
+"HCP","Dr. Emma Bruno","BRNMMM64P13F205H","Policlinico Gemelli (Roma)","Radiologia","DONAZIONI","2026-01-08","Roma","Donazione materiale didattico","Fattura IT-20260108-783",877
+"HCP","Dr. Marco Mariani","MRNMRC54M11F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","CONFERENCE_SUPPORT","2026-03-28","Milano","Rimborso spese viaggio e alloggio","Fattura IT-20260328-784",89
+"HCP","Dr. Silvia Esposito","SPSSLV50L04F205H","Policlinico Gemelli (Roma)","Medicina Interna","CONSULTANCY","2026-01-22","Roma","Consulenza tecnica di prodotto","Fattura IT-20260122-785",383
+"HCP","Dr. Giorgia Gatti","GTTGRG50C13F205H","Ospedale Careggi (Firenze)","Pediatria","PRESENTATION","2026-01-11","Bologna","Briefing scientifico aziendale","Fattura IT-20260111-786",329
+"HCP","Dr. Lorenzo Giordano","GRDLRN56P15F205H","Ospedale San Raffaele (Milano)","Pediatria","CONSULTANCY","2026-04-25","Firenze","Consulenza tecnica di prodotto","Fattura IT-20260425-787",507
+"HCP","Dr. Emma Rossi","RSSMMM69R01F205H","Ospedale Civile di Padova","Ginecologia","CONFERENCE_SUPPORT","2026-05-05","Genova","Copertura spese di ospitalità","Fattura IT-20260505-788",295
+"HCP","Dr. Aurora Moretti","MRTRRR63S16F205H","Ospedale Sant'Orsola (Bologna)","Neurologia","DONAZIONI","2026-02-04","Napoli","Donazione apparecchio ecografico","Fattura IT-20260204-789",6819
+"HCP","Dr. Filippo Gallo","GLLFLP53T02F205H","Policlinico di Bari","Cardiologia","CONSULTANCY","2026-01-16","Torino","Partecipazione tavola rotonda","Fattura IT-20260116-790",503
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI968978150","","","DONAZIONI","2026-01-14","Milano","Donazione apparecchio ecografico","Fattura IT-20260114-791",2255
+"HCP","Dr. Giorgia Russo","RSSGRG74B08F205H","Ospedale Sant'Orsola (Bologna)","Cardiologia","CONVENZIONI","2026-05-11","Napoli","Contratto di advisory board","Fattura IT-20260511-792",156
+"HCP","Dr. Lorenzo Marino","MRNLRN87H24F205H","Ospedale San Martino (Genova)","Neurologia","CONVENZIONI","2026-01-02","Palermo","Supporto alla ricerca clinica","Fattura IT-20260102-793",1727
+"HCP","Dr. Gabriele Giordano","GRDGBR56T13F205H","Ospedale Careggi (Firenze)","Oncologia","CONSULTANCY","2026-01-13","Bologna","Consulenza tecnica di prodotto","Fattura IT-20260113-794",235
+"HCP","Dr. Chiara Ferrari","FRRCHR60E20F205H","Ospedale Cardarelli (Napoli)","Pediatria","CONFERENCE_SUPPORT","2026-04-06","Bari","Rimborso spese viaggio e alloggio","Fattura IT-20260406-795",576
+"HCP","Dr. Alessandro Marino","MRNLSS57A19F205H","Ospedale Cardarelli (Napoli)","Pediatria","PRESENTATION","2026-02-24","Bari","Briefing scientifico aziendale","Fattura IT-20260224-796",140
+"HCP","Dr. Aurora Pellegrini","PLLRRR63P12F205H","Ospedale Sant'Orsola (Bologna)","Pediatria","PRESENTATION","2026-03-25","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20260325-797",693
+"HCP","Dr. Chiara De Luca","DLCCHR81L23F205H","Ospedale Civile di Padova","Radiologia","CONSULTANCY","2026-01-03","Genova","Consulenza tecnica di prodotto","Fattura IT-20260103-798",777
+"HCP","Dr. Gabriele Marino","MRNGBR50M14F205H","Ospedale Civile di Padova","Medicina Interna","CONFERENCE_SUPPORT","2026-04-09","Genova","Rimborso spese viaggio e alloggio","Fattura IT-20260409-799",548
+"HCP","Dr. Marco Costa","CSTMRC53C22F205H","Ospedale Cardarelli (Napoli)","Neurologia","CONSULTANCY","2026-04-14","Bari","Consulenza tecnica di prodotto","Fattura IT-20260414-800",367
+"INSTITUTION","Ospedale San Martino (Genova)","PI846755229","","","CONVENZIONI","2026-03-23","Genova","Incarico di docenza per seminario","Fattura IT-20260323-801",310
+"HCP","Dr. Silvia Bianchi","BNCSLV80D04F205H","Ospedale Cardarelli (Napoli)","Neurologia","CONSULTANCY","2026-01-04","Bari","Consulenza tecnica di prodotto","Fattura IT-20260104-802",284
+"HCP","Dr. Antonio Fontana","FNTNTN59A07F205H","Ospedale San Raffaele (Milano)","Neurologia","CONFERENCE_SUPPORT","2026-02-02","Firenze","Quota di iscrizione congresso","Fattura IT-20260202-803",560
+"HCP","Dr. Leonardo Fontana","FNTLNR74B26F205H","Policlinico Gemelli (Roma)","Pediatria","CONSULTANCY","2026-02-28","Roma","Consulenza tecnica di prodotto","Fattura IT-20260228-804",302
+"HCP","Dr. Beatrice Gallo","GLLBTR69T03F205H","Ospedale Careggi (Firenze)","Pediatria","CONVENZIONI","2026-04-25","Bologna","Contratto di advisory board","Fattura IT-20260425-805",699
+"HCP","Dr. Greta Fontana","FNTGRT71B01F205H","Ospedale Cardarelli (Napoli)","Radiologia","CONVENZIONI","2026-02-04","Bari","Supporto alla ricerca clinica","Fattura IT-20260204-806",405
+"HCP","Dr. Giorgia Colombo","CLMGRG57M09F205H","Ospedale Cardarelli (Napoli)","Chirurgia Generale","DONAZIONI","2026-03-09","Bari","Supporto liberale borse di studio","Fattura IT-20260309-807",1296
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI923041467","","","CONFERENCE_SUPPORT","2026-02-10","Roma","Quota di iscrizione congresso","Fattura IT-20260210-808",455
+"HCP","Dr. Francesca Greco","GRCFRN88S05F205H","Policlinico di Bari","Cardiologia","CONVENZIONI","2026-04-18","Torino","Contratto di advisory board","Fattura IT-20260418-809",610
+"HCP","Dr. Matteo Caruso","CRSMTT60C03F205H","Ospedale Molinette (Torino)","Dermatologia","CONSULTANCY","2026-01-14","Padova","Relazione scientifica convegno","Fattura IT-20260114-810",319
+"INSTITUTION","Policlinico Gemelli (Roma)","PI752777110","","","CONSULTANCY","2026-03-02","Firenze","Consulenza tecnica di prodotto","Fattura IT-20260302-811",563
+"HCP","Dr. Alice Russo","RSSLCL55S08F205H","Policlinico di Bari","Anestesiologia","PRESENTATION","2026-04-04","Torino","Presentazione di prodotto farmaceutico","Fattura IT-20260404-812",560
+"HCP","Dr. Ludovica Ferrari","FRRLDV80E23F205H","Policlinico Gemelli (Roma)","Medicina Interna","PRESENTATION","2026-01-22","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260122-813",192
+"HCP","Dr. Emma Rossi","RSSMMM71A06F205H","Ospedale Cardarelli (Napoli)","Dermatologia","PRESENTATION","2026-03-28","Bari","Briefing scientifico aziendale","Fattura IT-20260328-814",584
+"HCP","Dr. Lorenzo Ferrari","FRRLRN84E11F205H","Policlinico di Bari","Neurologia","CONFERENCE_SUPPORT","2026-01-04","Torino","Quota di iscrizione congresso","Fattura IT-20260104-815",634
+"HCP","Dr. Riccardo Ferraro","FRRRCC72C22F205H","Ospedale Careggi (Firenze)","Dermatologia","CONVENZIONI","2026-04-09","Bologna","Contratto di advisory board","Fattura IT-20260409-816",787
+"HCP","Dr. Giorgia Gatti","GTTGRG70S19F205H","Policlinico Gemelli (Roma)","Radiologia","CONVENZIONI","2026-01-07","Roma","Supporto alla ricerca clinica","Fattura IT-20260107-817",1632
+"HCP","Dr. Francesco Ferraro","FRRFRN66L07F205H","Policlinico Gemelli (Roma)","Pediatria","DONAZIONI","2026-04-22","Roma","Supporto liberale borse di studio","Fattura IT-20260422-818",8225
+"HCP","Dr. Silvia Colombo","CLMSLV58R19F205H","Ospedale Civile di Padova","Medicina Interna","CONSULTANCY","2026-05-03","Genova","Consulenza tecnica di prodotto","Fattura IT-20260503-819",649
+"HCP","Dr. Francesco Bruno","BRNFRN73A19F205H","Ospedale Molinette (Torino)","Medicina Interna","DONAZIONI","2026-03-10","Padova","Supporto liberale borse di studio","Fattura IT-20260310-820",2414
+"HCP","Dr. Chiara Mariani","MRNCHR55L12F205H","Ospedale Civile di Padova","Neurologia","PRESENTATION","2026-02-26","Genova","Presentazione di prodotto farmaceutico","Fattura IT-20260226-821",61
+"HCP","Dr. Antonio Conti","CNTNTN66C12F205H","Ospedale San Martino (Genova)","Radiologia","DONAZIONI","2026-01-30","Palermo","Erogazione per attrezzature di reparto","Fattura IT-20260130-822",2466
+"HCP","Dr. Sofia Ricci","RCCSFS80A28F205H","Ospedale Sant'Orsola (Bologna)","Chirurgia Generale","CONSULTANCY","2026-02-08","Napoli","Partecipazione tavola rotonda","Fattura IT-20260208-823",316
+"HCP","Dr. Filippo Costa","CSTFLP56C13F205H","Ospedale Molinette (Torino)","Pediatria","CONSULTANCY","2026-04-11","Padova","Partecipazione tavola rotonda","Fattura IT-20260411-824",110
+"HCP","Dr. Gabriele Marino","MRNGBR78R16F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","CONSULTANCY","2026-02-17","Roma","Consulenza tecnica di prodotto","Fattura IT-20260217-825",644
+"HCP","Dr. Alessandro Rizzo","RZZLSS60L23F205H","Policlinico Gemelli (Roma)","Dermatologia","DONAZIONI","2026-01-19","Roma","Erogazione per attrezzature di reparto","Fattura IT-20260119-826",1181
+"HCP","Dr. Sofia Vinci","VNCSFS57B22F205H","Policlinico Gemelli (Roma)","Pediatria","DONAZIONI","2026-02-08","Roma","Supporto liberale borse di studio","Fattura IT-20260208-827",7556
+"HCP","Dr. Lorenzo Caruso","CRSLRN59R12F205H","Ospedale Careggi (Firenze)","Dermatologia","CONSULTANCY","2026-02-15","Bologna","Partecipazione tavola rotonda","Fattura IT-20260215-828",198
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI174726517","","","PRESENTATION","2026-02-09","Bologna","Briefing scientifico aziendale","Fattura IT-20260209-829",53
+"HCP","Dr. Antonio Lombardi","LMBNTN88D02F205H","Policlinico di Bari","Oncologia","CONVENZIONI","2026-05-04","Torino","Accordo di consulenza scientifica","Fattura IT-20260504-830",213
+"HCP","Dr. Giovanni Bruno","BRNGVN63R07F205H","Ospedale Niguarda (Milano)","Medicina Interna","DONAZIONI","2026-05-06","Milano","Erogazione per attrezzature di reparto","Fattura IT-20260506-831",2271
+"HCP","Dr. Sofia Moretti","MRTSFS86B10F205H","Ospedale Civile di Padova","Anestesiologia","CONVENZIONI","2026-03-13","Genova","Contratto di advisory board","Fattura IT-20260313-832",597
+"HCP","Dr. Greta Rizzo","RZZGRT53S13F205H","Ospedale San Martino (Genova)","Anestesiologia","PRESENTATION","2026-04-11","Palermo","Briefing scientifico aziendale","Fattura IT-20260411-833",144
+"HCP","Dr. Francesca Russo","RSSFRN66L16F205H","Policlinico di Bari","Neurologia","DONAZIONI","2026-03-15","Torino","Donazione apparecchio ecografico","Fattura IT-20260315-834",1773
+"HCP","Dr. Davide Bianchi","BNCDVD74M24F205H","Ospedale Molinette (Torino)","Anestesiologia","DONAZIONI","2026-01-10","Padova","Erogazione per attrezzature di reparto","Fattura IT-20260110-835",7714
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI694994446","","","CONFERENCE_SUPPORT","2026-04-17","Roma","Rimborso spese viaggio e alloggio","Fattura IT-20260417-836",254
+"INSTITUTION","Ospedale Molinette (Torino)","PI322446483","","","DONAZIONI","2026-03-22","Firenze","Erogazione per attrezzature di reparto","Fattura IT-20260322-837",672
+"HCP","Dr. Gabriele Barbier","BRBGBR51P22F205H","Ospedale Molinette (Torino)","Neurologia","PRESENTATION","2026-04-17","Padova","Presentazione di prodotto farmaceutico","Fattura IT-20260417-838",627
+"HCP","Dr. Giulia Ferraro","FRRGLG77M21F205H","Ospedale Molinette (Torino)","Neurologia","CONVENZIONI","2026-02-20","Padova","Supporto alla ricerca clinica","Fattura IT-20260220-839",518
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI975986996","","","PRESENTATION","2026-03-03","Palermo","Presentazione di prodotto farmaceutico","Fattura IT-20260303-840",532
+"HCP","Dr. Alice Marino","MRNLCL74A27F205H","Ospedale Civile di Padova","Oncologia","CONVENZIONI","2026-02-02","Genova","Accordo di consulenza scientifica","Fattura IT-20260202-841",533
+"HCP","Dr. Mattia Vinci","VNCMTT78B19F205H","Ospedale Cardarelli (Napoli)","Pediatria","DONAZIONI","2026-03-16","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260316-842",607
+"HCP","Dr. Andrea Marino","MRNNDR57B03F205H","Ospedale Sant'Orsola (Bologna)","Chirurgia Generale","CONSULTANCY","2026-03-30","Napoli","Consulenza tecnica di prodotto","Fattura IT-20260330-843",761
+"HCP","Dr. Riccardo Bruno","BRNRCC76C22F205H","Ospedale San Raffaele (Milano)","Pediatria","DONAZIONI","2026-01-23","Firenze","Donazione apparecchio ecografico","Fattura IT-20260123-844",644
+"HCP","Dr. Francesca Pellegrini","PLLFRN51H24F205H","Policlinico Gemelli (Roma)","Medicina Interna","DONAZIONI","2026-04-29","Roma","Donazione apparecchio ecografico","Fattura IT-20260429-845",2331
+"HCP","Dr. Riccardo Barbier","BRBRCC77R17F205H","Ospedale Molinette (Torino)","Cardiologia","CONSULTANCY","2026-03-15","Padova","Partecipazione tavola rotonda","Fattura IT-20260315-846",699
+"HCP","Dr. Pietro Fontana","FNTPTR68P27F205H","Ospedale Cardarelli (Napoli)","Dermatologia","CONSULTANCY","2026-01-11","Bari","Consulenza tecnica di prodotto","Fattura IT-20260111-847",570
+"HCP","Dr. Chiara Rinaldi","RNLCHR84P23F205H","Ospedale Sant'Orsola (Bologna)","Oncologia","PRESENTATION","2026-02-08","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20260208-848",743
+"HCP","Dr. Francesca Rizzo","RZZFRN68M18F205H","Ospedale San Raffaele (Milano)","Cardiologia","CONSULTANCY","2026-04-12","Firenze","Consulenza tecnica di prodotto","Fattura IT-20260412-849",839
+"HCP","Dr. Alice Barbier","BRBLCL75M28F205H","Ospedale Civile di Padova","Pediatria","CONFERENCE_SUPPORT","2026-04-08","Genova","Quota di iscrizione congresso","Fattura IT-20260408-850",776
+"HCP","Dr. Pietro Bianchi","BNCPTR68C18F205H","Ospedale Sant'Orsola (Bologna)","Ginecologia","CONSULTANCY","2026-03-07","Napoli","Partecipazione tavola rotonda","Fattura IT-20260307-851",331
+"HCP","Dr. Mattia Gatti","GTTMTT67M20F205H","Policlinico di Bari","Dermatologia","DONAZIONI","2026-01-02","Torino","Donazione apparecchio ecografico","Fattura IT-20260102-852",7299
+"HCP","Dr. Silvia Ferrari","FRRSLV74H25F205H","Policlinico Gemelli (Roma)","Ginecologia","CONFERENCE_SUPPORT","2026-04-04","Roma","Rimborso spese viaggio e alloggio","Fattura IT-20260404-853",470
+"INSTITUTION","Ospedale Careggi (Firenze)","PI393271250","","","CONVENZIONI","2026-01-28","Bari","Accordo di consulenza scientifica","Fattura IT-20260128-854",261
+"HCP","Dr. Beatrice Romano","RMNBTR63B07F205H","Ospedale Niguarda (Milano)","Dermatologia","CONSULTANCY","2026-03-30","Milano","Partecipazione tavola rotonda","Fattura IT-20260330-855",413
+"HCP","Dr. Antonio Esposito","SPSNTN59L10F205H","Ospedale Civile di Padova","Ginecologia","DONAZIONI","2026-01-14","Genova","Erogazione per attrezzature di reparto","Fattura IT-20260114-856",1165
+"HCP","Dr. Matteo Esposito","SPSMTT52D08F205H","Ospedale Cardarelli (Napoli)","Pediatria","PRESENTATION","2026-05-17","Bari","Briefing scientifico aziendale","Fattura IT-20260517-857",417
+"HCP","Dr. Silvia Russo","RSSSLV73M22F205H","Ospedale Cardarelli (Napoli)","Pediatria","PRESENTATION","2026-04-24","Bari","Briefing scientifico aziendale","Fattura IT-20260424-858",333
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI137579388","","","PRESENTATION","2026-04-08","Roma","Briefing scientifico aziendale","Fattura IT-20260408-859",288
+"HCP","Dr. Emma Giordano","GRDMMM81C13F205H","Ospedale Sant'Orsola (Bologna)","Medicina Interna","PRESENTATION","2026-02-25","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20260225-860",110
+"HCP","Dr. Chiara Greco","GRCCHR55T06F205H","Policlinico Gemelli (Roma)","Dermatologia","PRESENTATION","2026-01-22","Roma","Briefing scientifico aziendale","Fattura IT-20260122-861",546
+"HCP","Dr. Pietro Pellegrini","PLLPTR67C27F205H","Policlinico Gemelli (Roma)","Radiologia","CONFERENCE_SUPPORT","2026-05-12","Roma","Rimborso spese viaggio e alloggio","Fattura IT-20260512-862",128
+"HCP","Dr. Emma Ferraro","FRRMMM79D06F205H","Ospedale Cardarelli (Napoli)","Chirurgia Generale","CONFERENCE_SUPPORT","2026-03-10","Bari","Copertura spese di ospitalità","Fattura IT-20260310-863",360
+"HCP","Dr. Leonardo Gallo","GLLLNR51P15F205H","Ospedale Sant'Orsola (Bologna)","Anestesiologia","PRESENTATION","2026-03-03","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20260303-864",660
+"HCP","Dr. Giulia Greco","GRCGLG54S20F205H","Ospedale Sant'Orsola (Bologna)","Chirurgia Generale","CONFERENCE_SUPPORT","2026-03-13","Napoli","Quota di iscrizione congresso","Fattura IT-20260313-865",812
+"HCP","Dr. Gabriele Bianchi","BNCGBR56P20F205H","Ospedale Cardarelli (Napoli)","Ginecologia","CONVENZIONI","2026-03-27","Bari","Incarico di docenza per seminario","Fattura IT-20260327-866",673
+"HCP","Dr. Alice Moretti","MRTLCL64A19F205H","Policlinico Gemelli (Roma)","Oncologia","DONAZIONI","2026-01-26","Roma","Donazione materiale didattico","Fattura IT-20260126-867",2250
+"HCP","Dr. Antonio Caruso","CRSNTN74E21F205H","Ospedale Civile di Padova","Ginecologia","DONAZIONI","2026-02-04","Genova","Donazione materiale didattico","Fattura IT-20260204-868",1262
+"HCP","Dr. Giulia Russo","RSSGLG62P28F205H","Ospedale Cardarelli (Napoli)","Radiologia","PRESENTATION","2026-01-31","Bari","Briefing scientifico aziendale","Fattura IT-20260131-869",495
+"HCP","Dr. Aurora Santoro","SNTRRR87A25F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","DONAZIONI","2026-04-07","Roma","Donazione materiale didattico","Fattura IT-20260407-870",7486
+"HCP","Dr. Paola Gallo","GLLPLP70C28F205H","Ospedale Cardarelli (Napoli)","Medicina Interna","DONAZIONI","2026-02-19","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260219-871",1293
+"INSTITUTION","Policlinico Gemelli (Roma)","PI254733854","","","CONVENZIONI","2026-03-31","Bari","Incarico di docenza per seminario","Fattura IT-20260331-872",1754
+"HCP","Dr. Gabriele Rizzo","RZZGBR73A12F205H","Policlinico di Bari","Cardiologia","CONSULTANCY","2026-01-12","Torino","Consulenza tecnica di prodotto","Fattura IT-20260112-873",373
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI228641389","","","CONFERENCE_SUPPORT","2026-04-23","Padova","Copertura spese di ospitalità","Fattura IT-20260423-874",762
+"HCP","Dr. Riccardo Gatti","GTTRCC89P10F205H","Ospedale San Martino (Genova)","Neurologia","PRESENTATION","2026-03-12","Palermo","Briefing scientifico aziendale","Fattura IT-20260312-875",708
+"HCP","Dr. Antonio Giordano","GRDNTN87L08F205H","Policlinico Gemelli (Roma)","Pediatria","PRESENTATION","2026-02-13","Roma","Presentazione di prodotto farmaceutico","Fattura IT-20260213-876",278
+"HCP","Dr. Paola Fontana","FNTPLP63R25F205H","Ospedale San Raffaele (Milano)","Anestesiologia","PRESENTATION","2026-04-04","Firenze","Presentazione di prodotto farmaceutico","Fattura IT-20260404-877",841
+"HCP","Dr. Emma Colombo","CLMMMM79B21F205H","Ospedale Cardarelli (Napoli)","Ginecologia","PRESENTATION","2026-02-23","Bari","Briefing scientifico aziendale","Fattura IT-20260223-878",138
+"HCP","Dr. Silvia Colombo","CLMSLV83S21F205H","Policlinico Gemelli (Roma)","Oncologia","PRESENTATION","2026-04-15","Roma","Briefing scientifico aziendale","Fattura IT-20260415-879",761
+"HCP","Dr. Filippo Ferraro","FRRFLP67H28F205H","Ospedale Niguarda (Milano)","Ginecologia","CONVENZIONI","2025-12-29","Milano","Supporto alla ricerca clinica","Fattura IT-20251229-880",320
+"HCP","Dr. Paola Moretti","MRTPLP56S17F205H","Ospedale Civile di Padova","Radiologia","CONVENZIONI","2026-02-20","Genova","Contratto di advisory board","Fattura IT-20260220-881",462
+"HCP","Dr. Silvia Ricci","RCCSLV82H10F205H","Ospedale Molinette (Torino)","Oncologia","CONSULTANCY","2026-04-07","Padova","Partecipazione tavola rotonda","Fattura IT-20260407-882",486
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI113251354","","","PRESENTATION","2026-04-06","Bari","Briefing scientifico aziendale","Fattura IT-20260406-883",748
+"HCP","Dr. Davide Vinci","VNCDVD71A16F205H","Policlinico Gemelli (Roma)","Cardiologia","CONSULTANCY","2026-01-28","Roma","Partecipazione tavola rotonda","Fattura IT-20260128-884",532
+"HCP","Dr. Leonardo Vinci","VNCLNR51D07F205H","Ospedale Molinette (Torino)","Oncologia","PRESENTATION","2026-02-04","Padova","Presentazione di prodotto farmaceutico","Fattura IT-20260204-885",676
+"HCP","Dr. Alice Bianchi","BNCLCL83R05F205H","Ospedale Civile di Padova","Neurologia","PRESENTATION","2026-04-01","Genova","Briefing scientifico aziendale","Fattura IT-20260401-886",783
+"HCP","Dr. Giorgia Conti","CNTGRG78S10F205H","Ospedale San Raffaele (Milano)","Anestesiologia","CONFERENCE_SUPPORT","2026-05-17","Firenze","Quota di iscrizione congresso","Fattura IT-20260517-887",558
+"HCP","Dr. Ludovica Fontana","FNTLDV89D05F205H","Ospedale San Raffaele (Milano)","Cardiologia","PRESENTATION","2026-03-19","Firenze","Presentazione di prodotto farmaceutico","Fattura IT-20260319-888",782
+"HCP","Dr. Leonardo Esposito","SPSLNR85C06F205H","Ospedale Sant'Orsola (Bologna)","Oncologia","CONVENZIONI","2026-02-25","Napoli","Supporto alla ricerca clinica","Fattura IT-20260225-889",763
+"HCP","Dr. Sofia Gatti","GTTSFS78H09F205H","Policlinico Gemelli (Roma)","Dermatologia","CONVENZIONI","2026-05-10","Roma","Supporto alla ricerca clinica","Fattura IT-20260510-890",1781
+"HCP","Dr. Antonio Gatti","GTTNTN73A20F205H","Policlinico Gemelli (Roma)","Radiologia","CONSULTANCY","2026-02-06","Roma","Relazione scientifica convegno","Fattura IT-20260206-891",693
+"HCP","Dr. Giovanni Rizzo","RZZGVN60H05F205H","Policlinico di Bari","Oncologia","CONSULTANCY","2026-05-05","Torino","Relazione scientifica convegno","Fattura IT-20260505-892",614
+"HCP","Dr. Aurora Esposito","SPSRRR68D03F205H","Ospedale Cardarelli (Napoli)","Dermatologia","CONVENZIONI","2026-01-27","Bari","Incarico di docenza per seminario","Fattura IT-20260127-893",1207
+"HCP","Dr. Pietro Costa","CSTPTR56L21F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","DONAZIONI","2026-01-28","Roma","Donazione apparecchio ecografico","Fattura IT-20260128-894",2092
+"HCP","Dr. Filippo Ferraro","FRRFLP59S25F205H","Ospedale San Raffaele (Milano)","Pediatria","CONFERENCE_SUPPORT","2026-02-19","Firenze","Quota di iscrizione congresso","Fattura IT-20260219-895",392
+"HCP","Dr. Antonio Mariani","MRNNTN55B05F205H","Ospedale Cardarelli (Napoli)","Medicina Interna","CONFERENCE_SUPPORT","2026-03-23","Bari","Copertura spese di ospitalità","Fattura IT-20260323-896",309
+"HCP","Dr. Lorenzo Fontana","FNTLRN74E14F205H","Ospedale Careggi (Firenze)","Ginecologia","DONAZIONI","2026-03-26","Bologna","Supporto liberale borse di studio","Fattura IT-20260326-897",2255
+"INSTITUTION","Ospedale San Martino (Genova)","PI560104149","","","PRESENTATION","2026-03-14","Napoli","Briefing scientifico aziendale","Fattura IT-20260314-898",512
+"HCP","Dr. Chiara De Luca","DLCCHR82M02F205H","Ospedale San Raffaele (Milano)","Ginecologia","CONFERENCE_SUPPORT","2026-05-17","Firenze","Rimborso spese viaggio e alloggio","Fattura IT-20260517-899",513
+"HCP","Dr. Leonardo Vinci","VNCLNR76L20F205H","Ospedale Cardarelli (Napoli)","Medicina Interna","PRESENTATION","2026-02-16","Bari","Briefing scientifico aziendale","Fattura IT-20260216-900",201
+"HCP","Dr. Francesca Bianchi","BNCFRN77S02F205H","Ospedale Niguarda (Milano)","Radiologia","CONSULTANCY","2026-03-22","Milano","Consulenza tecnica di prodotto","Fattura IT-20260322-901",480
+"HCP","Dr. Greta Conti","CNTGRT85L04F205H","Ospedale Careggi (Firenze)","Radiologia","PRESENTATION","2026-04-17","Bologna","Briefing scientifico aziendale","Fattura IT-20260417-902",449
+"HCP","Dr. Pietro Russo","RSSPTR79R03F205H","Ospedale San Martino (Genova)","Ginecologia","CONVENZIONI","2026-04-23","Palermo","Supporto alla ricerca clinica","Fattura IT-20260423-903",589
+"HCP","Dr. Luca Giordano","GRDLCL60E08F205H","Ospedale Careggi (Firenze)","Medicina Interna","DONAZIONI","2026-05-12","Bologna","Erogazione per attrezzature di reparto","Fattura IT-20260512-904",958
+"HCP","Dr. Antonio Pellegrini","PLLNTN51E24F205H","Ospedale Niguarda (Milano)","Oncologia","CONSULTANCY","2026-02-19","Milano","Consulenza tecnica di prodotto","Fattura IT-20260219-905",427
+"HCP","Dr. Matteo Bianchi","BNCMTT76C28F205H","Ospedale Careggi (Firenze)","Cardiologia","CONVENZIONI","2026-05-09","Bologna","Accordo di consulenza scientifica","Fattura IT-20260509-906",626
+"HCP","Dr. Valeria Barbier","BRBVLR66T20F205H","Ospedale Careggi (Firenze)","Anestesiologia","DONAZIONI","2026-02-27","Bologna","Supporto liberale borse di studio","Fattura IT-20260227-907",1067
+"INSTITUTION","Ospedale Careggi (Firenze)","PI472923948","","","DONAZIONI","2026-05-16","Milano","Donazione apparecchio ecografico","Fattura IT-20260516-908",570
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI234190663","","","DONAZIONI","2026-01-19","Roma","Donazione materiale didattico","Fattura IT-20260119-909",5910
+"HCP","Dr. Lorenzo Santoro","SNTLRN50L19F205H","Ospedale Molinette (Torino)","Anestesiologia","DONAZIONI","2026-04-21","Padova","Erogazione per attrezzature di reparto","Fattura IT-20260421-910",618
+"HCP","Dr. Lorenzo Rizzo","RZZLRN53C13F205H","Ospedale Molinette (Torino)","Pediatria","CONSULTANCY","2026-05-04","Padova","Consulenza tecnica di prodotto","Fattura IT-20260504-911",775
+"HCP","Dr. Alessandro Colombo","CLMLSS61D11F205H","Ospedale San Martino (Genova)","Dermatologia","CONSULTANCY","2026-04-05","Palermo","Consulenza tecnica di prodotto","Fattura IT-20260405-912",203
+"HCP","Dr. Emma Fontana","FNTMMM77H02F205H","Ospedale Cardarelli (Napoli)","Dermatologia","CONVENZIONI","2026-04-12","Bari","Incarico di docenza per seminario","Fattura IT-20260412-913",239
+"HCP","Dr. Riccardo Colombo","CLMRCC74P11F205H","Ospedale Cardarelli (Napoli)","Neurologia","DONAZIONI","2026-01-22","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260122-914",1609
+"HCP","Dr. Mattia Bruno","BRNMTT66A09F205H","Ospedale Molinette (Torino)","Dermatologia","CONSULTANCY","2026-01-17","Padova","Relazione scientifica convegno","Fattura IT-20260117-915",594
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI815289818","","","CONFERENCE_SUPPORT","2026-01-07","Palermo","Rimborso spese viaggio e alloggio","Fattura IT-20260107-916",610
+"HCP","Dr. Emma Ferrari","FRRMMM76C15F205H","Policlinico di Bari","Neurologia","CONFERENCE_SUPPORT","2026-03-19","Torino","Rimborso spese viaggio e alloggio","Fattura IT-20260319-917",703
+"HCP","Dr. Alessandro Bianchi","BNCLSS55C11F205H","Policlinico di Bari","Chirurgia Generale","CONSULTANCY","2026-03-08","Torino","Partecipazione tavola rotonda","Fattura IT-20260308-918",298
+"HCP","Dr. Lorenzo Ferraro","FRRLRN81R14F205H","Ospedale San Martino (Genova)","Chirurgia Generale","DONAZIONI","2026-04-26","Palermo","Supporto liberale borse di studio","Fattura IT-20260426-919",8333
+"HCP","Dr. Alessandro Santoro","SNTLSS51C17F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","CONFERENCE_SUPPORT","2026-01-26","Roma","Copertura spese di ospitalità","Fattura IT-20260126-920",81
+"HCP","Dr. Paola Greco","GRCPLP85R26F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","DONAZIONI","2026-01-10","Milano","Supporto liberale borse di studio","Fattura IT-20260110-921",1557
+"HCP","Dr. Marco Ferraro","FRRMRC59H26F205H","Ospedale Cardarelli (Napoli)","Cardiologia","CONFERENCE_SUPPORT","2026-01-11","Bari","Quota di iscrizione congresso","Fattura IT-20260111-922",740
+"HCP","Dr. Valeria Esposito","SPSVLR83E27F205H","Policlinico di Bari","Neurologia","DONAZIONI","2026-03-26","Torino","Supporto liberale borse di studio","Fattura IT-20260326-923",1232
+"HCP","Dr. Francesca Vinci","VNCFRN66E10F205H","Ospedale Sant'Orsola (Bologna)","Neurologia","PRESENTATION","2026-01-15","Napoli","Briefing scientifico aziendale","Fattura IT-20260115-924",713
+"HCP","Dr. Matteo Gallo","GLLMTT79S11F205H","Policlinico Gemelli (Roma)","Medicina Interna","DONAZIONI","2026-01-16","Roma","Supporto liberale borse di studio","Fattura IT-20260116-925",636
+"HCP","Dr. Francesco Vinci","VNCFRN64S21F205H","Policlinico di Bari","Anestesiologia","CONSULTANCY","2026-05-15","Torino","Partecipazione tavola rotonda","Fattura IT-20260515-926",435
+"HCP","Dr. Mattia Costa","CSTMTT85H07F205H","Ospedale Niguarda (Milano)","Neurologia","CONVENZIONI","2026-01-22","Milano","Incarico di docenza per seminario","Fattura IT-20260122-927",375
+"HCP","Dr. Leonardo Gallo","GLLLNR50P18F205H","Policlinico Gemelli (Roma)","Chirurgia Generale","DONAZIONI","2026-04-20","Roma","Erogazione per attrezzature di reparto","Fattura IT-20260420-928",1289
+"INSTITUTION","Ospedale Careggi (Firenze)","PI210385061","","","CONVENZIONI","2026-03-15","Genova","Incarico di docenza per seminario","Fattura IT-20260315-929",1591
+"INSTITUTION","Ospedale Niguarda (Milano)","PI953887565","","","CONSULTANCY","2026-02-03","Palermo","Consulenza tecnica di prodotto","Fattura IT-20260203-930",632
+"INSTITUTION","Ospedale Careggi (Firenze)","PI189735702","","","CONSULTANCY","2026-03-16","Padova","Relazione scientifica convegno","Fattura IT-20260316-931",557
+"HCP","Dr. Luca Santoro","SNTLCL72R25F205H","Ospedale Molinette (Torino)","Anestesiologia","PRESENTATION","2026-05-02","Padova","Presentazione di prodotto farmaceutico","Fattura IT-20260502-932",423
+"HCP","Dr. Silvia Vinci","VNCSLV89M14F205H","Ospedale San Raffaele (Milano)","Cardiologia","PRESENTATION","2026-01-29","Firenze","Briefing scientifico aziendale","Fattura IT-20260129-933",789
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI426546947","","","CONVENZIONI","2026-02-10","Palermo","Contratto di advisory board","Fattura IT-20260210-934",185
+"INSTITUTION","Policlinico Gemelli (Roma)","PI847866281","","","DONAZIONI","2026-04-21","Palermo","Donazione materiale didattico","Fattura IT-20260421-935",661
+"HCP","Dr. Mattia De Luca","DLCMTT52S03F205H","Ospedale Sant'Orsola (Bologna)","Medicina Interna","CONSULTANCY","2026-01-15","Napoli","Partecipazione tavola rotonda","Fattura IT-20260115-936",169
+"HCP","Dr. Giovanni Giordano","GRDGVN67P05F205H","Policlinico di Bari","Cardiologia","DONAZIONI","2026-04-29","Torino","Erogazione per attrezzature di reparto","Fattura IT-20260429-937",8585
+"HCP","Dr. Alessandro Caruso","CRSLSS78E13F205H","Ospedale Cardarelli (Napoli)","Ginecologia","CONFERENCE_SUPPORT","2026-01-06","Bari","Copertura spese di ospitalità","Fattura IT-20260106-938",398
+"HCP","Dr. Francesco Ricci","RCCFRN63H13F205H","Ospedale Civile di Padova","Ginecologia","CONFERENCE_SUPPORT","2026-04-25","Genova","Rimborso spese viaggio e alloggio","Fattura IT-20260425-939",405
+"HCP","Dr. Mattia Pellegrini","PLLMTT50C26F205H","Ospedale Civile di Padova","Anestesiologia","DONAZIONI","2026-01-27","Genova","Erogazione per attrezzature di reparto","Fattura IT-20260127-940",2267
+"HCP","Dr. Pietro Fontana","FNTPTR56S14F205H","Ospedale San Martino (Genova)","Radiologia","CONVENZIONI","2026-04-17","Palermo","Supporto alla ricerca clinica","Fattura IT-20260417-941",299
+"HCP","Dr. Filippo Esposito","SPSFLP57C19F205H","Ospedale Cardarelli (Napoli)","Cardiologia","CONFERENCE_SUPPORT","2025-12-27","Bari","Copertura spese di ospitalità","Fattura IT-20251227-942",797
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI363086813","","","CONFERENCE_SUPPORT","2025-12-29","Bologna","Copertura spese di ospitalità","Fattura IT-20251229-943",333
+"HCP","Dr. Emma Romano","RMNMMM82C22F205H","Ospedale Niguarda (Milano)","Oncologia","DONAZIONI","2026-03-28","Milano","Donazione apparecchio ecografico","Fattura IT-20260328-944",1417
+"HCP","Dr. Chiara Pellegrini","PLLCHR73C07F205H","Ospedale San Raffaele (Milano)","Neurologia","DONAZIONI","2026-03-04","Firenze","Donazione apparecchio ecografico","Fattura IT-20260304-945",767
+"HCP","Dr. Francesco Giordano","GRDFRN66M20F205H","Ospedale Cardarelli (Napoli)","Cardiologia","CONFERENCE_SUPPORT","2026-01-13","Bari","Quota di iscrizione congresso","Fattura IT-20260113-946",159
+"HCP","Dr. Matteo Ricci","RCCMTT65L16F205H","Ospedale Molinette (Torino)","Anestesiologia","DONAZIONI","2026-01-28","Padova","Donazione apparecchio ecografico","Fattura IT-20260128-947",1418
+"HCP","Dr. Giorgia Greco","GRCGRG50C16F205H","Policlinico di Bari","Cardiologia","DONAZIONI","2026-04-13","Torino","Donazione materiale didattico","Fattura IT-20260413-948",2037
+"HCP","Dr. Pietro Rossi","RSSPTR89C21F205H","Ospedale Sant'Orsola (Bologna)","Anestesiologia","CONVENZIONI","2026-05-09","Napoli","Accordo di consulenza scientifica","Fattura IT-20260509-949",1513
+"HCP","Dr. Alessandro Santoro","SNTLSS65R17F205H","Ospedale Niguarda (Milano)","Chirurgia Generale","CONSULTANCY","2026-03-30","Milano","Relazione scientifica convegno","Fattura IT-20260330-950",374
+"INSTITUTION","Ospedale Sant'Orsola (Bologna)","PI729293424","","","CONFERENCE_SUPPORT","2026-03-03","Genova","Copertura spese di ospitalità","Fattura IT-20260303-951",267
+"HCP","Dr. Leonardo Mancini","MNCLNR63R04F205H","Ospedale Careggi (Firenze)","Ginecologia","CONSULTANCY","2026-03-27","Bologna","Relazione scientifica convegno","Fattura IT-20260327-952",477
+"HCP","Dr. Sofia Bruno","BRNSFS53R22F205H","Ospedale Molinette (Torino)","Anestesiologia","CONVENZIONI","2026-02-03","Padova","Accordo di consulenza scientifica","Fattura IT-20260203-953",171
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI912578515","","","DONAZIONI","2026-04-01","Bologna","Supporto liberale borse di studio","Fattura IT-20260401-954",2260
+"HCP","Dr. Alice Moretti","MRTLCL86E07F205H","Ospedale Sant'Orsola (Bologna)","Pediatria","CONVENZIONI","2026-02-24","Napoli","Incarico di docenza per seminario","Fattura IT-20260224-955",1496
+"HCP","Dr. Luca Rinaldi","RNLLCL74H26F205H","Ospedale Molinette (Torino)","Medicina Interna","CONSULTANCY","2026-05-04","Padova","Partecipazione tavola rotonda","Fattura IT-20260504-956",263
+"HCP","Dr. Alice Mariani","MRNLCL65B17F205H","Ospedale Niguarda (Milano)","Ginecologia","CONFERENCE_SUPPORT","2026-03-17","Milano","Copertura spese di ospitalità","Fattura IT-20260317-957",830
+"HCP","Dr. Pietro Mariani","MRNPTR85D23F205H","Ospedale Careggi (Firenze)","Ginecologia","PRESENTATION","2026-04-03","Bologna","Presentazione di prodotto farmaceutico","Fattura IT-20260403-958",820
+"HCP","Dr. Giorgia Rizzo","RZZGRG81C08F205H","Policlinico Gemelli (Roma)","Ginecologia","CONSULTANCY","2026-03-29","Roma","Relazione scientifica convegno","Fattura IT-20260329-959",329
+"HCP","Dr. Francesca Ricci","RCCFRN84B13F205H","Ospedale Cardarelli (Napoli)","Anestesiologia","DONAZIONI","2026-03-13","Bari","Erogazione per attrezzature di reparto","Fattura IT-20260313-960",2077
+"HCP","Dr. Matteo Gatti","GTTMTT87E02F205H","Policlinico Gemelli (Roma)","Cardiologia","CONFERENCE_SUPPORT","2026-03-17","Roma","Rimborso spese viaggio e alloggio","Fattura IT-20260317-961",208
+"HCP","Dr. Davide Moretti","MRTDVD60S10F205H","Policlinico di Bari","Cardiologia","CONVENZIONI","2026-02-08","Torino","Incarico di docenza per seminario","Fattura IT-20260208-962",1932
+"HCP","Dr. Paola Gatti","GTTPLP60A10F205H","Ospedale Civile di Padova","Neurologia","PRESENTATION","2026-04-01","Genova","Briefing scientifico aziendale","Fattura IT-20260401-963",141
+"HCP","Dr. Giovanni Gatti","GTTGVN69B12F205H","Ospedale San Martino (Genova)","Cardiologia","PRESENTATION","2026-04-14","Palermo","Briefing scientifico aziendale","Fattura IT-20260414-964",440
+"HCP","Dr. Aurora Colombo","CLMRRR60B21F205H","Ospedale Careggi (Firenze)","Neurologia","CONVENZIONI","2026-01-01","Bologna","Incarico di docenza per seminario","Fattura IT-20260101-965",335
+"HCP","Dr. Silvia Ferraro","FRRSLV53A17F205H","Ospedale Niguarda (Milano)","Radiologia","DONAZIONI","2026-02-17","Milano","Donazione apparecchio ecografico","Fattura IT-20260217-966",8888
+"HCP","Dr. Greta Conti","CNTGRT76S07F205H","Ospedale San Raffaele (Milano)","Cardiologia","CONFERENCE_SUPPORT","2026-03-04","Firenze","Quota di iscrizione congresso","Fattura IT-20260304-967",450
+"HCP","Dr. Luca Santoro","SNTLCL84H03F205H","Ospedale Niguarda (Milano)","Dermatologia","DONAZIONI","2026-03-06","Milano","Supporto liberale borse di studio","Fattura IT-20260306-968",2052
+"HCP","Dr. Sofia Mancini","MNCSFS66P24F205H","Ospedale Sant'Orsola (Bologna)","Neurologia","PRESENTATION","2026-04-16","Napoli","Presentazione di prodotto farmaceutico","Fattura IT-20260416-969",178
+"HCP","Dr. Francesco Caruso","CRSFRN53C07F205H","Ospedale Careggi (Firenze)","Neurologia","DONAZIONI","2026-02-15","Bologna","Donazione materiale didattico","Fattura IT-20260215-970",1114
+"HCP","Dr. Alessandro Mancini","MNCLSS57T10F205H","Ospedale Cardarelli (Napoli)","Pediatria","CONVENZIONI","2026-03-28","Bari","Accordo di consulenza scientifica","Fattura IT-20260328-971",790
+"HCP","Dr. Valeria Rinaldi","RNLVLR83H22F205H","Ospedale San Martino (Genova)","Cardiologia","DONAZIONI","2026-03-27","Palermo","Erogazione per attrezzature di reparto","Fattura IT-20260327-972",1892
+"INSTITUTION","Ospedale Cardarelli (Napoli)","PI323979541","","","CONVENZIONI","2026-04-11","Bari","Supporto alla ricerca clinica","Fattura IT-20260411-973",1516
+"INSTITUTION","Ospedale San Raffaele (Milano)","PI669196466","","","DONAZIONI","2026-04-16","Bologna","Supporto liberale borse di studio","Fattura IT-20260416-974",7590
+"INSTITUTION","Ospedale Molinette (Torino)","PI419016928","","","DONAZIONI","2026-05-01","Torino","Donazione apparecchio ecografico","Fattura IT-20260501-975",2011
+"HCP","Dr. Antonio Bruno","BRNNTN77H12F205H","Ospedale San Raffaele (Milano)","Chirurgia Generale","CONSULTANCY","2026-03-13","Firenze","Consulenza tecnica di prodotto","Fattura IT-20260313-976",237
+"HCP","Dr. Antonio Ricci","RCCNTN53L25F205H","Ospedale Niguarda (Milano)","Neurologia","PRESENTATION","2026-01-23","Milano","Briefing scientifico aziendale","Fattura IT-20260123-977",335
+"HCP","Dr. Davide Giordano","GRDDVD60T27F205H","Ospedale Molinette (Torino)","Chirurgia Generale","CONVENZIONI","2026-03-12","Padova","Incarico di docenza per seminario","Fattura IT-20260312-978",1557
+"HCP","Dr. Silvia Vinci","VNCSLV51H03F205H","Policlinico di Bari","Oncologia","CONVENZIONI","2026-02-22","Torino","Incarico di docenza per seminario","Fattura IT-20260222-979",1687
+"HCP","Dr. Francesco Santoro","SNTFRN79A25F205H","Ospedale Molinette (Torino)","Ginecologia","PRESENTATION","2026-03-28","Padova","Presentazione di prodotto farmaceutico","Fattura IT-20260328-980",191
+"HCP","Dr. Luca Mariani","MRNLCL82H18F205H","Ospedale San Martino (Genova)","Chirurgia Generale","CONSULTANCY","2026-02-24","Palermo","Consulenza tecnica di prodotto","Fattura IT-20260224-981",583
+"HCP","Dr. Chiara Pellegrini","PLLCHR80B18F205H","Ospedale Civile di Padova","Neurologia","DONAZIONI","2026-01-30","Genova","Donazione materiale didattico","Fattura IT-20260130-982",9420
+"HCP","Dr. Francesco Santoro","SNTFRN65T22F205H","Ospedale Niguarda (Milano)","Ginecologia","CONVENZIONI","2025-12-28","Milano","Supporto alla ricerca clinica","Fattura IT-20251228-983",1572
+"HCP","Dr. Alice Fontana","FNTLCL71C15F205H","Ospedale San Martino (Genova)","Pediatria","DONAZIONI","2026-01-22","Palermo","Supporto liberale borse di studio","Fattura IT-20260122-984",1236
+"HCP","Dr. Lorenzo Rizzo","RZZLRN72T17F205H","Ospedale Careggi (Firenze)","Neurologia","CONFERENCE_SUPPORT","2026-02-08","Bologna","Rimborso spese viaggio e alloggio","Fattura IT-20260208-985",195
+"HCP","Dr. Riccardo Mancini","MNCRCC60C16F205H","Ospedale San Martino (Genova)","Pediatria","CONSULTANCY","2026-01-20","Palermo","Relazione scientifica convegno","Fattura IT-20260120-986",372
+"HCP","Dr. Greta Marino","MRNGRT72M15F205H","Policlinico Gemelli (Roma)","Ginecologia","DONAZIONI","2026-05-05","Roma","Donazione materiale didattico","Fattura IT-20260505-987",1027
+"INSTITUTION","Policlinico di Bari","PI412002479","","","CONSULTANCY","2025-12-28","Torino","Partecipazione tavola rotonda","Fattura IT-20251228-988",477
+"HCP","Dr. Lorenzo Barbier","BRBLRN77P19F205H","Ospedale Niguarda (Milano)","Oncologia","CONVENZIONI","2026-01-22","Milano","Accordo di consulenza scientifica","Fattura IT-20260122-989",1820
+"HCP","Dr. Leonardo Colombo","CLMLNR67M11F205H","Ospedale San Martino (Genova)","Dermatologia","CONSULTANCY","2026-05-19","Palermo","Partecipazione tavola rotonda","Fattura IT-20260519-990",617
+"HCP","Dr. Alessandro Romano","RMNLSS87A06F205H","Ospedale Careggi (Firenze)","Anestesiologia","CONVENZIONI","2026-03-12","Bologna","Supporto alla ricerca clinica","Fattura IT-20260312-991",286
+"HCP","Dr. Davide Fontana","FNTDVD66L26F205H","Ospedale Molinette (Torino)","Oncologia","CONVENZIONI","2026-03-16","Padova","Accordo di consulenza scientifica","Fattura IT-20260316-992",1477
+"HCP","Dr. Alessandro Esposito","SPSLSS84T25F205H","Ospedale Cardarelli (Napoli)","Anestesiologia","CONSULTANCY","2026-02-11","Bari","Partecipazione tavola rotonda","Fattura IT-20260211-993",125
+"HCP","Dr. Giovanni Barbier","BRBGVN80S23F205H","Ospedale San Martino (Genova)","Chirurgia Generale","DONAZIONI","2026-02-20","Palermo","Supporto liberale borse di studio","Fattura IT-20260220-994",981
+"HCP","Dr. Matteo Colombo","CLMMTT72T23F205H","Ospedale San Martino (Genova)","Medicina Interna","CONSULTANCY","2026-03-25","Palermo","Consulenza tecnica di prodotto","Fattura IT-20260325-995",541
+"HCP","Dr. Valeria Rinaldi","RNLVLR52H10F205H","Ospedale Molinette (Torino)","Dermatologia","CONSULTANCY","2026-02-24","Padova","Partecipazione tavola rotonda","Fattura IT-20260224-996",377
+"HCP","Dr. Ludovica Colombo","CLMLDV78A02F205H","Policlinico Gemelli (Roma)","Ginecologia","DONAZIONI","2025-12-27","Roma","Donazione materiale didattico","Fattura IT-20251227-997",2290
+"HCP","Dr. Alice Conti","CNTLCL74D09F205H","Policlinico Gemelli (Roma)","Pediatria","DONAZIONI","2026-02-27","Roma","Donazione materiale didattico","Fattura IT-20260227-998",517
+"HCP","Dr. Valeria Moretti","MRTVLR70B15F205H","Ospedale Molinette (Torino)","Pediatria","CONVENZIONI","2026-03-15","Padova","Supporto alla ricerca clinica","Fattura IT-20260315-999",720
+"HCP","Dr. Filippo Barbier","BRBFLP55E28F205H","Ospedale San Raffaele (Milano)","Medicina Interna","CONFERENCE_SUPPORT","2026-02-09","Firenze","Rimborso spese viaggio e alloggio","Fattura IT-20260209-1000",98

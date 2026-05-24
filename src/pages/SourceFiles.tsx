@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FileText, Database, Calendar } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { APIGateway } from '../datacenter/api_gateway';
 
 interface FileStat {
@@ -30,6 +31,11 @@ interface Transaction {
 }
 
 const SourceFiles = () => {
+  const location = useLocation();
+  const isItaly = location.pathname.includes('/italy');
+  const countryCode = isItaly ? 'IT' : 'KR';
+  const currencySymbol = isItaly ? '€' : '₩';
+
   const [files, setFiles] = useState<FileStat[]>([]);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [records, setRecords] = useState<Transaction[]>([]);
@@ -38,15 +44,18 @@ const SourceFiles = () => {
 
   useEffect(() => {
     fetchFiles();
-  }, []);
+    setSelectedFile(null);
+    setRecords([]);
+  }, [location.pathname]);
 
   const fetchFiles = async () => {
     try {
-      const krBatches = (await APIGateway.getBatches()).filter(b => b.countryCode === 'KR');
-      const krTransactions = await APIGateway.getTransactions('KR');
+      setIsLoadingFiles(true);
+      const targetBatches = (await APIGateway.getBatches()).filter(b => b.countryCode === countryCode);
+      const targetTransactions = await APIGateway.getTransactions(countryCode);
       
-      const mappedFiles: FileStat[] = krBatches.map(b => {
-        const batchTx = krTransactions.filter(t => t.batchId === b.batchId);
+      const mappedFiles: FileStat[] = targetBatches.map(b => {
+        const batchTx = targetTransactions.filter(t => t.batchId === b.batchId);
         const totalAmount = batchTx.reduce((sum, t) => sum + t.amountOriginal, 0);
         return {
           filename: b.sourceFileName,
@@ -70,12 +79,12 @@ const SourceFiles = () => {
     setRecords([]);
     
     try {
-      const krBatches = (await APIGateway.getBatches()).filter(b => b.countryCode === 'KR');
-      const targetBatch = krBatches.find(b => b.sourceFileName === filename);
+      const targetBatches = (await APIGateway.getBatches()).filter(b => b.countryCode === countryCode);
+      const targetBatch = targetBatches.find(b => b.sourceFileName === filename);
       
       if (targetBatch) {
-        const krTransactions = await APIGateway.getTransactions('KR');
-        const batchTx = krTransactions.filter(t => t.batchId === targetBatch.batchId);
+        const targetTransactions = await APIGateway.getTransactions(countryCode);
+        const batchTx = targetTransactions.filter(t => t.batchId === targetBatch.batchId);
         
         const mappedTx = batchTx.map(t => ({
           id: t.id,
@@ -142,7 +151,7 @@ const SourceFiles = () => {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                   <span>{f.recordCount} records</span>
-                  <span>₩{f.totalAmountKRW.toLocaleString()}</span>
+                  <span>{currencySymbol}{f.totalAmountKRW.toLocaleString(undefined, { minimumFractionDigits: isItaly ? 2 : 0 })}</span>
                 </div>
               </div>
             ))
@@ -181,7 +190,7 @@ const SourceFiles = () => {
                       <th>Institution</th>
                       <th>Category</th>
                       <th>Purpose</th>
-                      <th>Amount (KRW)</th>
+                      <th>Amount ({isItaly ? 'EUR' : 'KRW'})</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -198,7 +207,9 @@ const SourceFiles = () => {
                         <td>{tx.entity.workplaceInstitution || '-'}</td>
                         <td>{tx.categoryOfBenefit}</td>
                         <td>{tx.purposeOfBenefit || '-'}</td>
-                        <td style={{ fontWeight: 500 }}>₩{tx.amountKRW.toLocaleString()}</td>
+                        <td style={{ fontWeight: 500 }}>
+                          {tx.currency} {tx.amountKRW.toLocaleString(undefined, { minimumFractionDigits: isItaly ? 2 : 0 })}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

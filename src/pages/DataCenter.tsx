@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, Search, Filter, X, FileText, ArrowRight } from 'lucide-react';
 import { APIGateway, type UniversalTransaction, type IngestionBatch, type AuditLog } from '../datacenter/api_gateway';
 import * as XLSX from 'xlsx';
+import { parseAmount, validateReportingCompleteness } from '../datacenter/validation';
 
 const DataCenter: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'uploader' | 'transactions' | 'source_files'>('overview');
@@ -10,8 +11,13 @@ const DataCenter: React.FC = () => {
   
   // States holding mock central database feeds
   const [transactions, setTransactions] = useState<UniversalTransaction[]>([]);
+  const [committedTransactions, setCommittedTransactions] = useState<UniversalTransaction[]>([]);
   const [batches, setBatches] = useState<IngestionBatch[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+
+  // Dual-view admin control center state
+  const [reviewView, setReviewView] = useState<'pending' | 'committed'>('pending');
+  const [selectedReviewBatchId, setSelectedReviewBatchId] = useState<string | null>(null);
 
   // Ingestion form state
   const [targetCountry, setTargetCountry] = useState<string>('KR');
@@ -44,8 +50,10 @@ const DataCenter: React.FC = () => {
     const loadData = async () => {
       const txs = await APIGateway.getTransactions(countryFilter);
       const bts = await APIGateway.getBatches();
+      const committedTxs = await APIGateway.getCommittedTransactions();
       setTransactions(txs);
       setBatches(bts);
+      setCommittedTransactions(committedTxs);
     };
     loadData();
   }, [countryFilter]);
@@ -79,37 +87,77 @@ const DataCenter: React.FC = () => {
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const json = XLSX.utils.sheet_to_json(sheet) as any[];
 
+        // Content-based country verification before submission
+        const hasItalianHeaders = json.some((row: any) => 
+          row['Codice Fiscale'] !== undefined || 
+          row['Struttura'] !== undefined || 
+          row['Tipologia'] !== undefined ||
+          row['Amount (EUR)'] !== undefined
+        );
+        const hasKoreanHeaders = json.some((row: any) => 
+          row['Amount (KRW)'] !== undefined ||
+          row['Reporting Template'] !== undefined
+        );
+
+        if (targetCountry === 'KR' && hasItalianHeaders) {
+          throw new Error("Validation Error: The uploaded file contains Italian tax codes (Codice Fiscale) or Euro columns, but target is set to South Korea [KR]. Ingestion blocked to prevent data contamination.");
+        }
+        if ((targetCountry === 'IT' || targetCountry === 'FR') && hasKoreanHeaders) {
+          throw new Error("Validation Error: The uploaded file contains Korean Won (KRW) columns, but target is set to Europe. Ingestion blocked to prevent data contamination.");
+        }
+
         // Standardize headers dynamically based on target country rules
-        const mockRows = json.map((row: any) => ({
-          recipientType: row['Recipient Type'] || row['Type'] || 'HCP',
-          recipientName: row['Recipient Name'] || row['Nom'] || row['Name'] || 'Dr. Target HCP',
-          licenseNumber: String(row['License Number'] || row['RPPS'] || row['NPI'] || row['Codice Fiscale'] || ''),
-          workplaceInstitution: row['Workplace'] || row['Hopital'] || row['Institution'] || row['Struttura'] || '',
-          specialtyDepartment: row['Specialty'] || row['Specialite'] || row['Specializzazione'] || '',
-          spendCategory: row['Category of Benefit'] || row['Categorie'] || row['Tipologia'] || 'PRESENTATION',
-          dateOfProvision: row['Date of Provision'] || row['Date'] || row['Data'] || new Date().toISOString(),
-          placeOfProvision: row['Place'] || row['Lieu'] || row['Lieu'] || '',
-          purposeOfBenefit: row['Purpose'] || row['Objet'] || row['Oggetto'] || '',
-          details: row['Details'] || row['Dettagli'] || '',
-          amountKRW: row['Amount (KRW)'] || (targetCountry === 'KR' ? Number(row['Amount']) : 0),
-          amountEUR: row['Amount (EUR)'] || (targetCountry === 'FR' || targetCountry === 'IT' ? Number(row['Amount']) : 0),
-          amountUSD: row['Amount (USD)'] || (targetCountry === 'US' ? Number(row['Amount']) : 0)
-        }));
+        const mockRows = json.map((row: any) => {
+          // Detect original local currency amount based on uploader selection and fallbacks
+          const rawAmount = 
+            row['Amount (EUR)'] ||
+            row['Amount (KRW)'] ||
+            row['Amount (USD)'] ||
+            row['Amount'] ||
+            row['amount'] ||
+            row['Valore'] ||
+            row['valore'] ||
+            row['Importo'] ||
+            row['importo'] ||
+            row['Montant'] ||
+            row['montant'] ||
+            row['Value'] ||
+            row['value'] ||
+            0;
+            
+          const amountOriginal = parseAmount(rawAmount);
+
+          return {
+            recipientType: row['Recipient Type'] || row['Type'] || 'HCP',
+            recipientName: row['Recipient Name'] || row['Nom'] || row['Name'] || '',
+            licenseNumber: String(row['License Number'] || row['RPPS'] || row['NPI'] || row['Codice Fiscale'] || ''),
+            workplaceInstitution: row['Workplace'] || row['Hopital'] || row['Institution'] || row['Struttura'] || '',
+            specialtyDepartment: row['Specialty'] || row['Specialite'] || row['Specializzazione'] || '',
+            spendCategory: row['Category of Benefit'] || row['Categorie'] || row['Tipologia'] || 'PRESENTATION',
+            dateOfProvision: row['Date of Provision'] || row['Date'] || row['Data'] ? new Date(row['Date of Provision'] || row['Date'] || row['Data']).toISOString() : new Date().toISOString(),
+            placeOfProvision: row['Place'] || row['Lieu'] || row['Lieu'] || '',
+            purposeOfBenefit: row['Purpose'] || row['Objet'] || row['Oggetto'] || '',
+            details: row['Details'] || row['Dettagli'] || '',
+            amountOriginal: amountOriginal
+          };
+        });
 
         const result = await APIGateway.ingestData(targetCountry, targetYear, selectedFile.name, mockRows);
         if (result.success) {
           // Reload central ledger
           const txs = await APIGateway.getTransactions(countryFilter);
           const bts = await APIGateway.getBatches();
+          const committedTxs = await APIGateway.getCommittedTransactions();
           setTransactions(txs);
           setBatches(bts);
+          setCommittedTransactions(committedTxs);
           alert(`Ingestion Completed: Standardized ${result.ingested} records. ${result.flagged} flagged anomalies routed to Remediation.`);
           setActiveTab('overview');
           setSelectedFile(null);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed central data mapping:', err);
-        alert('Data center mapping failed. Check file column structure.');
+        alert(err.message || 'Data center mapping failed. Check file column structure.');
       } finally {
         setIsUploading(false);
       }
@@ -148,12 +196,28 @@ const DataCenter: React.FC = () => {
       const targetTx = transactions.find(t => t.id === id);
       if (!targetTx) return;
 
-      const origAmount = editFormData.amountOriginal ? Number(editFormData.amountOriginal) : targetTx.amountOriginal;
+      const origAmount = editFormData.amountOriginal !== undefined ? parseAmount(editFormData.amountOriginal) : targetTx.amountOriginal;
       
       // Calculate updated normalized USD amount based on country rules
       let amountUSD = origAmount;
       if (targetTx.countryCode === 'KR') amountUSD = origAmount / 1300;
       if (targetTx.countryCode === 'FR' || targetTx.countryCode === 'IT') amountUSD = origAmount * 1.09;
+      
+      const updatedTxFields = {
+        recipientType: targetTx.recipientType,
+        recipientName: editFormData.recipientName !== undefined ? editFormData.recipientName : targetTx.recipientName,
+        licenseNumber: targetTx.licenseNumber,
+        workplaceInstitution: editFormData.workplaceInstitution !== undefined ? editFormData.workplaceInstitution : targetTx.workplaceInstitution,
+        specialtyDepartment: editFormData.specialtyDepartment !== undefined ? editFormData.specialtyDepartment : targetTx.specialtyDepartment,
+        spendCategory: editFormData.spendCategory !== undefined ? editFormData.spendCategory : targetTx.spendCategory,
+        dateOfProvision: editFormData.dateOfProvision ? new Date(editFormData.dateOfProvision).toISOString() : targetTx.dateOfProvision,
+        placeOfProvision: targetTx.placeOfProvision,
+        purposeOfBenefit: editFormData.purposeOfBenefit !== undefined ? editFormData.purposeOfBenefit : targetTx.purposeOfBenefit,
+        details: editFormData.details !== undefined ? editFormData.details : targetTx.details,
+        amountOriginal: origAmount
+      };
+
+      const completeness = validateReportingCompleteness(targetTx.countryCode, updatedTxFields);
       
       // Dynamic Policy Limits Re-evaluation on save
       const limitExceeded = 
@@ -162,23 +226,25 @@ const DataCenter: React.FC = () => {
         (targetTx.countryCode === 'US' && origAmount > 500);
 
       const updatedValues: Partial<UniversalTransaction> = {
-        recipientName: editFormData.recipientName,
-        workplaceInstitution: editFormData.workplaceInstitution,
-        specialtyDepartment: editFormData.specialtyDepartment,
-        spendCategory: editFormData.spendCategory,
-        dateOfProvision: editFormData.dateOfProvision ? new Date(editFormData.dateOfProvision).toISOString() : undefined,
-        purposeOfBenefit: editFormData.purposeOfBenefit,
-        details: editFormData.details,
+        recipientName: updatedTxFields.recipientName,
+        workplaceInstitution: updatedTxFields.workplaceInstitution,
+        specialtyDepartment: updatedTxFields.specialtyDepartment,
+        spendCategory: updatedTxFields.spendCategory,
+        dateOfProvision: updatedTxFields.dateOfProvision,
+        purposeOfBenefit: updatedTxFields.purposeOfBenefit,
+        details: updatedTxFields.details,
         amountOriginal: origAmount,
         amountUSD: parseFloat(amountUSD.toFixed(2)),
-        remediationStatus: limitExceeded ? 'PENDING_REVIEW' : 'APPROVED'
+        remediationStatus: (limitExceeded || !completeness.isComplete) ? 'PENDING_REVIEW' : 'APPROVED'
       };
 
       const success = await APIGateway.updateTransaction(id, updatedValues);
       if (success) {
         // Reload transactions from the central source of truth
         const txs = await APIGateway.getTransactions(countryFilter);
+        const committedTxs = await APIGateway.getCommittedTransactions();
         setTransactions(txs);
+        setCommittedTransactions(committedTxs);
         setEditingId(null);
         setEditFormData({});
       } else {
@@ -202,8 +268,10 @@ const DataCenter: React.FC = () => {
       if (result.success) {
         const txs = await APIGateway.getTransactions(countryFilter);
         const bts = await APIGateway.getBatches();
+        const committedTxs = await APIGateway.getCommittedTransactions();
         setTransactions(txs);
         setBatches(bts);
+        setCommittedTransactions(committedTxs);
         setShowReviewModal(false);
         alert(`Successfully committed staging records to the country databases! Routed: Korea: ${result.routed?.KR || 0}, Italy: ${result.routed?.IT || 0}, France: ${result.routed?.FR || 0}, USA: ${result.routed?.US || 0}`);
       } else {
@@ -214,6 +282,28 @@ const DataCenter: React.FC = () => {
       alert("Failed to communicate with ETL API service.");
     } finally {
       setIsCommitting(false);
+    }
+  };
+
+  const handlePurgeDatabases = async () => {
+    if (window.confirm("⚠️ DANGER: Are you sure you want to purge all SQL databases? This will delete all staging records, production country registries, files, and audit logs. This action is irreversible!")) {
+      try {
+        const success = await APIGateway.purgeDatabases();
+        if (success) {
+          const txs = await APIGateway.getTransactions(countryFilter);
+          const bts = await APIGateway.getBatches();
+          const committedTxs = await APIGateway.getCommittedTransactions();
+          setTransactions(txs);
+          setBatches(bts);
+          setCommittedTransactions(committedTxs);
+          alert("All database registries have been purged and reset successfully!");
+        } else {
+          alert("Failed to purge database registries.");
+        }
+      } catch (err) {
+        console.error("Purge error:", err);
+        alert("Failed to communicate with administrative service.");
+      }
     }
   };
 
@@ -309,7 +399,7 @@ const DataCenter: React.FC = () => {
           className={`btn ${activeTab === 'overview' ? 'btn-primary' : ''}`}
           style={{ background: activeTab === 'overview' ? '' : 'transparent', color: activeTab === 'overview' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
         >
-          <Database size={18} /> Global Ledger Overview
+          <Database size={18} /> Incoming Data Review
         </button>
         <button 
           onClick={() => setActiveTab('uploader')}
@@ -335,141 +425,589 @@ const DataCenter: React.FC = () => {
       </div>
 
       {/* Overview Dashboard */}
-      {activeTab === 'overview' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-          {/* Commit Staging Buffer Banner */}
-          {countryFilter === 'GLOBAL' && transactions.length > 0 && (
-            <div className="card" style={{
+      {activeTab === 'overview' && (() => {
+        const pendingBatches = batches.filter(batch => transactions.some(tx => tx.batchId === batch.batchId));
+        const committedBatches = batches.filter(batch => committedTransactions.some(tx => tx.batchId === batch.batchId));
+        const stagingTotalUSD = transactions.reduce((sum, t) => sum + t.amountUSD, 0);
+        const committedTotalUSD = committedTransactions.reduce((sum, t) => sum + t.amountUSD, 0);
+        const pendingAlerts = transactions.filter(t => t.remediationStatus === 'PENDING_REVIEW').length;
+        const activeBatchList = reviewView === 'pending' ? pendingBatches : committedBatches;
+        
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            
+            {/* Dual-View Toggler Header */}
+            <div style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(139, 92, 246, 0.15) 100%)',
-              border: '1px solid rgba(124, 58, 237, 0.3)',
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-color)',
               borderRadius: '12px',
-              padding: '24px 30px',
-              boxShadow: '0 8px 32px 0 rgba(124, 58, 237, 0.05)',
-              backdropFilter: 'blur(8px)'
+              padding: '16px 24px',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
             }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--primary-glow)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Database size={20} /> Staging Buffer Registry
-                </h3>
-                <p style={{ margin: '6px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                  There are <strong>{transactions.length} records</strong> currently loaded in the staging buffer. After auditing and remediation, commit them to push data to separate compliance country SQL tables.
+                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  Ledger Partition Control Center
+                </h2>
+                <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                  Toggle between uncommitted staging buffer files and final production databases.
                 </p>
               </div>
-              <button
-                onClick={handleOpenReviewModal}
-                disabled={isCommitting}
-                className="btn btn-primary"
-                style={{
-                  padding: '12px 24px',
-                  fontWeight: 600,
-                  fontSize: '0.95rem',
+              
+              <div style={{
+                display: 'flex',
+                background: 'var(--bg-main)',
+                padding: '4px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-color)'
+              }}>
+                <button
+                  onClick={() => {
+                    setReviewView('pending');
+                    setSelectedReviewBatchId(null);
+                  }}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    fontSize: '0.88rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    background: reviewView === 'pending' ? 'var(--primary-accent)' : 'transparent',
+                    color: reviewView === 'pending' ? 'white' : 'var(--text-secondary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <Clock size={16} />
+                  <span>Pending Import (Staging)</span>
+                  <span style={{
+                    fontSize: '0.75rem',
+                    padding: '2px 6px',
+                    borderRadius: '10px',
+                    background: reviewView === 'pending' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)',
+                    color: reviewView === 'pending' ? 'white' : 'var(--text-primary)'
+                  }}>
+                    {transactions.length}
+                  </span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setReviewView('committed');
+                    setSelectedReviewBatchId(null);
+                  }}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    fontSize: '0.88rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    background: reviewView === 'committed' ? 'var(--primary-accent)' : 'transparent',
+                    color: reviewView === 'committed' ? 'white' : 'var(--text-secondary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <CheckCircle size={16} />
+                  <span>Committed Archives (Prod DB)</span>
+                  <span style={{
+                    fontSize: '0.75rem',
+                    padding: '2px 6px',
+                    borderRadius: '10px',
+                    background: reviewView === 'committed' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)',
+                    color: reviewView === 'committed' ? 'white' : 'var(--text-primary)'
+                  }}>
+                    {committedTransactions.length}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Commit / Success Action Banners */}
+            {reviewView === 'pending' ? (
+              transactions.length > 0 && (
+                <div className="card" style={{
                   display: 'flex',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)'
-                }}
-              >
-                {isCommitting ? 'Routing & Committing...' : (
-                  <>Commit to Registries <ArrowRight size={18} /></>
+                  background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(139, 92, 246, 0.12) 100%)',
+                  border: '1px solid rgba(124, 58, 237, 0.25)',
+                  borderRadius: '12px',
+                  padding: '24px 30px',
+                  boxShadow: '0 8px 32px 0 rgba(124, 58, 237, 0.03)',
+                  backdropFilter: 'blur(8px)'
+                }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--primary-glow)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Database size={20} /> Staging Buffer Registry (Awaiting Commit)
+                    </h3>
+                    <p style={{ margin: '6px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                      There are <strong>{transactions.length} records</strong> currently loaded in the staging buffer. After auditing and remediating source files, commit them to push data to final compliance country registries.
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleOpenReviewModal}
+                    disabled={isCommitting}
+                    className="btn btn-primary"
+                    style={{
+                      padding: '12px 24px',
+                      fontWeight: 600,
+                      fontSize: '0.95rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
+                    }}
+                  >
+                    {isCommitting ? 'Routing & Committing...' : (
+                      <>Commit Staging to Registries <ArrowRight size={18} /></>
+                    )}
+                  </button>
+                </div>
+              )
+            ) : (
+              committedTransactions.length > 0 && (
+                <div className="card" style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(52, 211, 153, 0.06) 100%)',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  borderRadius: '12px',
+                  padding: '24px 30px',
+                  boxShadow: '0 8px 32px 0 rgba(16, 185, 129, 0.01)'
+                }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <CheckCircle size={20} /> Production Registry Feed Active
+                    </h3>
+                    <p style={{ margin: '6px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                      All <strong>{committedTransactions.length} records</strong> are successfully audited, cryptographically sealed, and archived inside regional databases.
+                    </p>
+                  </div>
+                  <div className="badge badge-success" style={{ padding: '8px 16px', fontSize: '0.85rem', fontWeight: 600 }}>
+                    FEED_SYNC_OK
+                  </div>
+                </div>
+              )
+            )}
+
+            {/* Dynamic KPI Dashboard */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
+              <div className="card">
+                <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginBottom: '8px' }}>
+                  {reviewView === 'pending' ? 'STAGING CONSOLIDATED SPEND' : 'PRODUCTION ARCHIVED SPEND'}
+                </h3>
+                <div style={{ fontSize: '1.7rem', fontWeight: 700, color: 'var(--primary-glow)' }}>
+                  ${(reviewView === 'pending' ? stagingTotalUSD : committedTotalUSD).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Normalized globally</p>
+              </div>
+              
+              <div className="card">
+                <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginBottom: '8px' }}>
+                  {reviewView === 'pending' ? 'STAGING SOURCE FILES' : 'COMMITTED ARCHIVED FILES'}
+                </h3>
+                <div style={{ fontSize: '1.7rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {reviewView === 'pending' ? pendingBatches.length : committedBatches.length} Files
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>With active data records</p>
+              </div>
+
+              <div className="card">
+                <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginBottom: '8px' }}>
+                  {reviewView === 'pending' ? 'PENDING COMPLIANCE ALERTS' : 'COMPLIANCE INTEGRITY STATUS'}
+                </h3>
+                <div style={{ fontSize: '1.7rem', fontWeight: 700, color: (reviewView === 'pending' && pendingAlerts > 0) ? 'var(--warning)' : 'var(--success)' }}>
+                  {reviewView === 'pending' ? `${pendingAlerts} Flags` : '100% Compliant'}
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  {reviewView === 'pending' ? 'Awaiting statutory override' : 'Cryptographically verified'}
+                </p>
+              </div>
+
+              <div className="card">
+                <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginBottom: '8px' }}>ACTIVE SYNCED ENDPOINTS</h3>
+                <div style={{ fontSize: '1.7rem', fontWeight: 700, color: 'var(--success)' }}>
+                  {reviewView === 'pending' ? '4 Pending' : `${new Set(committedTransactions.map(t => t.countryCode)).size || 4} Sync'd`}
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Korea [KR] | Italy [IT] | France [FR] | USA [US]</p>
+              </div>
+            </div>
+
+            {/* Split-Pane Source File Review Console */}
+            <div style={{ display: 'flex', gap: '24px', alignItems: 'stretch', minHeight: '550px' }}>
+              
+              {/* Left Pane: Ingested Source Files selector */}
+              <div className="card" style={{ width: '380px', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-elevated)' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FileText size={18} color="var(--primary-glow)" /> Ingested Source Files
+                  </h3>
+                  <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                    {reviewView === 'pending' 
+                      ? 'Select loaded file to audit staging buffer.'
+                      : 'Select archived file to view production records.'}
+                  </p>
+                </div>
+                
+                <div style={{ overflowY: 'auto', flex: 1, maxHeight: '600px', background: 'var(--bg-main)' }}>
+                  {activeBatchList.length === 0 ? (
+                    <div style={{ padding: '32px 24px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                      <Clock size={36} style={{ opacity: 0.15, marginBottom: '12px', margin: '0 auto' }} />
+                      <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>No active files in this view</div>
+                      <p style={{ margin: '4px 0 0 0', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                        {reviewView === 'pending' 
+                          ? 'Upload new compliance records in the Ingest tab.'
+                          : 'Commit staging buffer records to see archives here.'}
+                      </p>
+                    </div>
+                  ) : (
+                    activeBatchList.map(batch => {
+                      const isSelected = selectedReviewBatchId === batch.batchId;
+                      const activeRecords = (reviewView === 'pending' ? transactions : committedTransactions)
+                        .filter(t => t.batchId === batch.batchId);
+                      
+                      const recordCount = activeRecords.length;
+                      const totalOriginalVal = activeRecords.reduce((sum, t) => sum + t.amountOriginal, 0);
+                      const originalCurrency = activeRecords[0]?.currencyOriginal || (batch.countryCode === 'KR' ? 'KRW' : 'EUR');
+                      
+                      const batchAlertsCount = activeRecords.filter(t => t.remediationStatus === 'PENDING_REVIEW').length;
+                      
+                      return (
+                        <div 
+                          key={batch.batchId}
+                          onClick={() => setSelectedReviewBatchId(batch.batchId)}
+                          style={{
+                            padding: '16px 20px',
+                            borderBottom: '1px solid var(--border-color)',
+                            cursor: 'pointer',
+                            background: isSelected ? 'var(--bg-elevated)' : 'transparent',
+                            borderLeft: isSelected ? '3px solid var(--primary-accent)' : '3px solid transparent',
+                            boxShadow: isSelected ? 'inset 0 0 12px rgba(124, 58, 237, 0.02)' : 'none',
+                            transition: 'all 0.2s',
+                          }}
+                          className="file-card-hover"
+                        >
+                          <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
+                              <FileText size={16} style={{ color: isSelected ? 'var(--primary-glow)' : 'var(--text-secondary)' }} /> 
+                              {batch.sourceFileName}
+                            </span>
+                            <span className="badge" style={{ fontSize: '0.7rem', padding: '2px 6px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>
+                              {batch.countryCode === 'KR' ? '🇰🇷 KR' : batch.countryCode === 'IT' ? '🇮🇹 IT' : batch.countryCode === 'FR' ? '🇫🇷 FR' : '🇺🇸 US'}
+                            </span>
+                          </div>
+                          
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                            <span>{recordCount} records</span>
+                            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                              {originalCurrency} {totalOriginalVal.toLocaleString(undefined, { maximumFractionDigits: originalCurrency === 'KRW' ? 0 : 2, minimumFractionDigits: originalCurrency === 'KRW' ? 0 : 2 })}
+                            </span>
+                          </div>
+                          
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                              {new Date(batch.uploadTimestamp).toLocaleDateString()}
+                            </span>
+                            
+                            {reviewView === 'pending' ? (
+                              batchAlertsCount > 0 ? (
+                                <span className="badge badge-danger" style={{ fontSize: '0.65rem', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <ShieldAlert size={12} /> {batchAlertsCount} Flagged
+                                </span>
+                              ) : (
+                                <span className="badge badge-success" style={{ fontSize: '0.65rem', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <CheckCircle size={12} /> Ready
+                                </span>
+                              )
+                            ) : (
+                              <span className="badge badge-success" style={{ fontSize: '0.65rem', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(16,185,129,0.06)' }}>
+                                <CheckCircle size={12} /> Archived
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+              
+              {/* Right Pane: Records auditor grid */}
+              <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                {selectedReviewBatchId ? (() => {
+                  const targetBatch = batches.find(b => b.batchId === selectedReviewBatchId);
+                  if (!targetBatch) return null;
+                  
+                  const activeRecords = (reviewView === 'pending' ? transactions : committedTransactions)
+                    .filter(t => t.batchId === selectedReviewBatchId);
+                  
+                  return (
+                    <>
+                      {/* Grid Header details */}
+                      <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-elevated)' }}>
+                        <div>
+                          <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+                            <Database size={18} color="var(--primary-glow)" /> {targetBatch.sourceFileName}
+                          </h3>
+                          <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                            {reviewView === 'pending'
+                              ? 'Interactive Staging Editor: Resolve completeness check violations inline.'
+                              : 'Immutable Production Registry Archive: Locked statutory ledger logs.'}
+                          </p>
+                        </div>
+                        <div className={`badge ${reviewView === 'pending' ? 'badge-warning' : 'badge-success'}`} style={{ padding: '6px 12px', fontSize: '0.8rem', fontWeight: 600 }}>
+                          {reviewView === 'pending' ? 'Staging Buffer Registry' : 'Committed Country Tables'}
+                        </div>
+                      </div>
+                      
+                      {/* Grid Records Table */}
+                      <div style={{ overflow: 'auto', flex: 1, margin: 0 }} className="table-container">
+                        {activeRecords.length === 0 ? (
+                          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                            No active records found for this batch in the selected partition.
+                          </div>
+                        ) : (
+                          <table style={{ margin: 0, width: '100%', tableLayout: 'auto' }}>
+                            <thead>
+                              <tr>
+                                <th style={{ background: 'var(--bg-main)', padding: '12px 16px' }}>Record ID</th>
+                                <th style={{ background: 'var(--bg-main)', padding: '12px 16px' }}>Recipient & Institution</th>
+                                <th style={{ background: 'var(--bg-main)', padding: '12px 16px' }}>Category</th>
+                                <th style={{ background: 'var(--bg-main)', padding: '12px 16px' }}>Benefit Provision details</th>
+                                <th style={{ background: 'var(--bg-main)', padding: '12px 16px' }}>Original Spend</th>
+                                <th style={{ background: 'var(--bg-main)', padding: '12px 16px' }}>Normalized USD</th>
+                                <th style={{ background: 'var(--bg-main)', padding: '12px 16px' }}>Completeness Audit</th>
+                                <th style={{ background: 'var(--bg-main)', padding: '12px 16px', minWidth: '120px' }}>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {activeRecords.map(tx => {
+                                const isEditing = editingId === tx.id;
+                                
+                                // Run dynamic validation checking on this record
+                                const completeness = validateReportingCompleteness(tx.countryCode, {
+                                  recipientName: isEditing ? (editFormData.recipientName !== undefined ? editFormData.recipientName : tx.recipientName) : tx.recipientName,
+                                  workplaceInstitution: isEditing ? (editFormData.workplaceInstitution !== undefined ? editFormData.workplaceInstitution : tx.workplaceInstitution) : tx.workplaceInstitution,
+                                  specialtyDepartment: isEditing ? (editFormData.specialtyDepartment !== undefined ? editFormData.specialtyDepartment : tx.specialtyDepartment) : tx.specialtyDepartment,
+                                  spendCategory: isEditing ? (editFormData.spendCategory !== undefined ? editFormData.spendCategory : tx.spendCategory) : tx.spendCategory,
+                                  dateOfProvision: tx.dateOfProvision,
+                                  placeOfProvision: tx.placeOfProvision,
+                                  purposeOfBenefit: isEditing ? (editFormData.purposeOfBenefit !== undefined ? editFormData.purposeOfBenefit : tx.purposeOfBenefit) : tx.purposeOfBenefit,
+                                  details: isEditing ? (editFormData.details !== undefined ? editFormData.details : tx.details) : tx.details,
+                                  amountOriginal: isEditing ? (editFormData.amountOriginal !== undefined ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) : tx.amountOriginal,
+                                  licenseNumber: tx.licenseNumber
+                                });
+                                
+                                const limitExceeded = 
+                                  (tx.countryCode === 'KR' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 500000) ||
+                                  ((tx.countryCode === 'FR' || tx.countryCode === 'IT') && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 150) ||
+                                  (tx.countryCode === 'US' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 500);
+                                
+                                return (
+                                  <tr key={tx.id} style={{ background: isEditing ? 'rgba(124, 58, 237, 0.01)' : 'transparent', borderBottom: '1px solid var(--border-color)' }}>
+                                    
+                                    {/* 1. ID */}
+                                    <td style={{ fontWeight: 'bold', fontSize: '0.8rem', padding: '12px 16px' }}>{tx.id}</td>
+                                    
+                                    {/* 2. Recipient & Institution */}
+                                    <td style={{ padding: '12px 16px' }}>
+                                      {isEditing ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                          <input 
+                                            value={editFormData.recipientName || ''} 
+                                            onChange={(e) => handleChange(e, 'recipientName')} 
+                                            style={{ padding: '6px 8px', width: '130px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.85rem' }} 
+                                            placeholder="Recipient Name" 
+                                          />
+                                          <input 
+                                            value={editFormData.workplaceInstitution || ''} 
+                                            onChange={(e) => handleChange(e, 'workplaceInstitution')} 
+                                            style={{ padding: '4px 8px', width: '130px', fontSize: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)' }} 
+                                            placeholder="Institution/Workplace" 
+                                          />
+                                        </div>
+                                      ) : (
+                                        <div>
+                                          <div style={{ fontWeight: 'bold' }}>{tx.recipientName}</div>
+                                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                                            {tx.licenseNumber} | {tx.workplaceInstitution}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </td>
+                                    
+                                    {/* 3. Category */}
+                                    <td style={{ padding: '12px 16px' }}>
+                                      {isEditing ? (
+                                        <select 
+                                          value={editFormData.spendCategory || ''} 
+                                          onChange={(e) => handleChange(e, 'spendCategory')} 
+                                          style={{ padding: '6px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                                        >
+                                          <option value="PRESENTATION">PRESENTATION</option>
+                                          <option value="SAMPLES">SAMPLES</option>
+                                          <option value="CONSULTANCY">CONSULTANCY</option>
+                                          <option value="CONVENZIONI">CONVENZIONI</option>
+                                          <option value="DONAZIONI">DONAZIONI</option>
+                                          <option value="CONFERENCE_SUPPORT">CONFERENCE_SUPPORT</option>
+                                        </select>
+                                      ) : (
+                                        <span className="badge" style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.72rem' }}>
+                                          {tx.spendCategory}
+                                        </span>
+                                      )}
+                                    </td>
+                                    
+                                    {/* 4. Purpose & Provision */}
+                                    <td style={{ padding: '12px 16px' }}>
+                                      {isEditing ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                          <input 
+                                            value={editFormData.purposeOfBenefit || ''} 
+                                            onChange={(e) => handleChange(e, 'purposeOfBenefit')} 
+                                            style={{ padding: '6px 8px', width: '150px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.85rem' }} 
+                                            placeholder="Purpose" 
+                                          />
+                                          <input 
+                                            value={editFormData.details || ''} 
+                                            onChange={(e) => handleChange(e, 'details')} 
+                                            style={{ padding: '4px 8px', width: '150px', fontSize: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)' }} 
+                                            placeholder="Details/Reference" 
+                                          />
+                                        </div>
+                                      ) : (
+                                        <div>
+                                          <div>{tx.purposeOfBenefit || <em style={{ color: 'var(--text-muted)' }}>None</em>}</div>
+                                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                            {tx.placeOfProvision} {tx.details ? `| ${tx.details}` : ''}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </td>
+                                    
+                                    {/* 5. Original Spend */}
+                                    <td style={{ padding: '12px 16px' }}>
+                                      {isEditing ? (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{tx.currencyOriginal}</span>
+                                          <input 
+                                            type="number" 
+                                            value={editFormData.amountOriginal || 0} 
+                                            onChange={(e) => handleChange(e, 'amountOriginal')} 
+                                            style={{ padding: '6px 8px', width: '80px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', textAlign: 'right', fontSize: '0.85rem' }} 
+                                          />
+                                        </div>
+                                      ) : (
+                                        <div>
+                                          {tx.currencyOriginal} {tx.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2, maximumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2 })}
+                                        </div>
+                                      )}
+                                    </td>
+                                    
+                                    {/* 6. Normalized USD */}
+                                    <td style={{ fontWeight: 700, color: 'var(--primary-accent)', padding: '12px 16px' }}>
+                                      ${tx.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </td>
+                                    
+                                    {/* 7. Completeness Audit */}
+                                    <td style={{ padding: '12px 16px' }}>
+                                      {reviewView === 'pending' ? (
+                                        (!completeness.isComplete || limitExceeded) ? (
+                                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                            <span className="badge badge-danger" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', padding: '3px 6px' }}>
+                                              <ShieldAlert size={12} /> Flagged
+                                            </span>
+                                            <div style={{ fontSize: '0.7rem', color: 'var(--danger)', maxWidth: '180px', lineHeight: 1.3 }}>
+                                              {!completeness.isComplete && (
+                                                <div>Missing statutory fields: {completeness.missingFields.join(', ')}</div>
+                                              )}
+                                              {limitExceeded && (
+                                                <div>Advisory policy cap exceeded!</div>
+                                              )}
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', padding: '3px 6px' }}>
+                                            <CheckCircle size={12} /> Compliant
+                                          </span>
+                                        )
+                                      ) : (
+                                        <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', padding: '3px 6px', background: 'rgba(16,185,129,0.06)' }}>
+                                          <CheckCircle size={12} /> Sealed & Verified
+                                        </span>
+                                      )}
+                                    </td>
+                                    
+                                    {/* 8. Actions */}
+                                    <td style={{ padding: '12px 16px' }}>
+                                      {reviewView === 'pending' ? (
+                                        isEditing ? (
+                                          <div style={{ display: 'flex', gap: '6px' }}>
+                                            <button className="btn btn-primary" onClick={() => handleSaveEdit(tx.id)} style={{ padding: '6px 10px', fontSize: '0.72rem', borderRadius: '4px' }}>Save</button>
+                                            <button className="btn" onClick={handleCancelEdit} style={{ padding: '6px 10px', fontSize: '0.72rem', borderRadius: '4px', background: 'var(--border-color)', color: 'var(--text-primary)' }}>Cancel</button>
+                                          </div>
+                                        ) : (
+                                          <div style={{ display: 'flex', gap: '6px' }}>
+                                            <button className="btn" onClick={() => handleEditClick(tx)} style={{ padding: '6px 10px', fontSize: '0.72rem', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', borderRadius: '4px' }}>Edit</button>
+                                            <button className="btn" onClick={() => setSelectedHistoryTxId(tx.id)} style={{ padding: '6px 10px', fontSize: '0.72rem', background: 'rgba(255,255,255,0.03)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px' }}>Logs</button>
+                                          </div>
+                                        )
+                                      ) : (
+                                        <button className="btn" onClick={() => setSelectedHistoryTxId(tx.id)} style={{ padding: '6px 10px', fontSize: '0.72rem', background: 'rgba(255,255,255,0.03)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px' }}>View Logs</button>
+                                      )}
+                                    </td>
+                                    
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        )}
+                      </div>
+                    </>
+                  );
+                })() : (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '380px', color: 'var(--text-secondary)', padding: '40px', textAlign: 'center' }}>
+                    <FileText size={48} style={{ opacity: 0.1, marginBottom: '16px' }} />
+                    <h3 style={{ margin: 0, fontWeight: 700 }}>Select a Source File</h3>
+                    <p style={{ margin: '6px 0 0 0', fontSize: '0.88rem', maxWidth: '320px' }}>
+                      Choose a loaded CSV or spreadsheet from the left pane to audit its specific records and statutory compliance checks.
+                    </p>
+                  </div>
                 )}
+              </div>
+              
+            </div>
+
+            {/* Emergency Administrative Resets */}
+            <div className="card" style={{ border: '1px solid rgba(239, 68, 68, 0.2)', background: 'rgba(239, 68, 68, 0.02)', padding: '20px 24px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
+              <div>
+                <h3 style={{ color: 'var(--danger)', margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 'bold' }}>Danger Zone (Administrative Resets)</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>
+                  Irreversibly wipe all SQL databases (Staging, South Korea, Italy, Ingestion Batches, and secure Audit Logs) to reset your testing workspace.
+                </p>
+              </div>
+              <button 
+                onClick={handlePurgeDatabases}
+                className="btn"
+                style={{ padding: '10px 20px', background: 'var(--danger)', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)' }}
+              >
+                Purge All SQL Databases
               </button>
             </div>
-          )}
-
-          {/* KPI Dashboard */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
-            <div className="card">
-              <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '8px' }}>GLOBAL CONSOLIDATED SPEND</h3>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary-glow)' }}>
-                ${globalTotalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
-              </div>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Aggregated & normalized globally</p>
-            </div>
-            
-            <div className="card">
-              <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '8px' }}>TOTAL INGESTED TRANSACTIONS</h3>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                {transactions.length} Records
-              </div>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Synced from active country feeds</p>
-            </div>
-
-            <div className="card">
-              <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '8px' }}>PENDING COMPLIANCE REMEDIATIONS</h3>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: activeAlertsCount > 0 ? 'var(--warning)' : 'var(--success)' }}>
-                {activeAlertsCount} Alerts
-              </div>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Awaiting statutory override</p>
-            </div>
-
-            <div className="card">
-              <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '8px' }}>DOWNSTREAM COUNTRY FEEDS</h3>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--success)' }}>
-                4 Jurisdictions
-              </div>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Korea [KR] | Italy [IT] | France [FR] | USA [US]</p>
-            </div>
           </div>
-
-          {/* Central Ingestion Batch Ledger */}
-          <div className="card">
-            <h2 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Clock size={20} color="var(--primary-glow)" /> Central Ingestion Batch Ledger
-            </h2>
-            <div className="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Batch ID</th>
-                    <th>Jurisdiction</th>
-                    <th>Target Year</th>
-                    <th>Source File Name</th>
-                    <th>Uploaded At</th>
-                    <th>Total Records</th>
-                    <th>Remediation Flags</th>
-                    <th>Downstream Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {batches.map(batch => (
-                    <tr key={batch.batchId}>
-                      <td style={{ fontWeight: 'bold' }}>{batch.batchId}</td>
-                      <td>
-                        <span className="badge" style={{ background: '#f1f5f9', border: '1px solid var(--border-color)', color: '#334155' }}>
-                          {batch.countryCode === 'KR' ? '🇰🇷 South Korea' : batch.countryCode === 'IT' ? '🇮🇹 Italy' : batch.countryCode === 'FR' ? '🇫🇷 France' : '🇺🇸 USA'}
-                        </span>
-                      </td>
-                      <td>{batch.reportingYear}</td>
-                      <td style={{ color: 'var(--text-secondary)' }}>{batch.sourceFileName}</td>
-                      <td>{new Date(batch.uploadTimestamp).toLocaleString()}</td>
-                      <td>{batch.totalRecords}</td>
-                      <td>
-                        {batch.flaggedRecords > 0 ? (
-                          <span className="badge badge-danger">
-                            <ShieldAlert size={14} /> {batch.flaggedRecords} Flagged
-                          </span>
-                        ) : (
-                          <span className="badge badge-success">
-                            <CheckCircle size={14} /> 0 Flags
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        <span className={`badge ${batch.status === 'PROCESSED' ? 'badge-success' : 'badge-warning'}`}>
-                          {batch.status === 'PROCESSED' ? 'FEED_SYNC_OK' : 'PENDING_AUDIT'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Multi-Country Ingestion Uploader */}
       {activeTab === 'uploader' && (

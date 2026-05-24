@@ -54,17 +54,31 @@ export const APIGateway = {
       let url = `${BACKEND_URL}/api/staging/transactions`;
       if (countryFilter && countryFilter !== 'GLOBAL') {
         const lowerCountry = countryFilter.toLowerCase();
-        if (lowerCountry === 'us') {
-          url = `${BACKEND_URL}/api/transactions/usa`;
-        } else {
-          url = `${BACKEND_URL}/api/transactions/${lowerCountry}`;
-        }
+        let path = lowerCountry;
+        if (lowerCountry === 'kr') path = 'korea';
+        if (lowerCountry === 'it') path = 'italy';
+        if (lowerCountry === 'fr') path = 'france';
+        if (lowerCountry === 'us') path = 'usa';
+        
+        url = `${BACKEND_URL}/api/transactions/${path}`;
       }
       const res = await fetch(url);
       if (!res.ok) throw new Error("Database fetch error");
       return await res.json();
     } catch (err) {
       console.error("API Gateway error reading transactions:", err);
+      return [];
+    }
+  },
+
+  // Fetch committed production transactions across all country registries
+  getCommittedTransactions: async (): Promise<UniversalTransaction[]> => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/transactions/committed`);
+      if (!res.ok) throw new Error("Database fetch error");
+      return await res.json();
+    } catch (err) {
+      console.error("API Gateway error reading committed transactions:", err);
       return [];
     }
   },
@@ -155,6 +169,19 @@ export const APIGateway = {
     } catch (err) {
       console.error("API Gateway error executing ETL staging commit:", err);
       return { success: false };
+    }
+  },
+
+  // Emergency Database Purge
+  purgeDatabases: async (): Promise<boolean> => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/purge`, {
+        method: 'POST'
+      });
+      return res.ok;
+    } catch (err) {
+      console.error("API Gateway error executing administrative database purge:", err);
+      return false;
     }
   },
 

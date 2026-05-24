@@ -78,6 +78,26 @@ const Sidebar = () => {
           <span>Dashboard (Italy)</span>
         </NavLink>
 
+        <NavLink to="/italy/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <Database size={20} />
+          <span>Data Explorer</span>
+        </NavLink>
+
+        <NavLink to="/italy/source-files" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <FileUp size={20} />
+          <span>Source Files</span>
+        </NavLink>
+
+        <NavLink to="/italy/remediation" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <AlertCircle size={20} />
+          <span>Remediation</span>
+        </NavLink>
+
+        <NavLink to="/italy/ingestion" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <UploadCloud size={20} />
+          <span>Local Ingestion</span>
+        </NavLink>
+
         <NavLink to="/italy/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <FileText size={20} />
           <span>Statutory Disclosures</span>

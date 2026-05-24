@@ -32,6 +32,10 @@ const AppLayout = () => {
           <Route path="/reporting" element={<Reporting />} />
           <Route path="/italy/dashboard" element={<ItalyDashboard />} />
           <Route path="/italy/reporting" element={<ItalyReporting />} />
+          <Route path="/italy/data" element={<DataExplorer />} />
+          <Route path="/italy/remediation" element={<Remediation />} />
+          <Route path="/italy/ingestion" element={<Ingestion />} />
+          <Route path="/italy/source-files" element={<SourceFiles />} />
           <Route path="/data" element={<DataExplorer />} />
           <Route path="/audit" element={<AuditLogs />} />
           <Route path="/assistant" element={<AIAssistant />} />

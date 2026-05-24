@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Search, Filter, SlidersHorizontal, AlertCircle, Edit2, Save, X, ArrowUp, ArrowDown } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { APIGateway } from '../datacenter/api_gateway';
 
 interface Transaction {
@@ -22,6 +23,11 @@ interface Transaction {
 }
 
 const DataExplorer = () => {
+  const location = useLocation();
+  const isItaly = location.pathname.includes('/italy');
+  const countryCode = isItaly ? 'IT' : 'KR';
+  const currencyLabel = isItaly ? 'Amount (EUR)' : 'Amount (KRW)';
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,14 +37,15 @@ const DataExplorer = () => {
 
   useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, [location.pathname]); // Re-fetch when switching between portals
 
   const fetchTransactions = async () => {
     try {
-      const krSpend = await APIGateway.getTransactions('KR');
+      setIsLoading(true);
+      const spendData = await APIGateway.getTransactions(countryCode);
       const batches = await APIGateway.getBatches();
       
-      const mappedTx = krSpend.map(t => {
+      const mappedTx = spendData.map(t => {
         const batch = batches.find(b => b.batchId === t.batchId);
         return {
           id: t.id,
@@ -49,7 +56,7 @@ const DataExplorer = () => {
           amountKRW: t.amountOriginal,
           currency: t.currencyOriginal,
           details: t.details,
-          sourceFile: batch ? batch.sourceFileName : 'KR_Sunshine_Transactions_Q1.xlsx',
+          sourceFile: batch ? batch.sourceFileName : (isItaly ? 'Italy_Transparency_Transactions_Q1.xlsx' : 'KR_Sunshine_Transactions_Q1.xlsx'),
           entity: {
             recipientType: t.recipientType,
             recipientName: t.recipientName,
@@ -195,8 +202,8 @@ const DataExplorer = () => {
 
   return (
     <div>
-      <h1 className="page-title">Data Explorer</h1>
-      <p className="page-subtitle">Search, sort, and securely edit ingested data records. All modifications are logged.</p>
+      <h1 className="page-title">Data Explorer ({isItaly ? 'Italy' : 'South Korea'})</h1>
+      <p className="page-subtitle">Search, sort, and securely edit ingested {isItaly ? 'Italy Sanità Trasparente' : 'K-Sunshine Act'} data records. All modifications are logged.</p>
 
       <div className="card" style={{ marginBottom: '24px', display: 'flex', gap: '16px', padding: '16px' }}>
         <div style={{ position: 'relative', flex: 1 }}>
@@ -229,7 +236,7 @@ const DataExplorer = () => {
                   {renderSortableHeader('Place', 'placeOfProvision')}
                   {renderSortableHeader('Purpose', 'purposeOfBenefit', '150px')}
                   {renderSortableHeader('Details', 'details', '200px')}
-                  {renderSortableHeader('Amount (KRW)', 'amountKRW')}
+                  {renderSortableHeader(currencyLabel, 'amountKRW')}
                   {renderSortableHeader('Source File', 'sourceFile', '180px')}
                   <th style={{ minWidth: '100px' }}>Actions</th>
                 </tr>
@@ -269,7 +276,9 @@ const DataExplorer = () => {
                           <td>{tx.placeOfProvision || '-'}</td>
                           <td>{tx.purposeOfBenefit || '-'}</td>
                           <td>{tx.details || '-'}</td>
-                          <td style={{ fontWeight: 500 }}>₩{tx.amountKRW.toLocaleString()}</td>
+                          <td style={{ fontWeight: 500 }}>
+                            {tx.currency} {tx.amountKRW.toLocaleString(undefined, { minimumFractionDigits: tx.currency === 'KRW' ? 0 : 2 })}
+                          </td>
                         </>
                       )}
                       
