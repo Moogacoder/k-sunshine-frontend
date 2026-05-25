@@ -4,6 +4,7 @@ import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, X, FileT
 import { APIGateway, type UniversalTransaction, type IngestionBatch, type AuditLog } from '../datacenter/api_gateway';
 import * as XLSX from 'xlsx';
 import { parseAmount, validateReportingCompleteness } from '../datacenter/validation';
+import { useLanguage } from '../components/LanguageContext';
 
 declare const L: any;
 
@@ -13,6 +14,7 @@ interface DataCenterProps {
 
 const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'overview' | 'compliance_map' | 'uploader' | 'transactions' | 'source_files'>(defaultTab || 'overview');
   const [mapMetricFilter, setMapMetricFilter] = useState<'ingested' | 'pushed' | 'reports'>('ingested');
 
@@ -618,7 +620,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <Database size={32} color="var(--primary-accent)" />
-              <h1 className="page-title" style={{ margin: 0 }}>Intelligent Transparency Data Center</h1>
+              <h1 className="page-title" style={{ margin: 0 }}>{t('datacenter.title')}</h1>
             </div>
           </div>
 
@@ -629,14 +631,14 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
               className={`btn ${activeTab === 'overview' ? 'btn-primary' : ''}`}
               style={{ background: activeTab === 'overview' ? '' : 'transparent', color: activeTab === 'overview' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
             >
-              <Database size={18} /> Incoming Data Review
+              <Database size={18} /> {t('datacenter.incomingReview')}
             </button>
             <button 
               onClick={() => setActiveTab('uploader')}
               className={`btn ${activeTab === 'uploader' ? 'btn-primary' : ''}`}
               style={{ background: activeTab === 'uploader' ? '' : 'transparent', color: activeTab === 'uploader' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
             >
-              <UploadCloud size={18} /> Load Data
+              <UploadCloud size={18} /> {t('datacenter.loadData')}
             </button>
 
             <button 
@@ -644,7 +646,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
               className={`btn ${activeTab === 'source_files' ? 'btn-primary' : ''}`}
               style={{ background: activeTab === 'source_files' ? '' : 'transparent', color: activeTab === 'source_files' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
             >
-              <FileText size={18} /> Source Files Explorer
+              <FileText size={18} /> {t('datacenter.sourceExplorer')}
             </button>
           </div>
         </>
@@ -652,10 +654,10 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
         <div style={{ marginBottom: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Globe size={32} color="var(--primary-accent)" />
-            <h1 className="page-title" style={{ margin: 0 }}>Global Data Status</h1>
+            <h1 className="page-title" style={{ margin: 0 }}>{t('sidebar.globalDataStatus')}</h1>
           </div>
           <p style={{ margin: '8px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-            Real-time compliance telemetry across active pharmaceutical value transparency registers.
+            {t('datacenter.telemetry')}
           </p>
         </div>
       )}
@@ -795,8 +797,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                         boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
                       }}
                     >
-                      {isCommitting ? 'Committing...' : (
-                        <>Commit File to Registries <ArrowRight size={18} /></>
+                      {isCommitting ? 'Pushing...' : (
+                        <>Push to Country Database <ArrowRight size={18} /></>
                       )}
                     </button>
                   </div>
@@ -1724,7 +1726,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
               
               <div style={{ padding: '24px', overflowY: 'auto', flex: 1, color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
-                  <h3 style={{ margin: '0 0 6px 0', fontSize: '1.1rem' }}>Statutory Data Integrity & Compliance Audit</h3>
+                  <h3 style={{ margin: '0 0 6px 0', fontSize: '1.1rem' }}>Transaction Audit</h3>
                   <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.4 }}>
                     Please review the audit summary metrics below. Once committed, these records will be pushed to the final compliance country registers and purged from the staging buffer.
                   </p>

@@ -14,7 +14,7 @@ const AIAssistant = () => {
     {
       id: 'welcome',
       sender: 'bot',
-      text: 'Hello! I am the K-Sunshine Compliance AI. I am fully trained on the South Korean Pharmaceutical Affairs Act and MOHW expenditure reporting rules. How can I assist your review today?',
+      text: 'Hello! I am the Global Transparency Compliance AI. I am fully trained on the South Korean Pharmaceutical Affairs Act and MOHW expenditure reporting rules. How can I assist your review today?',
       timestamp: new Date()
     }
   ]);
@@ -50,10 +50,15 @@ const AIAssistant = () => {
         throw new Error('Fallback to offline intelligence');
       }
       
+      const cleanedReply = reply
+        .replace(/k-transparency/gi, 'Global Transparency Manager')
+        .replace(/K-Sunshine Compliance AI/g, 'Global Transparency Compliance AI')
+        .replace(/k-sunshine/gi, 'Global Transparency');
+
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'bot',
-        text: reply,
+        text: cleanedReply,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, botMessage]);
@@ -61,7 +66,7 @@ const AIAssistant = () => {
       console.warn("Using high-performance local compliance rules-engine:", error);
       
       const text = userMessage.text.toLowerCase();
-      let reply = "That is an excellent compliance query. Under South Korea's K-Sunshine Act rules, all transfers of value to Healthcare Professionals (HCPs) and Medical Institutions must be tracked in our Universal Data Model. Let me know if you would like me to review specific ledger items or generate compliance-ready CSV/PDF reports!";
+      let reply = "That is an excellent compliance query. Under South Korea's Pharmaceutical Affairs Act rules, all transfers of value to Healthcare Professionals (HCPs) and Medical Institutions must be tracked in our Universal Data Model. Let me know if you would like me to review specific ledger items or generate compliance-ready CSV/PDF reports!";
       
       if (text.includes('limit') || text.includes('presentation') || text.includes('briefing') || text.includes('food') || text.includes('beverage') || text.includes('meal')) {
         reply = "Under Article 47-2 of South Korea's Pharmaceutical Affairs Act, the maximum value for food and beverages provided to an HCP during an official product presentation is strictly capped at **₩100,000** (approx. $75 USD) per HCP per session. Additionally, promotional items/freebies are restricted to **₩10,000** or less, and must be clearly marked with the manufacturer logo.";

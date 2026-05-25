@@ -17,6 +17,7 @@ import ColombiaDashboard from './pages/ColombiaDashboard';
 import ColombiaReporting from './pages/ColombiaReporting';
 import { AuthProvider } from './components/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import { LanguageProvider } from './components/LanguageContext';
 import './index.css';
 
 const AppLayout = () => {
@@ -57,16 +58,18 @@ const AppLayout = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/*" element={<AppLayout />} />
-          </Route>
-        </Routes>
-      </Router>
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/*" element={<AppLayout />} />
+            </Route>
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
 

@@ -2,9 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, UploadCloud, AlertCircle, FileText, LogOut, Database, Shield, Sparkles, FileUp, Globe, ChevronDown, ChevronRight } from 'lucide-react';
 import { useAuth } from './AuthContext';
+import { useLanguage } from './LanguageContext';
+import type { Language } from './translations';
 
 const Sidebar = () => {
   const { logout } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -27,16 +30,52 @@ const Sidebar = () => {
     if (currentPath !== prevPathRef.current) {
       if (isKoreaActive) {
         setIsKoreaExpanded(true);
-      }
-      if (isItalyActive) {
+        setIsItalyExpanded(false);
+        setIsColombiaExpanded(false);
+      } else if (isItalyActive) {
+        setIsKoreaExpanded(false);
         setIsItalyExpanded(true);
-      }
-      if (isColombiaActive) {
+        setIsColombiaExpanded(false);
+      } else if (isColombiaActive) {
+        setIsKoreaExpanded(false);
+        setIsItalyExpanded(false);
         setIsColombiaExpanded(true);
+      } else {
+        setIsKoreaExpanded(false);
+        setIsItalyExpanded(false);
+        setIsColombiaExpanded(false);
       }
       prevPathRef.current = currentPath;
     }
   }, [currentPath, isKoreaActive, isItalyActive, isColombiaActive]);
+
+  // Unified mutual-exclusion toggle handlers
+  const handleKoreaToggle = () => {
+    const nextState = !isKoreaExpanded;
+    setIsKoreaExpanded(nextState);
+    if (nextState) {
+      setIsItalyExpanded(false);
+      setIsColombiaExpanded(false);
+    }
+  };
+
+  const handleItalyToggle = () => {
+    const nextState = !isItalyExpanded;
+    setIsItalyExpanded(nextState);
+    if (nextState) {
+      setIsKoreaExpanded(false);
+      setIsColombiaExpanded(false);
+    }
+  };
+
+  const handleColombiaToggle = () => {
+    const nextState = !isColombiaExpanded;
+    setIsColombiaExpanded(nextState);
+    if (nextState) {
+      setIsKoreaExpanded(false);
+      setIsItalyExpanded(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -45,40 +84,64 @@ const Sidebar = () => {
 
   return (
     <aside className="sidebar">
-      <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <img src="/qordata_logo.png" alt="Qordata" style={{ height: '32px' }} />
+      <div style={{ marginBottom: '32px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <img src="/qordata_logo.png" alt="Qordata" style={{ height: '32px', alignSelf: 'flex-start' }} />
+        
+        {/* Premium Language Selector Dropdown */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.05)', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', marginTop: '12px' }}>
+          <Globe size={14} style={{ color: 'var(--primary-glow)' }} />
+          <select 
+            value={language} 
+            onChange={(e) => setLanguage(e.target.value as Language)}
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: 'var(--text-primary)', 
+              fontSize: '0.85rem', 
+              fontWeight: 500, 
+              outline: 'none', 
+              cursor: 'pointer',
+              width: '100%',
+              fontFamily: 'inherit'
+            }}
+          >
+            <option value="en" style={{ background: 'var(--bg-surface)' }}>🇺🇸 English</option>
+            <option value="ko" style={{ background: 'var(--bg-surface)' }}>🇰🇷 한국어 (Korean)</option>
+            <option value="it" style={{ background: 'var(--bg-surface)' }}>🇮🇹 Italiano (Italian)</option>
+            <option value="es" style={{ background: 'var(--bg-surface)' }}>🇨🇴 Español (Spanish)</option>
+          </select>
+        </div>
       </div>
 
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', overflowY: 'auto', maxHeight: 'calc(100vh - 200px)', paddingRight: '4px' }}>
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, overflowY: 'auto', paddingRight: '4px', marginBottom: '20px' }}>
         {/* Administrative Control Hub */}
-        <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.05em', margin: '8px 0 4px 12px', fontWeight: 'bold', opacity: 0.8 }}>Administrative Hub</div>
+        <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.05em', margin: '8px 0 4px 12px', fontWeight: 'bold', opacity: 0.8 }}>{t('sidebar.adminHub')}</div>
         <NavLink to="/datacenter" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ borderLeft: '3px solid var(--secondary-accent)', background: 'rgba(124, 58, 237, 0.05)', fontWeight: 'bold' }}>
           <Database size={20} color="var(--primary-glow)" />
-          <span style={{ color: 'var(--primary-glow)' }}>Global Data Center</span>
+          <span style={{ color: 'var(--primary-glow)' }}>{t('sidebar.globalDataCenter')}</span>
         </NavLink>
 
         <NavLink to="/global-data-status" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <Globe size={20} />
-          <span>Global Data Status</span>
+          <span>{t('sidebar.globalDataStatus')}</span>
         </NavLink>
 
         <NavLink to="/audit" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <Shield size={20} />
-          <span>Audit Trail</span>
+          <span>{t('sidebar.auditTrail')}</span>
         </NavLink>
 
         <NavLink to="/assistant" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <Sparkles size={20} />
-          <span>AI Assistant</span>
+          <span>{t('sidebar.aiAssistant')}</span>
         </NavLink>
 
         <div style={{ margin: '6px 0', borderTop: '1px solid var(--border-color)', opacity: 0.3 }}></div>
 
         {/* South Korea Portal Accordion */}
         <button
-          onClick={() => setIsKoreaExpanded(!isKoreaExpanded)}
+          onClick={handleKoreaToggle}
           style={{
-            background: 'none',
             border: 'none',
             width: '100%',
             padding: '10px 12px',
@@ -88,56 +151,51 @@ const Sidebar = () => {
             cursor: 'pointer',
             fontSize: '0.72rem',
             textTransform: 'uppercase',
-            color: isKoreaExpanded ? 'var(--primary-accent)' : 'var(--text-secondary)',
             letterSpacing: '0.05em',
             fontWeight: 'bold',
             transition: 'all 0.2s ease',
             textAlign: 'left',
             fontFamily: 'inherit',
-            borderRadius: '6px'
           }}
-          className="accordion-header"
+          className={`accordion-header ${isKoreaActive ? 'active' : ''}`}
         >
-          <span>🇰🇷 South Korea Sunshine</span>
+          <span>🇰🇷 {t('sidebar.southKorea')}</span>
           {isKoreaExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
         </button>
 
         <div style={{
-          maxHeight: isKoreaExpanded ? '340px' : '0px',
-          overflow: 'hidden',
-          transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          display: 'flex',
+          display: isKoreaExpanded ? 'flex' : 'none',
           flexDirection: 'column',
           paddingLeft: '4px'
         }}>
           <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <LayoutDashboard size={20} />
-            <span>Dashboard (Korea)</span>
+            <span>{t('sidebar.dashboardKorea')}</span>
           </NavLink>
           
           <NavLink to="/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <Database size={20} />
-            <span>Data Explorer</span>
+            <span>{t('sidebar.dataExplorer')}</span>
           </NavLink>
 
           <NavLink to="/source-files" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <FileUp size={20} />
-            <span>Source Files</span>
+            <span>{t('sidebar.sourceFiles')}</span>
           </NavLink>
 
           <NavLink to="/remediation" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <AlertCircle size={20} />
-            <span>Remediation</span>
+            <span>{t('sidebar.remediation')}</span>
           </NavLink>
 
           <NavLink to="/ingestion" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <UploadCloud size={20} />
-            <span>Local Ingestion</span>
+            <span>{t('sidebar.localIngestion')}</span>
           </NavLink>
           
           <NavLink to="/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <FileText size={20} />
-            <span>MOHW Reports</span>
+            <span>{t('sidebar.mohwReports')}</span>
           </NavLink>
         </div>
 
@@ -145,9 +203,8 @@ const Sidebar = () => {
 
         {/* Italy Portal Accordion */}
         <button
-          onClick={() => setIsItalyExpanded(!isItalyExpanded)}
+          onClick={handleItalyToggle}
           style={{
-            background: 'none',
             border: 'none',
             width: '100%',
             padding: '10px 12px',
@@ -157,56 +214,51 @@ const Sidebar = () => {
             cursor: 'pointer',
             fontSize: '0.72rem',
             textTransform: 'uppercase',
-            color: isItalyExpanded ? 'var(--primary-accent)' : 'var(--text-secondary)',
             letterSpacing: '0.05em',
             fontWeight: 'bold',
             transition: 'all 0.2s ease',
             textAlign: 'left',
             fontFamily: 'inherit',
-            borderRadius: '6px'
           }}
-          className="accordion-header"
+          className={`accordion-header ${isItalyActive ? 'active' : ''}`}
         >
-          <span>🇮🇹 Italy Sanità Trasparente</span>
+          <span>🇮🇹 {t('sidebar.italy')}</span>
           {isItalyExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
         </button>
 
         <div style={{
-          maxHeight: isItalyExpanded ? '340px' : '0px',
-          overflow: 'hidden',
-          transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          display: 'flex',
+          display: isItalyExpanded ? 'flex' : 'none',
           flexDirection: 'column',
           paddingLeft: '4px'
         }}>
           <NavLink to="/italy/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <LayoutDashboard size={20} />
-            <span>Dashboard (Italy)</span>
+            <span>{t('sidebar.dashboardItaly')}</span>
           </NavLink>
 
           <NavLink to="/italy/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <Database size={20} />
-            <span>Data Explorer</span>
+            <span>{t('sidebar.dataExplorer')}</span>
           </NavLink>
 
           <NavLink to="/italy/source-files" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <FileUp size={20} />
-            <span>Source Files</span>
+            <span>{t('sidebar.sourceFiles')}</span>
           </NavLink>
 
           <NavLink to="/italy/remediation" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <AlertCircle size={20} />
-            <span>Remediation</span>
+            <span>{t('sidebar.remediation')}</span>
           </NavLink>
 
           <NavLink to="/italy/ingestion" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <UploadCloud size={20} />
-            <span>Local Ingestion</span>
+            <span>{t('sidebar.localIngestion')}</span>
           </NavLink>
 
           <NavLink to="/italy/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <FileText size={20} />
-            <span>Statutory Disclosures</span>
+            <span>{t('sidebar.statutoryDisclosures')}</span>
           </NavLink>
         </div>
 
@@ -214,9 +266,8 @@ const Sidebar = () => {
 
         {/* Colombia Portal Accordion */}
         <button
-          onClick={() => setIsColombiaExpanded(!isColombiaExpanded)}
+          onClick={handleColombiaToggle}
           style={{
-            background: 'none',
             border: 'none',
             width: '100%',
             padding: '10px 12px',
@@ -226,65 +277,60 @@ const Sidebar = () => {
             cursor: 'pointer',
             fontSize: '0.72rem',
             textTransform: 'uppercase',
-            color: isColombiaExpanded ? 'var(--primary-accent)' : 'var(--text-secondary)',
             letterSpacing: '0.05em',
             fontWeight: 'bold',
             transition: 'all 0.2s ease',
             textAlign: 'left',
             fontFamily: 'inherit',
-            borderRadius: '6px'
           }}
-          className="accordion-header"
+          className={`accordion-header ${isColombiaActive ? 'active' : ''}`}
         >
-          <span>🇨🇴 Colombia RTVSS</span>
+          <span>🇨🇴 {t('sidebar.colombia')}</span>
           {isColombiaExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
         </button>
 
         <div style={{
-          maxHeight: isColombiaExpanded ? '340px' : '0px',
-          overflow: 'hidden',
-          transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          display: 'flex',
+          display: isColombiaExpanded ? 'flex' : 'none',
           flexDirection: 'column',
           paddingLeft: '4px'
         }}>
           <NavLink to="/colombia/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <LayoutDashboard size={20} />
-            <span>Dashboard (Colombia)</span>
+            <span>{t('sidebar.dashboardColombia')}</span>
           </NavLink>
 
           <NavLink to="/colombia/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <Database size={20} />
-            <span>Data Explorer</span>
+            <span>{t('sidebar.dataExplorer')}</span>
           </NavLink>
 
           <NavLink to="/colombia/source-files" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <FileUp size={20} />
-            <span>Source Files</span>
+            <span>{t('sidebar.sourceFiles')}</span>
           </NavLink>
 
           <NavLink to="/colombia/remediation" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <AlertCircle size={20} />
-            <span>Remediation</span>
+            <span>{t('sidebar.remediation')}</span>
           </NavLink>
 
           <NavLink to="/colombia/ingestion" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <UploadCloud size={20} />
-            <span>Local Ingestion</span>
+            <span>{t('sidebar.localIngestion')}</span>
           </NavLink>
 
           <NavLink to="/colombia/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <FileText size={20} />
-            <span>Statutory Disclosures</span>
+            <span>{t('sidebar.statutoryDisclosures')}</span>
           </NavLink>
         </div>
       </nav>
 
       <div style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '0.75rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <p style={{ margin: 0 }}><strong>Version:</strong> v1.0.0 (Commercial)</p>
-          <p style={{ margin: 0 }}><strong>Project:</strong> k-sunshine-act-com-2026</p>
-          <p style={{ margin: 0, wordBreak: 'break-all' }}><strong>Database:</strong> k-sunshine-db (Cloud SQL)</p>
+          <p style={{ margin: 0 }}><strong>{t('common.version')}:</strong> v1.0.0 (Commercial)</p>
+          <p style={{ margin: 0 }}><strong>{t('common.project')}:</strong> global-transparency-manager-2026</p>
+          <p style={{ margin: 0, wordBreak: 'break-all' }}><strong>{t('common.database')}:</strong> global-transparency-db (Cloud SQL)</p>
         </div>
         <button 
           onClick={handleLogout}
@@ -302,7 +348,7 @@ const Sidebar = () => {
             textAlign: 'left'
           }}
         >
-          <LogOut size={16} /> Logout
+          <LogOut size={16} /> {t('common.logout')}
         </button>
       </div>
     </aside>

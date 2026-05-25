@@ -453,7 +453,7 @@ const Reporting = () => {
         doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(15);
-        doc.text('K-SUNSHINE STATUTORY AUDIT & COMPLIANCE REPORT', 14, 12);
+        doc.text('GLOBAL TRANSPARENCY MANAGER STATUTORY AUDIT & COMPLIANCE REPORT', 14, 12);
         
         doc.setTextColor(167, 139, 250); // violet-300 (accent light glow)
         doc.setFont('helvetica', 'normal');
@@ -565,7 +565,7 @@ const Reporting = () => {
           doc.setFontSize(7.5);
           doc.setTextColor(148, 163, 184); // slate-400
           doc.setFont('helvetica', 'normal');
-          doc.text('CONFIDENTIAL AUDIT PREVIEW | GENERATED AUTOMATICALLY BY THE K-SUNSHINE COMPLIANCE ENGINE', 14, 199);
+          doc.text('CONFIDENTIAL AUDIT PREVIEW | GENERATED AUTOMATICALLY BY THE GLOBAL TRANSPARENCY COMPLIANCE ENGINE', 14, 199);
           doc.text('PHARMACEUTICAL AFFAIRS ACT ARTICLE 47-2 ENFORCEMENT & COMPLIANCE PROTOCOLS | FIVE-YEAR FISCAL RECORD RETENTION MANDATED', 14, 203);
           
           doc.setFont('helvetica', 'bold');
@@ -731,7 +731,7 @@ const Reporting = () => {
               <div className="pdf-toolbar-actions">
                 <a 
                   href={previewPdfUrl} 
-                  download={`K_Sunshine_${activeTemplateTitle.replace(/[^a-zA-Z0-9]/g, '_')}_Audit.pdf`}
+                  download={`Global_Transparency_Manager_${activeTemplateTitle.replace(/[^a-zA-Z0-9]/g, '_')}_Audit.pdf`}
                   className="btn btn-primary"
                   style={{ padding: '8px 16px', fontSize: '0.9rem', textDecoration: 'none' }}
                 >

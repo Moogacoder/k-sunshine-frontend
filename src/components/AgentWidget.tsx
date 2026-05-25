@@ -20,7 +20,7 @@ const AgentWidget = () => {
         
         <div className="agent-messages">
           <div style={{ background: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '12px', alignSelf: 'flex-start', maxWidth: '85%' }}>
-            <p style={{ margin: 0, fontSize: '0.9rem' }}>Hello! I'm your K-Sunshine Act compliance assistant. I can help you validate spend rules, explain remediation steps, or guide you through K-PIA reporting formats. How can I assist you today?</p>
+            <p style={{ margin: 0, fontSize: '0.9rem' }}>Hello! I'm your Global Transparency compliance assistant. I can help you validate spend rules, explain remediation steps, or guide you through regional reporting formats. How can I assist you today?</p>
           </div>
         </div>
         
