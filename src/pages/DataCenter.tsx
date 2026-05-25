@@ -61,6 +61,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
   const [isCommitting, setIsCommitting] = useState<boolean>(false);
   const [showReviewModal, setShowReviewModal] = useState<boolean>(false);
   const [isCertified, setIsCertified] = useState<boolean>(false);
+  const [workflowTrigger, setWorkflowTrigger] = useState<number>(0);
 
   useEffect(() => {
     // Load live central database feed asynchronously
@@ -76,7 +77,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
       setAllStagingTransactions(globalStaging);
     };
     loadData();
-  }, []);
+  }, [workflowTrigger]);
 
   // Setup Leaflet map instance ref
   const mapRef = useRef<any>(null);
@@ -783,24 +784,53 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                         This source file contains <strong>{batchRecords.length} records</strong>. Once approved and committed, they will be routed strictly to the <strong>{targetBatch.countryCode}</strong> compliance database.
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleOpenReviewModal(selectedReviewBatchId)}
-                      disabled={isCommitting}
-                      className="btn btn-primary"
-                      style={{
-                        padding: '12px 24px',
-                        fontWeight: 600,
-                        fontSize: '0.95rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
-                      }}
-                    >
-                      {isCommitting ? 'Pushing...' : (
-                        <>Push to Country Database <ArrowRight size={18} /></>
-                      )}
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      {/* Workflow Status Dropdown Selection */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-main)', border: '1px solid var(--border-color)', padding: '8px 16px', borderRadius: '8px' }}>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{t('workflow.statusTitle')}:</span>
+                        <select
+                          value={localStorage.getItem(`file_workflow_${targetBatch.countryCode}_${targetBatch.batchId}`) || 'NEEDS_REVIEW'}
+                          onChange={(e) => {
+                            const statusKey = `file_workflow_${targetBatch.countryCode}_${targetBatch.batchId}`;
+                            localStorage.setItem(statusKey, e.target.value);
+                            setWorkflowTrigger(prev => prev + 1);
+                          }}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--text-primary)',
+                            fontSize: '0.9rem',
+                            fontWeight: 600,
+                            outline: 'none',
+                            cursor: 'pointer',
+                            fontFamily: 'inherit'
+                          }}
+                        >
+                          <option value="NEEDS_REVIEW" style={{ background: 'var(--bg-surface)' }}>🔴 {t('workflow.needsReview')}</option>
+                          <option value="IN_PROCESS" style={{ background: 'var(--bg-surface)' }}>🟡 {t('workflow.inProcess')}</option>
+                          <option value="APPROVED" style={{ background: 'var(--bg-surface)' }}>🟢 {t('workflow.approved')}</option>
+                        </select>
+                      </div>
+
+                      <button
+                        onClick={() => handleOpenReviewModal(selectedReviewBatchId)}
+                        disabled={isCommitting}
+                        className="btn btn-primary"
+                        style={{
+                          padding: '12px 24px',
+                          fontWeight: 600,
+                          fontSize: '0.95rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
+                        }}
+                      >
+                        {isCommitting ? 'Pushing...' : (
+                          <>Push to Country Database <ArrowRight size={18} /></>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 );
               })()
@@ -913,6 +943,9 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                       
                       const batchAlertsCount = activeRecords.filter(t => t.remediationStatus === 'PENDING_REVIEW').length;
                       
+                      const statusKey = `file_workflow_${batch.countryCode}_${batch.batchId}`;
+                      const workflowStatus = localStorage.getItem(statusKey) || 'NEEDS_REVIEW';
+                      
                       return (
                         <div 
                           key={batch.batchId}
@@ -950,21 +983,27 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                               {new Date(batch.uploadTimestamp).toLocaleDateString()}
                             </span>
                             
-                            {reviewView === 'pending' ? (
-                              batchAlertsCount > 0 ? (
-                                <span className="badge badge-danger" style={{ fontSize: '0.65rem', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  <ShieldAlert size={12} /> {batchAlertsCount} Flagged
-                                </span>
-                              ) : (
-                                <span className="badge badge-success" style={{ fontSize: '0.65rem', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                  <CheckCircle size={12} /> Ready
-                                </span>
-                              )
-                            ) : (
-                              <span className="badge badge-success" style={{ fontSize: '0.65rem', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(16,185,129,0.06)' }}>
-                                <CheckCircle size={12} /> Archived
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                              <span className={`badge ${workflowStatus === 'APPROVED' ? 'badge-success' : (workflowStatus === 'IN_PROCESS' ? 'badge-warning' : 'badge-danger')}`} style={{ fontSize: '0.65rem', padding: '2px 6px', whiteSpace: 'nowrap' }}>
+                                {workflowStatus === 'APPROVED' ? t('workflow.approved') : (workflowStatus === 'IN_PROCESS' ? t('workflow.inProcess') : t('workflow.needsReview'))}
                               </span>
-                            )}
+
+                              {reviewView === 'pending' ? (
+                                batchAlertsCount > 0 ? (
+                                  <span className="badge badge-danger" style={{ fontSize: '0.65rem', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <ShieldAlert size={12} /> {batchAlertsCount} Flagged
+                                  </span>
+                                ) : (
+                                  <span className="badge badge-success" style={{ fontSize: '0.65rem', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <CheckCircle size={12} /> Ready
+                                  </span>
+                                )
+                              ) : (
+                                <span className="badge badge-success" style={{ fontSize: '0.65rem', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(16,185,129,0.06)' }}>
+                                  <CheckCircle size={12} /> Archived
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       );
@@ -985,7 +1024,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                   return (
                     <>
                       {/* Grid Header details */}
-                      <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-elevated)' }}>
+                      <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-elevated)', flexWrap: 'wrap', gap: '12px' }}>
                         <div>
                           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
                             <Database size={18} color="var(--primary-glow)" /> {targetBatch.sourceFileName}
@@ -996,8 +1035,37 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                               : 'Immutable Production Registry Archive: Locked statutory ledger logs.'}
                           </p>
                         </div>
-                        <div className={`badge ${reviewView === 'pending' ? 'badge-warning' : 'badge-success'}`} style={{ padding: '6px 12px', fontSize: '0.8rem', fontWeight: 600 }}>
-                          {reviewView === 'pending' ? 'Staging Buffer Registry' : 'Committed Country Tables'}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          {/* Workflow Status Dropdown Selection */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', padding: '6px 12px', borderRadius: '8px' }}>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{t('workflow.statusTitle')}:</span>
+                            <select
+                              value={localStorage.getItem(`file_workflow_${targetBatch.countryCode}_${targetBatch.batchId}`) || 'NEEDS_REVIEW'}
+                              onChange={(e) => {
+                                const statusKey = `file_workflow_${targetBatch.countryCode}_${targetBatch.batchId}`;
+                                localStorage.setItem(statusKey, e.target.value);
+                                setWorkflowTrigger(prev => prev + 1);
+                              }}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: 'var(--text-primary)',
+                                fontSize: '0.85rem',
+                                fontWeight: 600,
+                                outline: 'none',
+                                cursor: 'pointer',
+                                fontFamily: 'inherit'
+                              }}
+                            >
+                              <option value="NEEDS_REVIEW" style={{ background: 'var(--bg-surface)' }}>🔴 {t('workflow.needsReview')}</option>
+                              <option value="IN_PROCESS" style={{ background: 'var(--bg-surface)' }}>🟡 {t('workflow.inProcess')}</option>
+                              <option value="APPROVED" style={{ background: 'var(--bg-surface)' }}>🟢 {t('workflow.approved')}</option>
+                            </select>
+                          </div>
+
+                          <div className={`badge ${reviewView === 'pending' ? 'badge-warning' : 'badge-success'}`} style={{ padding: '6px 12px', fontSize: '0.8rem', fontWeight: 600 }}>
+                            {reviewView === 'pending' ? 'Staging Buffer Registry' : 'Committed Country Tables'}
+                          </div>
                         </div>
                       </div>
                       

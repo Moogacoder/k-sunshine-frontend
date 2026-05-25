@@ -72,6 +72,12 @@ export const translations = {
       commitDesc: 'This source file contains records. Once approved and committed, they will be routed to the regional compliance database.',
       feedBanner: 'Production Registry Feed Active',
       feedDesc: 'All records are successfully audited, cryptographically sealed, and archived inside regional databases.'
+    },
+    workflow: {
+      needsReview: 'Needs Review',
+      inProcess: 'In Process',
+      approved: 'Approved',
+      statusTitle: 'File Workflow Status'
     }
   },
   it: {
@@ -145,6 +151,12 @@ export const translations = {
       commitDesc: 'Questo file sorgente contiene dei record. Una volta approvati e inviati, saranno instradati al database di conformità regionale.',
       feedBanner: 'Feed del Registro di Produzione Attivo',
       feedDesc: 'Tutti i record sono stati verificati con successo, sigillati crittograficamente e archiviati nei database regionali.'
+    },
+    workflow: {
+      needsReview: 'Richiede Revisione',
+      inProcess: 'In Corso',
+      approved: 'Approvato',
+      statusTitle: 'Stato Flusso di Lavoro'
     }
   },
   ko: {
@@ -218,6 +230,12 @@ export const translations = {
       commitDesc: '이 소스 파일에는 레코드가 포함되어 있습니다. 승인 및 커밋되면 해당 지역 준수 데이터베이스로 전송됩니다.',
       feedBanner: '생산 등록부 피드 활성화됨',
       feedDesc: '모든 레코드가 성공적으로 감사되고 암호화되어 로컬 데이터베이스에 아카이브되었습니다.'
+    },
+    workflow: {
+      needsReview: '검토 필요',
+      inProcess: '진행 중',
+      approved: '승인됨',
+      statusTitle: '파일 워크플로 상태'
     }
   },
   es: {
@@ -291,6 +309,12 @@ export const translations = {
       commitDesc: 'Este archivo fuente contiene registros. Una vez aprobado y enviado, se enviará a la base de datos de cumplimiento regional.',
       feedBanner: 'Canal de Registro de Producción Activo',
       feedDesc: 'Todos los registros se auditaron con éxito, se sellaron criptográficamente y se archivaron en las bases de datos regionales.'
+    },
+    workflow: {
+      needsReview: 'Necesita Revisión',
+      inProcess: 'En Proceso',
+      approved: 'Aprobado',
+      statusTitle: 'Estado del Flujo de Trabajo'
     }
   }
 };

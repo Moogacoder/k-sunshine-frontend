@@ -2,13 +2,16 @@ import { useState, useEffect } from 'react';
 import { FileText, Database, Calendar } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { APIGateway } from '../datacenter/api_gateway';
+import { useLanguage } from '../components/LanguageContext';
 
 interface FileStat {
+  batchId: string;
   filename: string;
   recordCount: number;
   totalAmountKRW: number;
   earliestDate: string;
   latestDate: string;
+  workflowStatus: string;
 }
 
 interface Transaction {
@@ -32,6 +35,7 @@ interface Transaction {
 
 const SourceFiles = () => {
   const location = useLocation();
+  const { t } = useLanguage();
   const isItaly = location.pathname.includes('/italy');
   const isColombia = location.pathname.includes('/colombia');
   const countryCode = isColombia ? 'CO' : (isItaly ? 'IT' : 'KR');
@@ -42,6 +46,16 @@ const SourceFiles = () => {
   const [records, setRecords] = useState<Transaction[]>([]);
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [isLoadingRecords, setIsLoadingRecords] = useState(false);
+
+  const handleWorkflowChange = (filename: string, newStatus: string) => {
+    const targetFile = files.find(f => f.filename === filename);
+    if (!targetFile) return;
+    
+    const statusKey = `file_workflow_${countryCode}_${targetFile.batchId}`;
+    localStorage.setItem(statusKey, newStatus);
+    
+    setFiles(prev => prev.map(f => f.filename === filename ? { ...f, workflowStatus: newStatus } : f));
+  };
 
   useEffect(() => {
     fetchFiles();
@@ -58,12 +72,18 @@ const SourceFiles = () => {
       const mappedFiles: FileStat[] = targetBatches.map(b => {
         const batchTx = targetTransactions.filter(t => t.batchId === b.batchId);
         const totalAmount = batchTx.reduce((sum, t) => sum + t.amountOriginal, 0);
+        
+        const statusKey = `file_workflow_${countryCode}_${b.batchId}`;
+        const workflowStatus = localStorage.getItem(statusKey) || 'NEEDS_REVIEW';
+
         return {
+          batchId: b.batchId,
           filename: b.sourceFileName,
           recordCount: b.totalRecords,
           totalAmountKRW: totalAmount,
           earliestDate: b.uploadTimestamp,
-          latestDate: b.uploadTimestamp
+          latestDate: b.uploadTimestamp,
+          workflowStatus: workflowStatus
         };
       });
       setFiles(mappedFiles);
@@ -147,8 +167,13 @@ const SourceFiles = () => {
                   transition: 'background 0.2s'
                 }}
               >
-                <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <FileText size={16} /> {f.filename}
+                <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', gap: '8px' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <FileText size={16} /> {f.filename}
+                  </span>
+                  <span className={`badge ${f.workflowStatus === 'APPROVED' ? 'badge-success' : (f.workflowStatus === 'IN_PROCESS' ? 'badge-warning' : 'badge-danger')}`} style={{ fontSize: '0.65rem', padding: '2px 6px', whiteSpace: 'nowrap' }}>
+                    {f.workflowStatus === 'APPROVED' ? t('workflow.approved') : (f.workflowStatus === 'IN_PROCESS' ? t('workflow.inProcess') : t('workflow.needsReview'))}
+                  </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                   <span>{f.recordCount} records</span>
@@ -164,7 +189,7 @@ const SourceFiles = () => {
       <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}>
         {selectedFile ? (
           <>
-            <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <FileText size={20} className="text-primary" /> {selectedFile}
@@ -173,8 +198,33 @@ const SourceFiles = () => {
                   Showing raw, unmodified data rows exactly as loaded from this file.
                 </p>
               </div>
-              <div className="badge" style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>
-                {records.length} Records Loaded
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {/* Workflow Status Dropdown Selection */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-main)', border: '1px solid var(--border-color)', padding: '6px 12px', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{t('workflow.statusTitle')}:</span>
+                  <select
+                    value={files.find(f => f.filename === selectedFile)?.workflowStatus || 'NEEDS_REVIEW'}
+                    onChange={(e) => handleWorkflowChange(selectedFile, e.target.value)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      outline: 'none',
+                      cursor: 'pointer',
+                      fontFamily: 'inherit'
+                    }}
+                  >
+                    <option value="NEEDS_REVIEW" style={{ background: 'var(--bg-surface)' }}>🔴 {t('workflow.needsReview')}</option>
+                    <option value="IN_PROCESS" style={{ background: 'var(--bg-surface)' }}>🟡 {t('workflow.inProcess')}</option>
+                    <option value="APPROVED" style={{ background: 'var(--bg-surface)' }}>🟢 {t('workflow.approved')}</option>
+                  </select>
+                </div>
+
+                <div className="badge" style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', padding: '8px 12px', fontSize: '0.85rem', fontWeight: 600 }}>
+                  {records.length} Records Loaded
+                </div>
               </div>
             </div>
 
