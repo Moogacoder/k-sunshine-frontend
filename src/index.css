@@ -440,3 +440,13 @@ tr:hover td {
   color: var(--primary-accent) !important;
 }
 
+/* Sidebar Accordion Header Premium Styling */
+.accordion-header {
+  outline: none;
+}
+
+.accordion-header:hover {
+  background-color: rgba(0, 0, 0, 0.02) !important;
+  color: var(--primary-accent) !important;
+}
+

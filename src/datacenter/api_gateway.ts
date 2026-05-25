@@ -59,6 +59,7 @@ export const APIGateway = {
         if (lowerCountry === 'it') path = 'italy';
         if (lowerCountry === 'fr') path = 'france';
         if (lowerCountry === 'us') path = 'usa';
+        if (lowerCountry === 'co') path = 'colombia';
         
         url = `${BACKEND_URL}/api/transactions/${path}`;
       }

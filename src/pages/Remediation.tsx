@@ -22,7 +22,8 @@ interface RemediationFlag {
 const Remediation = () => {
   const location = useLocation();
   const isItaly = location.pathname.includes('/italy');
-  const countryCode = isItaly ? 'IT' : 'KR';
+  const isColombia = location.pathname.includes('/colombia');
+  const countryCode = isColombia ? 'CO' : (isItaly ? 'IT' : 'KR');
 
   const [flags, setFlags] = useState<RemediationFlag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,11 +44,12 @@ const Remediation = () => {
         const limitExceeded = 
           (t.countryCode === 'KR' && t.amountOriginal > 500000) ||
           ((t.countryCode === 'FR' || t.countryCode === 'IT') && t.amountOriginal > 150) ||
+          (t.countryCode === 'CO' && t.amountOriginal > 1500000) ||
           (t.countryCode === 'US' && t.amountOriginal > 500);
 
         const issues = [];
         if (limitExceeded) {
-          const limitVal = t.countryCode === 'KR' ? '₩500,000' : t.countryCode === 'US' ? '$500' : '€150';
+          const limitVal = t.countryCode === 'KR' ? '₩500,000' : t.countryCode === 'CO' ? '$1,500,000 COP' : t.countryCode === 'US' ? '$500' : '€150';
           issues.push(`Statutory Policy Threshold Exceeded (${limitVal})`);
         }
         if (!completeness.isComplete) {
@@ -95,8 +97,8 @@ const Remediation = () => {
 
   return (
     <div>
-      <h1 className="page-title">Data Remediation Workflow ({isItaly ? 'Italy' : 'South Korea'})</h1>
-      <p className="page-subtitle">Review flagged transactions that violate local {isItaly ? 'Italy Sanità Trasparente Law 31/2022' : 'K-Sunshine Act'} compliance thresholds or contain data anomalies.</p>
+      <h1 className="page-title">Data Remediation Workflow ({isColombia ? 'Colombia' : (isItaly ? 'Italy' : 'South Korea')})</h1>
+      <p className="page-subtitle">Review flagged transactions that violate local {isColombia ? 'Colombia Resolution 2881' : (isItaly ? 'Italy Sanità Trasparente Law 31/2022' : 'K-Sunshine Act')} compliance thresholds or contain data anomalies.</p>
 
       <div className="card">
         <h3 style={{ marginBottom: '20px' }}>Flagged Records Queue</h3>

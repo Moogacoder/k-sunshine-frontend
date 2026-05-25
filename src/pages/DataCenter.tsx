@@ -17,9 +17,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
   const [mapMetricFilter, setMapMetricFilter] = useState<'ingested' | 'pushed' | 'reports'>('ingested');
 
   useEffect(() => {
-    if (defaultTab) {
-      setActiveTab(defaultTab);
-    }
+    setActiveTab(defaultTab || 'overview');
   }, [defaultTab]);
 
   
@@ -124,14 +122,15 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
     }
 
     const map = mapRef.current;
-    const countries = ['KR', 'IT', 'FR', 'US'];
+    const countries = ['KR', 'IT', 'FR', 'US', 'CO'];
 
     // Coordinates mapping
     const coords: { [key: string]: [number, number] } = {
       KR: [37.5665, 126.9780], // Seoul
       IT: [41.9028, 12.4964],  // Rome
       FR: [48.8566, 2.3522],   // Paris
-      US: [38.9072, -77.0369]  // Washington D.C.
+      US: [38.9072, -77.0369], // Washington D.C.
+      CO: [4.7110, -74.0721]   // Bogotá
     };
 
     // Calculate max value for the active metric to normalize sizes
@@ -195,6 +194,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           navigate('/dashboard');
         } else if (code === 'IT') {
           navigate('/italy/dashboard');
+        } else if (code === 'CO') {
+          navigate('/colombia/dashboard');
         } else {
           alert(`Compliance Portal: The local reporting database for ${stats.name} is active in staging. Standard operations are currently logged via the primary data load queues.`);
         }
@@ -283,12 +284,21 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           row['Amount (KRW)'] !== undefined ||
           row['Reporting Template'] !== undefined
         );
+        const hasColombianHeaders = json.some((row: any) =>
+          row['Nit o Identificacion'] !== undefined ||
+          row['Nombre del Beneficiario'] !== undefined ||
+          row['Amount (COP)'] !== undefined ||
+          row['Valor Transferencia (COP)'] !== undefined
+        );
 
-        if (targetCountry === 'KR' && hasItalianHeaders) {
-          throw new Error("Validation Error: The uploaded file contains Italian tax codes (Codice Fiscale) or Euro columns, but target is set to South Korea [KR]. Ingestion blocked to prevent data contamination.");
+        if (targetCountry === 'KR' && (hasItalianHeaders || hasColombianHeaders)) {
+          throw new Error("Validation Error: The uploaded file contains European or Colombian specific columns, but target is set to South Korea [KR]. Ingestion blocked to prevent data contamination.");
         }
-        if ((targetCountry === 'IT' || targetCountry === 'FR') && hasKoreanHeaders) {
-          throw new Error("Validation Error: The uploaded file contains Korean Won (KRW) columns, but target is set to Europe. Ingestion blocked to prevent data contamination.");
+        if ((targetCountry === 'IT' || targetCountry === 'FR') && (hasKoreanHeaders || hasColombianHeaders)) {
+          throw new Error("Validation Error: The uploaded file contains Korean Won or Colombian Peso specific columns, but target is set to European registries.");
+        }
+        if (targetCountry === 'CO' && (hasKoreanHeaders || hasItalianHeaders)) {
+          throw new Error("Validation Error: The uploaded file contains Korean Won or Italian specific columns, but target is set to Colombia [CO]. Ingestion blocked to prevent data contamination.");
         }
 
         // Standardize headers dynamically based on target country rules
@@ -385,6 +395,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
       let amountUSD = origAmount;
       if (targetTx.countryCode === 'KR') amountUSD = origAmount / 1300;
       if (targetTx.countryCode === 'FR' || targetTx.countryCode === 'IT') amountUSD = origAmount * 1.09;
+      if (targetTx.countryCode === 'CO') amountUSD = origAmount / 4000;
       
       const updatedTxFields = {
         recipientType: targetTx.recipientType,
@@ -406,6 +417,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
       const limitExceeded = 
         (targetTx.countryCode === 'KR' && origAmount > 500000) ||
         ((targetTx.countryCode === 'FR' || targetTx.countryCode === 'IT') && origAmount > 150) ||
+        (targetTx.countryCode === 'CO' && origAmount > 1500000) ||
         (targetTx.countryCode === 'US' && origAmount > 500);
 
       const updatedValues: Partial<UniversalTransaction> = {
@@ -536,11 +548,9 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           if (Array.isArray(parsed)) {
             reports = parsed.filter((r: any) => String(r.reportYear) === '2026').length;
           }
-        } else {
-          reports = 3;
         }
       } catch {
-        reports = 3;
+        reports = 0;
       }
     } else if (codeUpper === 'IT') {
       name = 'Italy';
@@ -554,24 +564,38 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           if (Array.isArray(parsed)) {
             reports = parsed.filter((r: any) => String(r.reportYear) === '2026').length;
           }
-        } else {
-          reports = 2;
         }
       } catch {
-        reports = 2;
+        reports = 0;
       }
     } else if (codeUpper === 'FR') {
       name = 'France';
       flag = '🇫🇷';
       color = '#3b82f6'; // Royal Blue
       coords = { x: 430, y: 110 };
-      reports = 2;
+      reports = 0;
     } else if (codeUpper === 'US') {
       name = 'United States';
       flag = '🇺🇸';
       color = '#f59e0b'; // Amber
       coords = { x: 200, y: 140 };
-      reports = 1;
+      reports = 0;
+    } else if (codeUpper === 'CO') {
+      name = 'Colombia';
+      flag = '🇨🇴';
+      color = '#0284c7'; // Sky Blue
+      coords = { x: 280, y: 190 };
+      try {
+        const cached = localStorage.getItem('co_transparency_archived_reports');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) {
+            reports = parsed.filter((r: any) => String(r.reportYear) === '2026').length;
+          }
+        }
+      } catch {
+        reports = 0;
+      }
     }
     
     return {
@@ -842,9 +866,9 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
               <div className="card">
                 <h3 style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginBottom: '8px' }}>ACTIVE SYNCED ENDPOINTS</h3>
                 <div style={{ fontSize: '1.7rem', fontWeight: 700, color: 'var(--success)' }}>
-                  {reviewView === 'pending' ? '4 Pending' : `${new Set(committedTransactions.map(t => t.countryCode)).size || 4} Sync'd`}
+                  {reviewView === 'pending' ? '5 Pending' : `${new Set(committedTransactions.map(t => t.countryCode)).size || 5} Sync'd`}
                 </div>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Korea [KR] | Italy [IT] | France [FR] | USA [US]</p>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Korea [KR] | Italy [IT] | France [FR] | USA [US] | Colombia [CO]</p>
                 </div>
             </div>
 
@@ -908,7 +932,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                               {batch.sourceFileName}
                             </span>
                             <span className="badge" style={{ fontSize: '0.7rem', padding: '2px 6px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>
-                              {batch.countryCode === 'KR' ? '🇰🇷 KR' : batch.countryCode === 'IT' ? '🇮🇹 IT' : batch.countryCode === 'FR' ? '🇫🇷 FR' : '🇺🇸 US'}
+                              {batch.countryCode === 'KR' ? '🇰🇷 KR' : batch.countryCode === 'IT' ? '🇮🇹 IT' : batch.countryCode === 'FR' ? '🇫🇷 FR' : batch.countryCode === 'CO' ? '🇨🇴 CO' : '🇺🇸 US'}
                             </span>
                           </div>
                           
@@ -1016,6 +1040,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                 const limitExceeded = 
                                   (tx.countryCode === 'KR' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 500000) ||
                                   ((tx.countryCode === 'FR' || tx.countryCode === 'IT') && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 150) ||
+                                  (tx.countryCode === 'CO' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 1500000) ||
                                   (tx.countryCode === 'US' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 500);
                                 
                                 return (
@@ -1306,7 +1331,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                 gap: '16px',
                 justifyContent: 'center'
               }}>
-                {['KR', 'IT', 'FR', 'US'].map(code => {
+                {['KR', 'IT', 'FR', 'US', 'CO'].map(code => {
                   const stats = getCountryStats(code);
                   const isHovered = hoveredCountry === code;
                   
@@ -1400,6 +1425,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                   <option value="IT">🇮🇹 Italy (Sanità Trasparente Law 31/2022)</option>
                   <option value="FR">🇫🇷 France (Loi Bertrand transparency)</option>
                   <option value="US">🇺🇸 United States (CMS Open Payments)</option>
+                  <option value="CO">🇨🇴 Colombia (Resolution 2881 RTVSS)</option>
                 </select>
               </div>
               <div style={{ width: '120px' }}>

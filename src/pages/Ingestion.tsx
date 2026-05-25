@@ -16,7 +16,9 @@ interface UploadResult {
 const Ingestion = () => {
   const location = useLocation();
   const isItaly = location.pathname.includes('/italy');
-  const countryCode = isItaly ? 'IT' : 'KR';
+  const isColombia = location.pathname.includes('/colombia');
+  
+  const countryCode = isColombia ? 'CO' : (isItaly ? 'IT' : 'KR');
 
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -54,14 +56,26 @@ const Ingestion = () => {
         row['Reporting Template'] !== undefined
       );
 
-      if (!isItaly && hasItalianHeaders) {
-        alert("Contamination Warning: The uploaded dataset contains Italian Codice Fiscale or Euro disclosures, which cannot be loaded into the South Korea Sunshine Act registry. Ingestion rejected to prevent database contamination.");
+      const hasColombianHeaders = json.some((row: any) =>
+        row['Nit o Identificacion'] !== undefined ||
+        row['Nombre del Beneficiario'] !== undefined ||
+        row['Valor Transferencia (COP)'] !== undefined
+      );
+
+      if (countryCode === 'KR' && (hasItalianHeaders || hasColombianHeaders)) {
+        alert("Contamination Warning: The uploaded dataset contains European or Colombian disclosures, which cannot be loaded into the South Korea Sunshine Act registry. Ingestion rejected to prevent database contamination.");
         setIsUploading(false);
         return;
       }
 
-      if (isItaly && hasKoreanHeaders) {
-        alert("Contamination Warning: The uploaded dataset contains South Korean Won (KRW) or Sunshine Act disclosures, which cannot be loaded into the Italy Sanità Trasparente registry. Ingestion rejected to prevent database contamination.");
+      if (countryCode === 'IT' && (hasKoreanHeaders || hasColombianHeaders)) {
+        alert("Contamination Warning: The uploaded dataset contains South Korean Won (KRW) or Colombian Peso disclosures, which cannot be loaded into the Italy Sanità Trasparente registry. Ingestion rejected to prevent database contamination.");
+        setIsUploading(false);
+        return;
+      }
+
+      if (countryCode === 'CO' && (hasKoreanHeaders || hasItalianHeaders)) {
+        alert("Contamination Warning: The uploaded dataset contains South Korean Won (KRW) or Italian disclosures, which cannot be loaded into the Colombia RTVSS registry. Ingestion rejected to prevent database contamination.");
         setIsUploading(false);
         return;
       }
@@ -90,7 +104,7 @@ const Ingestion = () => {
           licenseNumber: String(row['License Number'] || row['RPPS'] || row['NPI'] || row['Codice Fiscale'] || ''),
           workplaceInstitution: row['Workplace'] || row['Hopital'] || row['Institution'] || row['Struttura'] || '',
           specialtyDepartment: row['Specialty'] || row['Specialite'] || row['Specializzazione'] || '',
-          categoryOfBenefit: row['Category of Benefit'] || row['Categorie'] || row['Tipologia'] || (isItaly ? 'CONVENZIONI' : 'PRESENTATION'),
+          categoryOfBenefit: row['Category of Benefit'] || row['Categorie'] || row['Tipologia'] || row['Categoria de la Transferencia'] || (isColombia ? 'HONORARIOS' : (isItaly ? 'CONVENZIONI' : 'PRESENTATION')),
           dateOfProvision: row['Date of Provision'] || row['Date'] || row['Data'] ? new Date(row['Date of Provision'] || row['Date'] || row['Data']).toISOString() : new Date().toISOString(),
           placeOfProvision: row['Place'] || row['Lieu'] || row['Lieu'] || '',
           purposeOfBenefit: row['Purpose'] || row['Objet'] || row['Oggetto'] || '',
@@ -138,8 +152,8 @@ const Ingestion = () => {
 
   return (
     <div>
-      <h1 className="page-title">Local Data Ingestion ({isItaly ? 'Italy' : 'South Korea'})</h1>
-      <p className="page-subtitle">Upload spend records from external sources for {isItaly ? 'Italy Sanità Trasparente' : 'K-Sunshine Act'} validation.</p>
+      <h1 className="page-title">Local Data Ingestion ({isColombia ? 'Colombia' : (isItaly ? 'Italy' : 'South Korea')})</h1>
+      <p className="page-subtitle">Upload spend records from external sources for {isColombia ? 'Colombia Resolution 2881' : (isItaly ? 'Italy Sanità Trasparente' : 'K-Sunshine Act')} validation.</p>
 
       <div 
         className="card" 
@@ -182,7 +196,7 @@ const Ingestion = () => {
               </label>
               
               <a 
-                href={isItaly ? "/italian_hcp_transactions_1000.csv" : "/K_Sunshine_Upload_Template.csv"} 
+                href={isColombia ? "/colombian_hcp_transactions_1000.csv" : (isItaly ? "/italian_hcp_transactions_1000.csv" : "/K_Sunshine_Upload_Template.csv")} 
                 download 
                 className="btn btn-secondary" 
                 style={{ 

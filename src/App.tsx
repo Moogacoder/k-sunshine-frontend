@@ -13,6 +13,8 @@ import Login from './pages/Login';
 import DataCenter from './pages/DataCenter';
 import ItalyDashboard from './pages/ItalyDashboard';
 import ItalyReporting from './pages/ItalyReporting';
+import ColombiaDashboard from './pages/ColombiaDashboard';
+import ColombiaReporting from './pages/ColombiaReporting';
 import { AuthProvider } from './components/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
@@ -37,6 +39,12 @@ const AppLayout = () => {
           <Route path="/italy/remediation" element={<Remediation />} />
           <Route path="/italy/ingestion" element={<Ingestion />} />
           <Route path="/italy/source-files" element={<SourceFiles />} />
+          <Route path="/colombia/dashboard" element={<ColombiaDashboard />} />
+          <Route path="/colombia/reporting" element={<ColombiaReporting />} />
+          <Route path="/colombia/data" element={<DataExplorer />} />
+          <Route path="/colombia/remediation" element={<Remediation />} />
+          <Route path="/colombia/ingestion" element={<Ingestion />} />
+          <Route path="/colombia/source-files" element={<SourceFiles />} />
           <Route path="/data" element={<DataExplorer />} />
           <Route path="/audit" element={<AuditLogs />} />
           <Route path="/assistant" element={<AIAssistant />} />

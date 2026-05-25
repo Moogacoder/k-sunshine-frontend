@@ -33,8 +33,9 @@ interface Transaction {
 const SourceFiles = () => {
   const location = useLocation();
   const isItaly = location.pathname.includes('/italy');
-  const countryCode = isItaly ? 'IT' : 'KR';
-  const currencySymbol = isItaly ? '€' : '₩';
+  const isColombia = location.pathname.includes('/colombia');
+  const countryCode = isColombia ? 'CO' : (isItaly ? 'IT' : 'KR');
+  const currencySymbol = isColombia ? '$' : (isItaly ? '€' : '₩');
 
   const [files, setFiles] = useState<FileStat[]>([]);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -190,7 +191,7 @@ const SourceFiles = () => {
                       <th>Institution</th>
                       <th>Category</th>
                       <th>Purpose</th>
-                      <th>Amount ({isItaly ? 'EUR' : 'KRW'})</th>
+                      <th>Amount ({isColombia ? 'COP' : (isItaly ? 'EUR' : 'KRW')})</th>
                     </tr>
                   </thead>
                   <tbody>
