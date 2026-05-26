@@ -15,6 +15,7 @@ import ItalyDashboard from './pages/ItalyDashboard';
 import ItalyReporting from './pages/ItalyReporting';
 import ColombiaDashboard from './pages/ColombiaDashboard';
 import ColombiaReporting from './pages/ColombiaReporting';
+import Calendar from './pages/Calendar';
 import { AuthProvider } from './components/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { LanguageProvider } from './components/LanguageContext';
@@ -49,6 +50,7 @@ const AppLayout = () => {
           <Route path="/data" element={<DataExplorer />} />
           <Route path="/audit" element={<AuditLogs />} />
           <Route path="/assistant" element={<AIAssistant />} />
+          <Route path="/calendar" element={<Calendar />} />
         </Routes>
       </main>
       <AgentWidget />

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, UploadCloud, AlertCircle, FileText, LogOut, Database, Shield, Sparkles, FileUp, Globe, ChevronDown, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, UploadCloud, AlertCircle, FileText, LogOut, Database, Shield, Sparkles, FileUp, Globe, ChevronDown, ChevronRight, Calendar } from 'lucide-react';
 import { useAuth } from './AuthContext';
 import { useLanguage } from './LanguageContext';
 import type { Language } from './translations';
@@ -134,6 +134,11 @@ const Sidebar = () => {
         <NavLink to="/assistant" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <Sparkles size={20} />
           <span>{t('sidebar.aiAssistant')}</span>
+        </NavLink>
+
+        <NavLink to="/calendar" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <Calendar size={20} />
+          <span>{t('sidebar.complianceCalendar')}</span>
         </NavLink>
 
         <div style={{ margin: '6px 0', borderTop: '1px solid var(--border-color)', opacity: 0.3 }}></div>

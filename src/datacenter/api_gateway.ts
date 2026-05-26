@@ -31,6 +31,7 @@ export interface IngestionBatch {
   totalRecords: number;
   flaggedRecords: number;
   status: 'PROCESSED' | 'REMEDIATION_REQUIRED' | 'FAILED';
+  workflowStatus?: string;
   originalTransactions?: UniversalTransaction[];
 }
 
@@ -202,6 +203,21 @@ export const APIGateway = {
     } catch (err) {
       console.error("API Gateway error contacting AI agent:", err);
       return "I am currently offline due to a connection drop with the SQL Database service. Please try again shortly.";
+    }
+  },
+  
+  // Update batch workflow status inside the database
+  updateBatchWorkflowStatus: async (batchId: string, newStatus: string): Promise<boolean> => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/batches/${batchId}/workflow`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workflowStatus: newStatus })
+      });
+      return res.ok;
+    } catch (err) {
+      console.error("API Gateway error updating batch workflow status:", err);
+      return false;
     }
   }
 };

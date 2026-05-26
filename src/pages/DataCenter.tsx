@@ -926,11 +926,12 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-main)', border: '1px solid var(--border-color)', padding: '8px 16px', borderRadius: '8px' }}>
                         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{t('workflow.statusTitle')}:</span>
                         <select
-                          value={localStorage.getItem(`file_workflow_${targetBatch.countryCode}_${targetBatch.batchId}`) || 'NEEDS_REVIEW'}
-                          onChange={(e) => {
-                            const statusKey = `file_workflow_${targetBatch.countryCode}_${targetBatch.batchId}`;
-                            localStorage.setItem(statusKey, e.target.value);
-                            setWorkflowTrigger(prev => prev + 1);
+                          value={targetBatch.workflowStatus || 'NEEDS_REVIEW'}
+                          onChange={async (e) => {
+                            const success = await APIGateway.updateBatchWorkflowStatus(targetBatch.batchId, e.target.value);
+                            if (success) {
+                              setWorkflowTrigger(prev => prev + 1);
+                            }
                           }}
                           style={{
                             background: 'none',
@@ -946,6 +947,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                           <option value="NEEDS_REVIEW" style={{ background: 'var(--bg-surface)' }}>🔴 {t('workflow.needsReview')}</option>
                           <option value="IN_PROCESS" style={{ background: 'var(--bg-surface)' }}>🟡 {t('workflow.inProcess')}</option>
                           <option value="APPROVED" style={{ background: 'var(--bg-surface)' }}>🟢 {t('workflow.approved')}</option>
+                          <option value="SUBMITTED" style={{ background: 'var(--bg-surface)' }}>🔵 {t('workflow.submitted')}</option>
                         </select>
                       </div>
 
@@ -1080,8 +1082,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                       
                       const batchAlertsCount = activeRecords.filter(t => t.remediationStatus === 'PENDING_REVIEW').length;
                       
-                      const statusKey = `file_workflow_${batch.countryCode}_${batch.batchId}`;
-                      const workflowStatus = localStorage.getItem(statusKey) || 'NEEDS_REVIEW';
+                      const workflowStatus = batch.workflowStatus || 'NEEDS_REVIEW';
                       
                       return (
                         <div 
@@ -1121,8 +1122,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                             </span>
                             
                             <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                              <span className={`badge ${workflowStatus === 'APPROVED' ? 'badge-success' : (workflowStatus === 'IN_PROCESS' ? 'badge-warning' : 'badge-danger')}`} style={{ fontSize: '0.65rem', padding: '2px 6px', whiteSpace: 'nowrap' }}>
-                                {workflowStatus === 'APPROVED' ? t('workflow.approved') : (workflowStatus === 'IN_PROCESS' ? t('workflow.inProcess') : t('workflow.needsReview'))}
+                              <span className={`badge ${workflowStatus === 'SUBMITTED' ? 'badge-primary' : (workflowStatus === 'APPROVED' ? 'badge-success' : (workflowStatus === 'IN_PROCESS' ? 'badge-warning' : 'badge-danger'))}`} style={{ fontSize: '0.65rem', padding: '2px 6px', whiteSpace: 'nowrap' }}>
+                                {workflowStatus === 'SUBMITTED' ? t('workflow.submitted') : (workflowStatus === 'APPROVED' ? t('workflow.approved') : (workflowStatus === 'IN_PROCESS' ? t('workflow.inProcess') : t('workflow.needsReview')))}
                               </span>
 
                               {reviewView === 'pending' ? (
@@ -1177,11 +1178,12 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', padding: '6px 12px', borderRadius: '8px' }}>
                             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{t('workflow.statusTitle')}:</span>
                             <select
-                              value={localStorage.getItem(`file_workflow_${targetBatch.countryCode}_${targetBatch.batchId}`) || 'NEEDS_REVIEW'}
-                              onChange={(e) => {
-                                const statusKey = `file_workflow_${targetBatch.countryCode}_${targetBatch.batchId}`;
-                                localStorage.setItem(statusKey, e.target.value);
-                                setWorkflowTrigger(prev => prev + 1);
+                              value={targetBatch.workflowStatus || 'NEEDS_REVIEW'}
+                              onChange={async (e) => {
+                                const success = await APIGateway.updateBatchWorkflowStatus(targetBatch.batchId, e.target.value);
+                                if (success) {
+                                  setWorkflowTrigger(prev => prev + 1);
+                                }
                               }}
                               style={{
                                 background: 'none',
@@ -1197,6 +1199,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                               <option value="NEEDS_REVIEW" style={{ background: 'var(--bg-surface)' }}>🔴 {t('workflow.needsReview')}</option>
                               <option value="IN_PROCESS" style={{ background: 'var(--bg-surface)' }}>🟡 {t('workflow.inProcess')}</option>
                               <option value="APPROVED" style={{ background: 'var(--bg-surface)' }}>🟢 {t('workflow.approved')}</option>
+                              <option value="SUBMITTED" style={{ background: 'var(--bg-surface)' }}>🔵 {t('workflow.submitted')}</option>
                             </select>
                           </div>
 

@@ -47,14 +47,14 @@ const SourceFiles = () => {
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   const [isLoadingRecords, setIsLoadingRecords] = useState(false);
 
-  const handleWorkflowChange = (filename: string, newStatus: string) => {
+  const handleWorkflowChange = async (filename: string, newStatus: string) => {
     const targetFile = files.find(f => f.filename === filename);
     if (!targetFile) return;
     
-    const statusKey = `file_workflow_${countryCode}_${targetFile.batchId}`;
-    localStorage.setItem(statusKey, newStatus);
-    
-    setFiles(prev => prev.map(f => f.filename === filename ? { ...f, workflowStatus: newStatus } : f));
+    const success = await APIGateway.updateBatchWorkflowStatus(targetFile.batchId, newStatus);
+    if (success) {
+      setFiles(prev => prev.map(f => f.filename === filename ? { ...f, workflowStatus: newStatus } : f));
+    }
   };
 
   useEffect(() => {
@@ -68,13 +68,15 @@ const SourceFiles = () => {
       setIsLoadingFiles(true);
       const targetBatches = (await APIGateway.getBatches()).filter(b => b.countryCode === countryCode);
       const targetTransactions = await APIGateway.getTransactions(countryCode);
+      const committedTransactions = await APIGateway.getCommittedTransactions();
       
       const mappedFiles: FileStat[] = targetBatches.map(b => {
-        const batchTx = targetTransactions.filter(t => t.batchId === b.batchId);
+        let batchTx = targetTransactions.filter(t => t.batchId === b.batchId);
+        if (batchTx.length === 0) {
+          batchTx = committedTransactions.filter(t => t.batchId === b.batchId);
+        }
         const totalAmount = batchTx.reduce((sum, t) => sum + t.amountOriginal, 0);
-        
-        const statusKey = `file_workflow_${countryCode}_${b.batchId}`;
-        const workflowStatus = localStorage.getItem(statusKey) || 'NEEDS_REVIEW';
+        const workflowStatus = b.workflowStatus || 'NEEDS_REVIEW';
 
         return {
           batchId: b.batchId,
@@ -105,7 +107,12 @@ const SourceFiles = () => {
       
       if (targetBatch) {
         const targetTransactions = await APIGateway.getTransactions(countryCode);
-        const batchTx = targetTransactions.filter(t => t.batchId === targetBatch.batchId);
+        const committedTransactions = await APIGateway.getCommittedTransactions();
+        
+        let batchTx = targetTransactions.filter(t => t.batchId === targetBatch.batchId);
+        if (batchTx.length === 0) {
+          batchTx = committedTransactions.filter(t => t.batchId === targetBatch.batchId);
+        }
         
         const mappedTx = batchTx.map(t => ({
           id: t.id,
@@ -171,8 +178,8 @@ const SourceFiles = () => {
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     <FileText size={16} /> {f.filename}
                   </span>
-                  <span className={`badge ${f.workflowStatus === 'APPROVED' ? 'badge-success' : (f.workflowStatus === 'IN_PROCESS' ? 'badge-warning' : 'badge-danger')}`} style={{ fontSize: '0.65rem', padding: '2px 6px', whiteSpace: 'nowrap' }}>
-                    {f.workflowStatus === 'APPROVED' ? t('workflow.approved') : (f.workflowStatus === 'IN_PROCESS' ? t('workflow.inProcess') : t('workflow.needsReview'))}
+                  <span className={`badge ${f.workflowStatus === 'SUBMITTED' ? 'badge-primary' : (f.workflowStatus === 'APPROVED' ? 'badge-success' : (f.workflowStatus === 'IN_PROCESS' ? 'badge-warning' : 'badge-danger'))}`} style={{ fontSize: '0.65rem', padding: '2px 6px', whiteSpace: 'nowrap' }}>
+                    {f.workflowStatus === 'SUBMITTED' ? t('workflow.submitted') : (f.workflowStatus === 'APPROVED' ? t('workflow.approved') : (f.workflowStatus === 'IN_PROCESS' ? t('workflow.inProcess') : t('workflow.needsReview')))}
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
@@ -219,6 +226,7 @@ const SourceFiles = () => {
                     <option value="NEEDS_REVIEW" style={{ background: 'var(--bg-surface)' }}>🔴 {t('workflow.needsReview')}</option>
                     <option value="IN_PROCESS" style={{ background: 'var(--bg-surface)' }}>🟡 {t('workflow.inProcess')}</option>
                     <option value="APPROVED" style={{ background: 'var(--bg-surface)' }}>🟢 {t('workflow.approved')}</option>
+                    <option value="SUBMITTED" style={{ background: 'var(--bg-surface)' }}>🔵 {t('workflow.submitted')}</option>
                   </select>
                 </div>
 

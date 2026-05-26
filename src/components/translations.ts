@@ -46,7 +46,8 @@ export const translations = {
       sourceFiles: 'Source Files',
       localIngestion: 'Local Ingestion',
       mohwReports: 'MOHW Reports',
-      statutoryDisclosures: 'Statutory Disclosures'
+      statutoryDisclosures: 'Statutory Disclosures',
+      complianceCalendar: 'Compliance Calendar'
     },
     datacenter: {
       title: 'Global Transparency Manager Data Center',
@@ -77,6 +78,7 @@ export const translations = {
       needsReview: 'Needs Review',
       inProcess: 'In Process',
       approved: 'Approved',
+      submitted: 'Submitted',
       statusTitle: 'File Workflow Status'
     }
   },
@@ -125,7 +127,8 @@ export const translations = {
       sourceFiles: 'File Sorgente',
       localIngestion: 'Importazione Locale',
       mohwReports: 'Rapporti MOHW',
-      statutoryDisclosures: 'Informativa Statutaria'
+      statutoryDisclosures: 'Informativa Statutaria',
+      complianceCalendar: 'Calendario Conformità'
     },
     datacenter: {
       title: 'Data Center Global Transparency Manager',
@@ -156,6 +159,7 @@ export const translations = {
       needsReview: 'Richiede Revisione',
       inProcess: 'In Corso',
       approved: 'Approvato',
+      submitted: 'Inviato',
       statusTitle: 'Stato Flusso di Lavoro'
     }
   },
@@ -204,7 +208,8 @@ export const translations = {
       sourceFiles: '소스 파일',
       localIngestion: '로컬 수집',
       mohwReports: '보건복지부 보고서',
-      statutoryDisclosures: '법정 공시'
+      statutoryDisclosures: '법정 공시',
+      complianceCalendar: '준수 일정표'
     },
     datacenter: {
       title: '글로벌 투명성 관리 데이터 센터',
@@ -235,6 +240,7 @@ export const translations = {
       needsReview: '검토 필요',
       inProcess: '진행 중',
       approved: '승인됨',
+      submitted: '제출됨',
       statusTitle: '파일 워크플로 상태'
     }
   },
@@ -283,7 +289,8 @@ export const translations = {
       sourceFiles: 'Archivos Fuente',
       localIngestion: 'Ingesta Local',
       mohwReports: 'Reportes MOHW',
-      statutoryDisclosures: 'Divulgaciones Legales'
+      statutoryDisclosures: 'Divulgaciones Legales',
+      complianceCalendar: 'Calendario Cumplimiento'
     },
     datacenter: {
       title: 'Centro de Datos Global Transparency Manager',
@@ -314,6 +321,7 @@ export const translations = {
       needsReview: 'Necesita Revisión',
       inProcess: 'En Proceso',
       approved: 'Aprobado',
+      submitted: 'Enviado',
       statusTitle: 'Estado del Flujo de Trabajo'
     }
   }
