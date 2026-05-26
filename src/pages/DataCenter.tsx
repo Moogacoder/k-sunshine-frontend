@@ -524,6 +524,143 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
     setEditFormData({ ...editFormData, [field]: e.target.value });
   };
 
+  const downloadTemplate = (countryCode: string) => {
+    let headers: string[] = [];
+    let sampleData: Record<string, any>[] = [];
+    let filename = '';
+
+    if (countryCode === 'KR') {
+      headers = [
+        'Recipient Type', 'Recipient Name', 'License Number', 
+        'Workplace', 'Specialty', 'Category of Benefit', 
+        'Date of Provision', 'Place', 'Purpose', 'Details', 'Amount (KRW)'
+      ];
+      sampleData = [{
+        'Recipient Type': 'HCP',
+        'Recipient Name': 'Dr. Min-Seok Kim',
+        'License Number': 'MD-74829',
+        'Workplace': 'Seoul National University Hospital',
+        'Specialty': 'Cardiology',
+        'Category of Benefit': 'CONSULTANCY',
+        'Date of Provision': '2026-04-12',
+        'Place': 'Seoul',
+        'Purpose': 'Advisory Board Meeting',
+        'Details': 'Q2 Cardiology Panel',
+        'Amount (KRW)': 350000
+      }, {
+        'Recipient Type': 'HCO',
+        'Recipient Name': 'Korean Medical Association',
+        'License Number': 'CO-19384',
+        'Workplace': '',
+        'Specialty': '',
+        'Category of Benefit': 'CONFERENCE_SUPPORT',
+        'Date of Provision': '2026-05-18',
+        'Place': 'Busan',
+        'Purpose': 'Annual Symposium Sponsor',
+        'Details': 'Platinum Sponsor Package',
+        'Amount (KRW)': 2500000
+      }];
+      filename = 'template_south_korea_sunshine.xlsx';
+    } else if (countryCode === 'IT') {
+      headers = [
+        'Recipient Type', 'Recipient Name', 'License Number', 
+        'Workplace', 'Specialty', 'Category of Benefit', 
+        'Date of Provision', 'Place', 'Purpose', 'Details', 'Amount (EUR)'
+      ];
+      sampleData = [{
+        'Recipient Type': 'HCP',
+        'Recipient Name': 'Dr. Giovanni Rossi',
+        'License Number': 'RSSGNN80A01H501Z',
+        'Workplace': 'Ospedale San Raffaele',
+        'Specialty': 'Neurology',
+        'Category of Benefit': 'CONVENZIONI',
+        'Date of Provision': '2026-03-24',
+        'Place': 'Milano',
+        'Purpose': 'Clinical Study Collaboration Agreement',
+        'Details': 'Protocol 4082-A',
+        'Amount (EUR)': 1200
+      }, {
+        'Recipient Type': 'HCO',
+        'Recipient Name': 'Associazione Cardiologi Italiani',
+        'License Number': '12345678901',
+        'Workplace': 'Associazione',
+        'Specialty': '',
+        'Category of Benefit': 'DONAZIONI',
+        'Date of Provision': '2026-04-05',
+        'Place': 'Roma',
+        'Purpose': 'Educational Grant',
+        'Details': 'Echocardiograph Donation',
+        'Amount (EUR)': 4500
+      }];
+      filename = 'template_italy_sanita_trasparente.xlsx';
+    } else if (countryCode === 'FR') {
+      headers = [
+        'Recipient Type', 'Recipient Name', 'License Number', 
+        'Workplace', 'Specialty', 'Category of Benefit', 
+        'Date of Provision', 'Place', 'Purpose', 'Details', 'Amount (EUR)'
+      ];
+      sampleData = [{
+        'Recipient Type': 'HCP',
+        'Recipient Name': 'Dr. Marie Dupont',
+        'License Number': '10101928472',
+        'Workplace': 'Centre Hospitalier Universitaire',
+        'Specialty': 'Oncology',
+        'Category of Benefit': 'PRESENTATION',
+        'Date of Provision': '2026-02-15',
+        'Place': 'Paris',
+        'Purpose': 'Symposium Speaker Fee',
+        'Details': 'Immuno-Oncology breakthroughs presentation',
+        'Amount (EUR)': 150
+      }];
+      filename = 'template_france_loi_bertrand.xlsx';
+    } else if (countryCode === 'US') {
+      headers = [
+        'Recipient Type', 'Recipient Name', 'License Number', 
+        'Workplace', 'Specialty', 'Category of Benefit', 
+        'Date of Provision', 'Place', 'Purpose', 'Details', 'Amount (USD)'
+      ];
+      sampleData = [{
+        'Recipient Type': 'HCP',
+        'Recipient Name': 'Dr. Sarah Jenkins',
+        'License Number': '1982740192',
+        'Workplace': 'Mayo Clinic',
+        'Specialty': 'Endocrinology',
+        'Category of Benefit': 'CONSULTANCY',
+        'Date of Provision': '2026-05-10',
+        'Place': 'Rochester',
+        'Purpose': 'Speaker Honorarium',
+        'Details': 'Type 2 Diabetes Therapeutics',
+        'Amount (USD)': 450
+      }];
+      filename = 'template_usa_cms_openpayments.xlsx';
+    } else if (countryCode === 'CO') {
+      headers = [
+        'Recipient Type', 'Recipient Name', 'License Number', 
+        'Workplace', 'Specialty', 'Category of Benefit', 
+        'Date of Provision', 'Place', 'Purpose', 'Details', 'Amount (COP)'
+      ];
+      sampleData = [{
+        'Recipient Type': 'HCP',
+        'Recipient Name': 'Dr. Carlos Mendoza',
+        'License Number': '80192834',
+        'Workplace': 'Clinica de Marly',
+        'Specialty': 'Pediatrics',
+        'Category of Benefit': 'SAMPLES',
+        'Date of Provision': '2026-01-20',
+        'Place': 'Bogotá',
+        'Purpose': 'Medical Samples Provision',
+        'Details': 'Infant nutrition formula samples',
+        'Amount (COP)': 320000
+      }];
+      filename = 'template_colombia_rtvss.xlsx';
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(sampleData, { header: headers });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporting Template');
+    XLSX.writeFile(workbook, filename);
+  };
+
   // Computations
   const getCountryStats = (code: string) => {
     const codeUpper = code.toUpperCase();
@@ -1478,9 +1615,66 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           <h2 style={{ fontSize: '1.25rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <UploadCloud size={22} color="var(--primary-glow)" /> Load Multi-Country Data
           </h2>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '0.9rem' }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.9rem' }}>
             Upload raw manufacturer spend spreadsheets. The Data Loading Engine will map source headers onto the Universal Data Model (UDM) based on your selected target country's legal boundaries.
           </p>
+
+          {/* Curated Country Templates Downloads Grid */}
+          <div style={{
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '10px',
+            padding: '16px 20px',
+            marginBottom: '24px',
+          }}>
+            <h4 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <FileText size={16} className="text-primary" /> Download Statutory Excel Templates
+            </h4>
+            <p style={{ margin: '0 0 14px 0', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+              Use these pre-formatted country templates to ensure data consistency, complete essential columns, and bypass ETL staging completeness violations.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '10px' }}>
+              {[
+                { code: 'KR', name: 'South Korea', flag: '🇰🇷' },
+                { code: 'IT', name: 'Italy', flag: '🇮🇹' },
+                { code: 'FR', name: 'France', flag: '🇫🇷' },
+                { code: 'US', name: 'United States', flag: '🇺🇸' },
+                { code: 'CO', name: 'Colombia', flag: '🇨🇴' }
+              ].map(tpl => (
+                <button
+                  key={tpl.code}
+                  type="button"
+                  onClick={() => downloadTemplate(tpl.code)}
+                  className="btn"
+                  style={{
+                    padding: '8px 10px',
+                    fontSize: '0.75rem',
+                    background: 'var(--bg-base)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '4px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--primary-accent)';
+                    e.currentTarget.style.background = 'rgba(124, 58, 237, 0.05)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--border-color)';
+                    e.currentTarget.style.background = 'var(--bg-base)';
+                  }}
+                >
+                  <span style={{ fontSize: '1.25rem' }}>{tpl.flag}</span>
+                  <span style={{ fontWeight: 700, color: 'var(--text-primary)', textAlign: 'center' }}>{tpl.name}</span>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>.xlsx template</span>
+                </button>
+              ))}
+            </div>
+          </div>
 
           <form onSubmit={handleIngest} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div style={{ display: 'flex', gap: '16px' }}>
