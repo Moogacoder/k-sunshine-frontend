@@ -219,7 +219,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
             <span style="font-weight: 600; color: #10b981;">${stats.pushed.toLocaleString()}</span>
           </div>
           <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
-            <span style="color: #64748b;">MOHW Reports (2026):</span>
+            <span style="color: #64748b;">${stats.reportsLabel || 'Statutory Reports'} (2026):</span>
             <span style="font-weight: 600; color: ${stats.color};">${stats.reports}</span>
           </div>
         </div>
@@ -675,12 +675,14 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
     let color = '';
     let coords = { x: 0, y: 0 };
     let reports = 0;
+    let reportsLabel = '';
     
     if (codeUpper === 'KR') {
       name = 'South Korea';
       flag = '🇰🇷';
       color = '#8b5cf6'; // Purple
       coords = { x: 710, y: 145 };
+      reportsLabel = 'MOHW Reports';
       try {
         const cached = localStorage.getItem('k_sunshine_archived_reports');
         if (cached) {
@@ -697,6 +699,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
       flag = '🇮🇹';
       color = '#ef4444'; // Crimson
       coords = { x: 455, y: 125 };
+      reportsLabel = 'Sanità Trasparente';
       try {
         const cached = localStorage.getItem('it_transparency_archived_reports');
         if (cached) {
@@ -713,18 +716,21 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
       flag = '🇫🇷';
       color = '#3b82f6'; // Royal Blue
       coords = { x: 430, y: 110 };
+      reportsLabel = 'Loi Bertrand';
       reports = 0;
     } else if (codeUpper === 'US') {
       name = 'United States';
       flag = '🇺🇸';
       color = '#f59e0b'; // Amber
       coords = { x: 200, y: 140 };
+      reportsLabel = 'CMS Open Payments';
       reports = 0;
     } else if (codeUpper === 'CO') {
       name = 'Colombia';
       flag = '🇨🇴';
       color = '#0284c7'; // Sky Blue
       coords = { x: 280, y: 190 };
+      reportsLabel = 'RTVSS Reports';
       try {
         const cached = localStorage.getItem('co_transparency_archived_reports');
         if (cached) {
@@ -745,7 +751,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
       coords,
       ingested,
       pushed,
-      reports
+      reports,
+      reportsLabel
     };
   };
 
@@ -2009,7 +2016,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {['KR', 'IT', 'FR', 'US'].map(code => {
+                      {['KR', 'IT', 'FR', 'US', 'CO'].map(code => {
                         const countryTxs = commitTxs.filter(t => t.countryCode === code);
                         if (countryTxs.length === 0) return null;
 
@@ -2020,7 +2027,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                         return (
                           <tr key={code}>
                             <td style={{ fontWeight: 'bold' }}>
-                              {code === 'KR' ? '🇰🇷 South Korea [KR]' : code === 'IT' ? '🇮🇹 Italy [IT]' : code === 'FR' ? '🇫🇷 France [FR]' : '🇺🇸 USA [US]'}
+                              {code === 'KR' ? '🇰🇷 South Korea [KR]' : code === 'IT' ? '🇮🇹 Italy [IT]' : code === 'FR' ? '🇫🇷 France [FR]' : code === 'US' ? '🇺🇸 USA [US]' : '🇨🇴 Colombia [CO]'}
                             </td>
                             <td style={{ textAlign: 'center', color: 'var(--success)' }}>{compliantCount} Approved</td>
                             <td style={{ textAlign: 'center', color: flaggedCount > 0 ? 'var(--warning)' : 'var(--text-muted)', fontWeight: flaggedCount > 0 ? 'bold' : 'normal' }}>

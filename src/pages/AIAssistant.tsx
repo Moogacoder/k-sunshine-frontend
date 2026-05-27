@@ -14,7 +14,7 @@ const AIAssistant = () => {
     {
       id: 'welcome',
       sender: 'bot',
-      text: 'Hello! I am the Global Transparency Compliance AI. I am fully trained on the South Korean Pharmaceutical Affairs Act and MOHW expenditure reporting rules. How can I assist your review today?',
+      text: 'Hello! I am the Global Transparency Compliance AI assistant. I am fully trained on statutory regulations globally, including the US CMS Open Payments, South Korea Sunshine Act, France Loi Bertrand, Italy Sanità Trasparente, and Colombia RTVSS (Resolution 2881). How can I assist your compliance review today?',
       timestamp: new Date()
     }
   ]);
@@ -66,18 +66,22 @@ const AIAssistant = () => {
       console.warn("Using high-performance local compliance rules-engine:", error);
       
       const text = userMessage.text.toLowerCase();
-      let reply = "That is an excellent compliance query. Under South Korea's Pharmaceutical Affairs Act rules, all transfers of value to Healthcare Professionals (HCPs) and Medical Institutions must be tracked in our Universal Data Model. Let me know if you would like me to review specific ledger items or generate compliance-ready CSV/PDF reports!";
+      let reply = "That is an excellent compliance query. Under our central Global Transparency rules, all transfers of value to Healthcare Professionals (HCPs) and Medical Institutions must be tracked in our Universal Data Model. Let me know if you would like me to review specific ledger items or generate compliance-ready reports!";
       
-      if (text.includes('limit') || text.includes('presentation') || text.includes('briefing') || text.includes('food') || text.includes('beverage') || text.includes('meal')) {
-        reply = "Under Article 47-2 of South Korea's Pharmaceutical Affairs Act, the maximum value for food and beverages provided to an HCP during an official product presentation is strictly capped at **₩100,000** (approx. $75 USD) per HCP per session. Additionally, promotional items/freebies are restricted to **₩10,000** or less, and must be clearly marked with the manufacturer logo.";
-      } else if (text.includes('sample') || text.includes('evaluation') || text.includes('device')) {
-        reply = "Drug and medical device samples are permitted for clinical evaluation, but must be in the minimum packaging units necessary. Companies are required to report sample distributions under MOHW Template 1, and these items cannot be resold or used for personal treatments.";
-      } else if (text.includes('pms') || text.includes('surveillance') || text.includes('post-marketing') || text.includes('honoraria')) {
-        reply = "Post-Marketing Surveillance (PMS) honoraria are regulated by the MFDS. Payments per case report are generally capped at **₩50,000** to **₩300,000** depending on medical necessity and rarity, and must be logged under Template 6.";
-      } else if (text.includes('consultancy') || text.includes('advisory') || text.includes('lecture') || text.includes('fee')) {
-        reply = "Advisory panels and lecturing engagements are compliant under South Korea rules provided they reflect Fair Market Value (FMV) and are backed by signed agreements before the event. Fees are typically capped at **₩500,000** per session or **₩1,000,000** per day, and are reported under Template 7.";
+      if (text.includes('colombia') || text.includes('rtvss') || text.includes('2881') || text.includes('cop')) {
+        reply = "Under Colombia's RTVSS (Resolution 2881 of 2018), any individual value transfer exceeding **1,500,000 COP** (approx. $375 USD) to an HCP must be reported via SISPRO. Semi-annual deadlines are September 30 (for H1) and March 31 (for H2). Mapped categories are HONORARIOS, REUNIONES, VIAJES, and DONACIONES.";
+      } else if (text.includes('france') || text.includes('bertrand') || text.includes('loi')) {
+        reply = "Under France's Loi Bertrand, agreements are reportable regardless of value, and benefits/remuneration of **€10 or more** must be declared. Hospitality exceeding **€150** or advisory fees exceeding **€500** will trigger compliance alerts. Reports must be pushed semi-annually to the official Transparence Santé register (March 1 for H2, September 1 for H1).";
+      } else if (text.includes('italy') || text.includes('sanita') || text.includes('62/2022') || text.includes('legge') || text.includes('trasparente')) {
+        reply = "Under Italy's Sanità Trasparente (Law 62/2022), HCP agreements above **€1,000** or HCO sponsorships/donations above **€5,000** must be uploaded to the electronic registry managed by the Ministry of Health. Deadlines follow semi-annual windows (Phase 1 due April 30, Phase 2 due October 31). Failure to report results in high administrative fines.";
+      } else if (text.includes('usa') || text.includes('us ') || text.includes('open payments') || text.includes('cms')) {
+        reply = "Under the USA CMS Open Payments (Physician Payments Sunshine Act), applicable manufacturers must report all transfers of value above **$500** to covered clinicians (MDs, DOs, NPs, PAs, etc.). Data is compiled annually (January 1 - December 31) and must be submitted to the CMS Open Payments system by March 31 of the following year.";
+      } else if (text.includes('south korea') || text.includes('korea') || text.includes('sunshine') || text.includes('krpia')) {
+        reply = "Under Article 47-2 of South Korea's Pharmaceutical Affairs Act, reportable transfers include food, beverages, and promotional goods. Educational events exceeding **100,000 KRW** for meals and **10,000 KRW** for promotional items (50,000 KRW for multi-institution events) are subject to strict disclosure requirements. Advisory panels are capped at **500,000 KRW** per session. Reports are submitted annually to the Ministry of Health and Welfare (MOHW).";
+      } else if (text.includes('limit') || text.includes('presentation') || text.includes('briefing') || text.includes('food') || text.includes('beverage') || text.includes('meal')) {
+        reply = "Statutory meal, presentation, and threshold limits vary significantly by jurisdiction under global rules:\n\n• **South Korea**: Meals capped at **₩100,000** per HCP per session, promotional items at **₩10,000** or less, and advisory panels capped at **₩500,000** per session.\n• **Italy**: Agreements above **€1,000** or donations/sponsorships above **€5,000** must be disclosed. Hospitality during educational briefings is reportable and capped at **€150** per event.\n• **Colombia**: Food and travel expenses are tracked under Resolution 2881 with an individual value transfer disclosure threshold of **1,500,000 COP** per transaction.\n• **United States**: Transfers of value (including meals) above **$500** per covered clinician must be reported to the CMS Open Payments system.";
       } else if (text.includes('remediation') || text.includes('flagged') || text.includes('resolved') || text.includes('violation')) {
-        reply = "The Remediation engine automatically flags transactions exceeding standard limits (e.g. ₩500,000 for individual advisory agreements). Users can review, approve, or reject these records under the 'Data Remediation' panel. All decisions are logged in the cryptographic Audit Trail.";
+        reply = "The Remediation engine automatically flags transactions exceeding standard regional limits. Users can review, approve, or reject these records under the 'Data Remediation' panel. All decisions are logged in the cryptographic Audit Trail.";
       }
 
       const botMessage: Message = {
@@ -105,8 +109,8 @@ const AIAssistant = () => {
         <Sparkles size={32} color="var(--primary)" />
         <h1 className="page-title" style={{ margin: 0 }}>Compliance AI Assistant</h1>
       </div>
-      <p className="page-subtitle" style={{ marginBottom: '24px' }}>Powered by Google Gemini. Ask any questions about MOHW reporting limits, regulations, or safe harbors.</p>
-
+      <p className="page-subtitle" style={{ marginBottom: '24px' }}>Powered by Google Gemini. Ask any questions about global transparency reporting limits, statutory regulations, or safe harbors.</p>
+ 
       <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' }}>
         
         {/* Chat History */}

@@ -11,7 +11,7 @@ const AgentWidget = () => {
           <Bot size={24} color="var(--primary-glow)" />
           <div>
             <h3 style={{ fontSize: '1rem', margin: 0 }}>Compliance Agent</h3>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Powered by Gemini 3.1 Flash</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Powered by Gemini 3.5 Flash</span>
           </div>
           <button onClick={() => setIsOpen(false)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
             <X size={20} />

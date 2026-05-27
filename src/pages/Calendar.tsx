@@ -171,6 +171,42 @@ const Calendar: React.FC = () => {
       flag: '🇮🇹',
       threshold: 'HCP Agreements > €1,000, HCO Donations > €5,000',
       link: '/italy/reporting'
+    },
+    {
+      id: 'us-rxdc-2025',
+      countryCode: 'US',
+      countryName: 'US (Federal)',
+      title: 'US Federal RxDC Reporting',
+      date: new Date(2026, 5, 1), // June 1, 2026
+      desc: 'Federal RxDC reporting deadline for the prior calendar year\'s prescription drug spending, premium, and rebate data submitted to CMS.',
+      color: '#f59e0b', // Amber
+      flag: '🇺🇸',
+      threshold: 'All plan sponsors and health issuers',
+      link: '/datacenter'
+    },
+    {
+      id: 'us-ma-conduct-2025',
+      countryCode: 'US',
+      countryName: 'US (Massachusetts)',
+      title: 'Massachusetts HCP Disclosure',
+      date: new Date(2026, 6, 1), // July 1, 2026
+      desc: 'Annual disclosure report detailing marketing expenditures, gifts, and payments to Massachusetts-licensed healthcare practitioners under the pharmaceutical code of conduct.',
+      color: '#10b981', // Success Green
+      flag: '🇺🇸',
+      threshold: 'Any transfer of value',
+      link: '/datacenter'
+    },
+    {
+      id: 'us-dc-accessrx-2025',
+      countryCode: 'US',
+      countryName: 'US (District of Columbia)',
+      title: 'DC AccessRx Cost Reporting',
+      date: new Date(2026, 6, 1), // July 1, 2026
+      desc: 'Annual report on marketing expenses, advertising, and gifts provided to DC healthcare professionals under the AccessRx Program.',
+      color: '#14b8a6', // Teal
+      flag: '🇺🇸',
+      threshold: 'All pharmaceutical marketing expenses',
+      link: '/datacenter'
     }
   ];
 
@@ -433,11 +469,12 @@ const Calendar: React.FC = () => {
                               day.getMonth() === systemDate.getMonth() && 
                               day.getDate() === systemDate.getDate();
 
-              // Identify if day has statutory deadlines
+              // Identify if day has statutory deadlines (only upcoming)
               const dayDeadlines = deadlines.filter(dl => 
                 dl.date.getFullYear() === day.getFullYear() &&
                 dl.date.getMonth() === day.getMonth() &&
-                dl.date.getDate() === day.getDate()
+                dl.date.getDate() === day.getDate() &&
+                dl.date.getTime() >= systemDate.getTime()
               );
 
               return (
@@ -543,10 +580,12 @@ const Calendar: React.FC = () => {
             </h2>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '420px', overflowY: 'auto', paddingRight: '4px' }}>
-              {deadlines.map(dl => {
-                const isPast = dl.date.getTime() < systemDate.getTime();
-                const daysLeft = Math.ceil((dl.date.getTime() - systemDate.getTime()) / (1000 * 60 * 60 * 24));
-                const progress = getCompilationProgress(dl.countryCode);
+              {deadlines
+                .filter(dl => dl.date.getTime() >= systemDate.getTime())
+                .map(dl => {
+                  const daysLeft = Math.ceil((dl.date.getTime() - systemDate.getTime()) / (1000 * 60 * 60 * 24));
+                  const progress = getCompilationProgress(dl.countryCode);
+                  const isPast = false;
 
                 return (
                   <div 
