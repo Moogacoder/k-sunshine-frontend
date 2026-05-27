@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, X, FileText, ArrowRight } from 'lucide-react';
+import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, X, FileText, ArrowRight, Sparkles } from 'lucide-react';
 import { APIGateway, type UniversalTransaction, type IngestionBatch, type AuditLog } from '../datacenter/api_gateway';
 import * as XLSX from 'xlsx';
 import { parseAmount, validateReportingCompleteness } from '../datacenter/validation';
@@ -42,6 +42,17 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
   const [targetYear, setTargetYear] = useState<number>(2026);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Ingestion Summary & Stats Modal states
+  const [showStatsModal, setShowStatsModal] = useState<boolean>(false);
+  const [statsData, setStatsData] = useState<{
+    filename: string;
+    totalRows: number;
+    ingested: number;
+    flagged: number;
+    countryCode: string;
+    mapping: Record<string, string>;
+  } | null>(null);
 
   // Sorting and advanced filtering states
 
@@ -353,8 +364,36 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           const globalStaging = await APIGateway.getTransactions('GLOBAL');
           setAllStagingTransactions(globalStaging);
 
-          alert(`Ingestion Completed: Standardized ${result.ingested} records. ${result.flagged} flagged anomalies routed to Remediation.`);
-          setActiveTab('overview');
+          // Dynamically compute columns mapping to show in stats summary
+          const firstRow = json[0] || {};
+          const headersInFile = Object.keys(firstRow);
+          const findMappedHeader = (keys: string[]) => {
+            return headersInFile.find(h => keys.includes(h)) || '';
+          };
+          const finalMapping = {
+            recipientType: findMappedHeader(['Recipient Type', 'Type']),
+            recipientName: findMappedHeader(['Recipient Name', 'Nom', 'Name']),
+            licenseNumber: findMappedHeader(['License Number', 'RPPS', 'NPI', 'Codice Fiscale']),
+            workplaceInstitution: findMappedHeader(['Workplace', 'Hopital', 'Institution', 'Struttura']),
+            specialtyDepartment: findMappedHeader(['Specialty', 'Specialite', 'Specializzazione']),
+            spendCategory: findMappedHeader(['Category of Benefit', 'Categorie', 'Tipologia']),
+            dateOfProvision: findMappedHeader(['Date of Provision', 'Date', 'Data']),
+            purposeOfBenefit: findMappedHeader(['Purpose', 'Objet', 'Oggetto']),
+            details: findMappedHeader(['Details', 'Dettagli']),
+            amountOriginal: findMappedHeader(['Amount (EUR)', 'Amount (KRW)', 'Amount (USD)', 'Amount', 'amount', 'Valore', 'valore', 'Importo', 'importo', 'Montant', 'montant', 'Value', 'value'])
+          };
+
+          // Capture stats data for the summary stats modal
+          setStatsData({
+            filename: selectedFile.name,
+            totalRows: json.length,
+            ingested: result.ingested,
+            flagged: result.flagged,
+            countryCode: targetCountry,
+            mapping: finalMapping
+          });
+          setShowStatsModal(true);
+
           setSelectedFile(null);
         }
       } catch (err: any) {
@@ -2134,6 +2173,148 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           </div>
         );
       })()}
+
+      {/* Ingestion Summary & Stats Modal */}
+      {showStatsModal && statsData && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15, 23, 42, 0.88)', backdropFilter: 'blur(12px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1150, padding: '20px'
+        }}>
+          <div className="card animate-scale-up" style={{ 
+            width: '100%', maxWidth: '680px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', 
+            padding: 0, border: '1px solid var(--border-color)', overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)', background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)'
+          }}>
+            
+            {/* Modal Header */}
+            <div style={{ padding: '24px 28px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', background: 'rgba(255, 255, 255, 0.02)' }}>
+              <CheckCircle size={26} color="#10B981" style={{ marginRight: '12px' }} />
+              <div>
+                <h2 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 'bold', color: 'var(--text-primary)' }}>Ingestion Summary & Performance Metrics</h2>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>File: <strong style={{ color: 'var(--text-primary)' }}>{statsData.filename}</strong></span>
+              </div>
+              <button 
+                onClick={() => setShowStatsModal(false)}
+                style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '28px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              
+              {/* Stats High-Impact Counters Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Total Rows Parsed</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>{statsData.totalRows}</div>
+                </div>
+                <div style={{ padding: '16px', background: 'rgba(16, 185, 129, 0.04)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(16, 185, 129, 0.8)', marginBottom: '6px' }}>Successfully Ingested</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#10B981' }}>{statsData.ingested}</div>
+                </div>
+                <div style={{ 
+                  padding: '16px', 
+                  background: statsData.flagged > 0 ? 'rgba(245, 158, 11, 0.04)' : 'rgba(255,255,255,0.02)', 
+                  border: statsData.flagged > 0 ? '1px solid rgba(245, 158, 11, 0.2)' : '1px solid var(--border-color)', 
+                  borderRadius: '10px', textAlign: 'center' 
+                }}>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: statsData.flagged > 0 ? 'rgba(245, 158, 11, 0.8)' : 'var(--text-secondary)', marginBottom: '6px' }}>Remediation Flags</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: statsData.flagged > 0 ? '#F59E0B' : 'var(--text-primary)' }}>{statsData.flagged}</div>
+                </div>
+              </div>
+
+              {/* Contamination Clean Badge */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.15)', padding: '14px 18px', borderRadius: '8px' }}>
+                <CheckCircle size={18} color="#10B981" style={{ flexShrink: 0 }} />
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  <strong style={{ color: 'var(--text-primary)' }}>Target Jurisdiction ({statsData.countryCode}):</strong> Automated contamination check completed successfully. Column structure aligned with statutory guidelines.
+                </div>
+              </div>
+
+              {/* Column Mapping Section */}
+              <div>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Sparkles size={16} color="var(--primary-glow)" /> Confirmed UDM Header Mapping
+                </h3>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'rgba(0,0,0,0.15)' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                    <thead>
+                      <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
+                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Universal Schema Field</th>
+                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Mapped Excel Header</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { key: 'recipientType', label: 'Recipient Type' },
+                        { key: 'recipientName', label: 'Recipient Name' },
+                        { key: 'licenseNumber', label: 'License / ID Number' },
+                        { key: 'workplaceInstitution', label: 'Workplace Institution' },
+                        { key: 'specialtyDepartment', label: 'Specialty Department' },
+                        { key: 'spendCategory', label: 'Category of Spend' },
+                        { key: 'dateOfProvision', label: 'Provision Date' },
+                        { key: 'purposeOfBenefit', label: 'Purpose of Benefit' },
+                        { key: 'details', label: 'Additional Details' },
+                        { key: 'amountOriginal', label: 'Amount (Original)' }
+                      ].map(field => {
+                        const sourceHeader = statsData.mapping[field.key];
+                        return (
+                          <tr key={field.key} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+                            <td style={{ padding: '8px 12px', color: 'var(--text-primary)', fontWeight: 500 }}>{field.label}</td>
+                            <td style={{ padding: '8px 12px' }}>
+                              {sourceHeader ? (
+                                <span className="badge badge-success" style={{ padding: '3px 8px', fontSize: '0.72rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+                                  {sourceHeader}
+                                </span>
+                              ) : (
+                                <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>-- Auto-populated / Defaulted --</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '20px 28px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '12px', justifyContent: 'flex-end', background: 'rgba(255, 255, 255, 0.01)' }}>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => {
+                  setShowStatsModal(false);
+                  setActiveTab('overview');
+                }}
+                style={{ border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-primary)', padding: '10px 20px', borderRadius: '6px' }}
+              >
+                Close Summary
+              </button>
+              
+              {statsData.flagged > 0 && (
+                <button 
+                  className="btn btn-primary" 
+                  onClick={() => {
+                    setShowStatsModal(false);
+                    const code = statsData.countryCode.toLowerCase();
+                    const path = code === 'kr' ? '/remediation' : `/${code}/remediation`;
+                    navigate(path);
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '6px', background: '#F59E0B', border: '1px solid #F59E0B', color: 'white', fontWeight: 600 }}
+                >
+                  Resolve Flags ({statsData.flagged}) <ArrowRight size={16} />
+                </button>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 };

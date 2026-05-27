@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FileSpreadsheet, Download, Clock, User, Eye, X, Loader2 } from 'lucide-react';
+import { FileSpreadsheet, Download, Clock, User, Eye, X, Loader2, Sparkles } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -43,6 +43,29 @@ const ColombiaReporting = () => {
   const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null);
   const [activeTemplateTitle, setActiveTemplateTitle] = useState('');
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+  // AI Compliance Statement States
+  const [showAiStatement, setShowAiStatement] = useState(false);
+  const [isStatementLoading, setIsStatementLoading] = useState(false);
+  const [statementContent, setStatementContent] = useState('');
+
+  const handleGenerateStatement = async () => {
+    if (statementContent) {
+      setShowAiStatement(!showAiStatement);
+      return;
+    }
+    setShowAiStatement(true);
+    setIsStatementLoading(true);
+    try {
+      const draft = await APIGateway.getComplianceStatement('CO', 2026);
+      setStatementContent(draft);
+    } catch (err) {
+      console.error("Failed to generate compliance statement:", err);
+      setStatementContent("Failed to generate the cover statement. Please verify server status.");
+    } finally {
+      setIsStatementLoading(false);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -424,15 +447,55 @@ const ColombiaReporting = () => {
 
   return (
     <div style={{ paddingBottom: '40px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px' }}>
-        <span style={{ fontSize: '2.5rem' }}>🇨🇴</span>
-        <div>
-          <h1 className="page-title" style={{ margin: 0 }}>Reportes de Resolución 2881 (RTVSS)</h1>
-          <p className="page-subtitle" style={{ margin: 0 }}>
-            Generación y archivo oficial de planillas del Registro de Transferencias de Valor de la Industria Farmacéutica.
-          </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <span style={{ fontSize: '2.5rem' }}>🇨🇴</span>
+          <div>
+            <h1 className="page-title" style={{ margin: 0 }}>Reportes de Resolución 2881 (RTVSS)</h1>
+            <p className="page-subtitle" style={{ margin: 0 }}>
+              Generación y archivo oficial de planillas del Registro de Transferencias de Valor de la Industria Farmacéutica.
+            </p>
+          </div>
         </div>
+        <button 
+          className="btn btn-primary" 
+          onClick={handleGenerateStatement}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', backgroundColor: '#0284c7', borderColor: '#0284c7' }}
+        >
+          <Sparkles size={16} /> 
+          {showAiStatement ? 'Ocultar Portada AI' : 'Certificación de Trasparencia AI'}
+        </button>
       </div>
+
+      {/* AI Compliance Statement Collapsible Container */}
+      {showAiStatement && (
+        <div className="card animate-scale-up" style={{ 
+          marginBottom: '32px', 
+          border: '1px solid var(--border-color)', 
+          background: 'rgba(30, 41, 59, 0.4)',
+          backdropFilter: 'blur(10px)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <Sparkles size={20} color="var(--primary-glow)" />
+            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 'bold' }}>AI-Generated Filing Cover Statement (Borrador RTVSS)</h3>
+            {isStatementLoading && <Loader2 size={16} color="var(--primary-accent)" style={{ animation: 'spin 1s linear infinite' }} />}
+          </div>
+          
+          {isStatementLoading ? (
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Compilando valores consolidados y redactando certificación de presentación...</p>
+          ) : (
+            <div 
+              style={{ fontSize: '0.9rem', lineHeight: '1.6', color: 'var(--text-primary)', whiteSpace: 'pre-wrap' }}
+              dangerouslySetInnerHTML={{ 
+                __html: statementContent
+                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                  .replace(/### (.*?)\n/g, '<h4 style="color:var(--primary-glow);margin-top:16px;margin-bottom:8px;font-size:0.95rem;">$1</h4>')
+                  .replace(/## (.*?)\n/g, '<h3 style="color:var(--text-primary);margin-top:20px;margin-bottom:10px;font-size:1.1rem;">$1</h3>')
+              }}
+            />
+          )}
+        </div>
+      )}
 
       {isLoading ? (
         <p style={{ color: 'var(--text-secondary)' }}>Cargando datos del portal colombiano...</p>

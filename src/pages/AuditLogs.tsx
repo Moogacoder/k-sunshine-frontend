@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Clock, Database } from 'lucide-react';
+import { Shield, Clock, Database, Sparkles, Loader2 } from 'lucide-react';
 import { APIGateway } from '../datacenter/api_gateway';
 
 interface AuditLog {
@@ -18,6 +18,11 @@ const AuditLogs = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [expandedLog, setExpandedLog] = useState<string | null>(null);
 
+  // AI Briefing states
+  const [isBriefingOpen, setIsBriefingOpen] = useState(false);
+  const [isBriefingLoading, setIsBriefingLoading] = useState(false);
+  const [aiBriefingContent, setAiBriefingContent] = useState('');
+
   useEffect(() => {
     fetchLogs();
   }, []);
@@ -30,6 +35,25 @@ const AuditLogs = () => {
       console.error("Failed to fetch audit logs:", err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGenerateBriefing = async () => {
+    if (aiBriefingContent) {
+      setIsBriefingOpen(!isBriefingOpen);
+      return;
+    }
+
+    setIsBriefingOpen(true);
+    setIsBriefingLoading(true);
+    try {
+      const summary = await APIGateway.getAuditSummary();
+      setAiBriefingContent(summary);
+    } catch (err) {
+      console.error("Failed to fetch AI audit briefing:", err);
+      setAiBriefingContent("Failed to compile the intelligent Audit Trail executive briefing. Please verify your internet connection or check the backend services.");
+    } finally {
+      setIsBriefingLoading(false);
     }
   };
 
@@ -91,7 +115,52 @@ const AuditLogs = () => {
         <Shield size={32} color="var(--primary)" />
         <h1 className="page-title" style={{ margin: 0 }}>Global Audit Trail</h1>
       </div>
-      <p className="page-subtitle" style={{ marginBottom: '32px' }}>Immutable, cryptographic ledger of all data mutations for KOPS compliance.</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+        <p className="page-subtitle" style={{ margin: 0 }}>Immutable, cryptographic ledger of all data mutations for KOPS compliance.</p>
+        
+        {/* Generate AI Briefing Button */}
+        <button 
+          className="btn btn-primary" 
+          onClick={handleGenerateBriefing}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}
+        >
+          <Sparkles size={16} /> 
+          {isBriefingOpen ? 'Hide AI Briefing' : 'AI Executive Briefing'}
+        </button>
+      </div>
+
+      {/* AI Executive Briefing collapsible panel */}
+      {isBriefingOpen && (
+        <div className="card animate-scale-up" style={{ 
+          marginBottom: '28px', 
+          border: '1px solid var(--border-color)', 
+          background: 'rgba(30, 41, 59, 0.4)',
+          backdropFilter: 'blur(10px)',
+          padding: '24px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifySelf: 'flex-start', gap: '8px', marginBottom: '16px' }}>
+            <Sparkles size={20} color="var(--primary-glow)" />
+            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 'bold' }}>Qordata AI Audit Analysis</h3>
+            {isBriefingLoading && <Loader2 size={16} color="var(--primary-accent)" style={{ animation: 'spin 1s linear infinite' }} />}
+          </div>
+
+          {isBriefingLoading ? (
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0 }}>
+              Gemini is digesting transaction mutation logs, routed countries, and compliance update frequencies...
+            </p>
+          ) : (
+            <div 
+              style={{ fontSize: '0.9rem', lineHeight: '1.6', color: 'var(--text-primary)', whiteSpace: 'pre-wrap' }}
+              dangerouslySetInnerHTML={{ 
+                __html: aiBriefingContent
+                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                  .replace(/### (.*?)\n/g, '<h4 style="color:var(--primary-glow);margin-top:16px;margin-bottom:8px;font-size:0.95rem;">$1</h4>')
+                  .replace(/## (.*?)\n/g, '<h3 style="color:var(--text-primary);margin-top:20px;margin-bottom:10px;font-size:1.1rem;">$1</h3>')
+              }}
+            />
+          )}
+        </div>
+      )}
 
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         {isLoading ? (

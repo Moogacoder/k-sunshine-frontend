@@ -190,12 +190,12 @@ export const APIGateway = {
   },
 
   // AI chat assistant query
-  sendChatQuery: async (message: string): Promise<string> => {
+  sendChatQuery: async (message: string, path?: string): Promise<string> => {
     try {
       const res = await fetch(`${BACKEND_URL}/api/agent/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
+        body: JSON.stringify({ message, path })
       });
       if (!res.ok) throw new Error("AI agent error");
       const data = await res.json();
@@ -203,6 +203,71 @@ export const APIGateway = {
     } catch (err) {
       console.error("API Gateway error contacting AI agent:", err);
       return "I am currently offline due to a connection drop with the SQL Database service. Please try again shortly.";
+    }
+  },
+  
+  // AI Smart Column Mapping query
+  mapColumns: async (headers: string[]): Promise<Record<string, string>> => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/agent/map-columns`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ headers })
+      });
+      if (!res.ok) throw new Error("AI column mapping error");
+      return await res.json();
+    } catch (err) {
+      console.error("API Gateway error fetching column mapping:", err);
+      return {};
+    }
+  },
+
+  // AI Violation Explainer and Autoresolve suggest query
+  explainViolation: async (transaction: any): Promise<{ explanation: string; suggestedFix: any }> => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/agent/explain-violation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transaction })
+      });
+      if (!res.ok) throw new Error("AI violation explainer error");
+      return await res.json();
+    } catch (err) {
+      console.error("API Gateway error explaining violation:", err);
+      return { explanation: "Failed to analyze this transaction using compliance AI.", suggestedFix: {} };
+    }
+  },
+
+  // AI Audit Summary Brief query
+  getAuditSummary: async (): Promise<string> => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/agent/audit-summary`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!res.ok) throw new Error("AI audit summary error");
+      const data = await res.json();
+      return data.summary;
+    } catch (err) {
+      console.error("API Gateway error fetching audit summary:", err);
+      return "Failed to compile the intelligent Audit Trail executive briefing.";
+    }
+  },
+
+  // AI Compliance Draft Statement query
+  getComplianceStatement: async (countryCode: string, year: number): Promise<string> => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/agent/compliance-statement`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ countryCode, year })
+      });
+      if (!res.ok) throw new Error("AI compliance statement error");
+      const data = await res.json();
+      return data.statement;
+    } catch (err) {
+      console.error("API Gateway error fetching compliance statement:", err);
+      return "Failed to draft the intelligent Compliance Cover Statement.";
     }
   },
   

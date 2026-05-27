@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, Send, User, Sparkles } from 'lucide-react';
+import { Send, User, Sparkles } from 'lucide-react';
 import { APIGateway } from '../datacenter/api_gateway';
 
 interface Message {
@@ -120,10 +120,11 @@ const AIAssistant = () => {
               
               <div style={{ 
                 width: '36px', height: '36px', borderRadius: '50%', 
-                background: msg.sender === 'user' ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 
+                background: msg.sender === 'user' ? 'var(--primary)' : 'transparent',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                overflow: 'hidden'
               }}>
-                {msg.sender === 'user' ? <User size={20} color="white" /> : <Bot size={20} color="var(--primary)" />}
+                {msg.sender === 'user' ? <User size={20} color="white" /> : <img src="https://www.qordata.com/wp-content/uploads/2019/10/Updated_Logo_transparent.png" alt="EngageAgent" style={{ width: '100%', height: '100%', objectFit: 'contain', background: 'white', padding: '2px' }} />}
               </div>
               
               <div style={{ 
@@ -144,8 +145,8 @@ const AIAssistant = () => {
           
           {isLoading && (
             <div style={{ display: 'flex', gap: '16px', flexDirection: 'row' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Bot size={20} color="var(--primary)" />
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden', background: 'white', padding: '2px', border: '1px solid var(--border-color)' }}>
+                <img src="https://www.qordata.com/wp-content/uploads/2019/10/Updated_Logo_transparent.png" alt="EngageAgent" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               </div>
               <div style={{ background: 'var(--bg-main)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
                 Consulting the PAA guidelines...

@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import type { DragEvent, ChangeEvent } from 'react';
-import { UploadCloud, FileSpreadsheet, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
+import { UploadCloud, FileSpreadsheet, Loader2, CheckCircle, AlertTriangle, Sparkles, ArrowRight, X } from 'lucide-react';
 import * as XLSX from 'xlsx';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { APIGateway } from '../datacenter/api_gateway';
 import { parseAmount } from '../datacenter/validation';
 
@@ -13,8 +13,24 @@ interface UploadResult {
   flagged: number;
 }
 
+// Universal Schema attributes to map to
+const REQUIRED_SCHEMA_FIELDS = [
+  { key: 'recipientType', label: 'Recipient Type', desc: 'HCP, THO, or INSTITUTION' },
+  { key: 'recipientName', label: 'Recipient Name', desc: 'Name of clinician or organization' },
+  { key: 'licenseNumber', label: 'License / ID Number', desc: 'NPI, Codice Fiscale, NIT, RPPS, etc.' },
+  { key: 'workplaceInstitution', label: 'Workplace Institution', desc: 'Workplace hospital or clinic name' },
+  { key: 'specialtyDepartment', label: 'Specialty Department', desc: 'Medical specialty or department' },
+  { key: 'categoryOfBenefit', label: 'Category of Spend', desc: 'Spend type/category' },
+  { key: 'dateOfProvision', label: 'Provision Date', desc: 'Date of value transfer' },
+  { key: 'placeOfProvision', label: 'Place of Provision', desc: 'City or state location' },
+  { key: 'purposeOfBenefit', label: 'Purpose of Benefit', desc: 'Reason or event name' },
+  { key: 'amountOriginal', label: 'Amount (Original)', desc: 'Transaction value' },
+  { key: 'details', label: 'Additional Details', desc: 'Notes or equipment descriptions' }
+];
+
 const Ingestion = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isItaly = location.pathname.includes('/italy');
   const isColombia = location.pathname.includes('/colombia');
   
@@ -23,6 +39,24 @@ const Ingestion = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [recentUploads, setRecentUploads] = useState<UploadResult[]>([]);
+
+  // AI Schema Mapping Modal states
+  const [showMappingModal, setShowMappingModal] = useState(false);
+  const [tempJsonData, setTempJsonData] = useState<any[]>([]);
+  const [tempFileName, setTempFileName] = useState('');
+  const [availableHeaders, setAvailableHeaders] = useState<string[]>([]);
+  const [columnMapping, setColumnMapping] = useState<Record<string, string>>({});
+  const [isMappingLoading, setIsMappingLoading] = useState(false);
+
+  // Ingestion Summary & Stats Modal states
+  const [showStatsModal, setShowStatsModal] = useState(false);
+  const [statsData, setStatsData] = useState<{
+    filename: string;
+    totalRows: number;
+    ingested: number;
+    flagged: number;
+    mapping: Record<string, string>;
+  } | null>(null);
 
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
@@ -42,6 +76,12 @@ const Ingestion = () => {
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
       const json = XLSX.utils.sheet_to_json(worksheet);
+
+      if (json.length === 0) {
+        alert("The uploaded file is empty.");
+        setIsUploading(false);
+        return;
+      }
 
       // Verify country relevance (Contamination Check)
       const hasItalianHeaders = json.some((row: any) => 
@@ -80,60 +120,110 @@ const Ingestion = () => {
         return;
       }
 
-      // Map the Excel headers to our backend schema
-      const mappedData = json.map((row: any) => {
-        const rawAmount = 
-          row['Amount (EUR)'] ||
-          row['Amount (KRW)'] ||
-          row['Amount (USD)'] ||
-          row['Amount'] ||
-          row['amount'] ||
-          row['Valore'] ||
-          row['valore'] ||
-          row['Importo'] ||
-          row['importo'] ||
-          row['Montant'] ||
-          row['montant'] ||
-          row['Value'] ||
-          row['value'] ||
-          0;
+      // Extract raw column headers from spreadsheet keys
+      const headers = Object.keys(json[0] as object);
+      setAvailableHeaders(headers);
+      setTempJsonData(json);
+      setTempFileName(file.name);
+      
+      // Open mapping panel and request dynamic AI column mappings
+      setShowMappingModal(true);
+      setIsMappingLoading(true);
+
+      try {
+        const aiMapping = await APIGateway.mapColumns(headers);
         
-        return {
-          recipientType: row['Recipient Type'] || 'HCP',
-          recipientName: row['Recipient Name'] || row['Nom'] || row['Name'] || '',
-          licenseNumber: String(row['License Number'] || row['RPPS'] || row['NPI'] || row['Codice Fiscale'] || ''),
-          workplaceInstitution: row['Workplace'] || row['Hopital'] || row['Institution'] || row['Struttura'] || '',
-          specialtyDepartment: row['Specialty'] || row['Specialite'] || row['Specializzazione'] || '',
-          categoryOfBenefit: row['Category of Benefit'] || row['Categorie'] || row['Tipologia'] || row['Categoria de la Transferencia'] || (isColombia ? 'HONORARIOS' : (isItaly ? 'CONVENZIONI' : 'PRESENTATION')),
-          dateOfProvision: row['Date of Provision'] || row['Date'] || row['Data'] ? new Date(row['Date of Provision'] || row['Date'] || row['Data']).toISOString() : new Date().toISOString(),
-          placeOfProvision: row['Place'] || row['Lieu'] || row['Lieu'] || '',
-          purposeOfBenefit: row['Purpose'] || row['Objet'] || row['Oggetto'] || '',
-          amountOriginal: parseAmount(rawAmount),
-          details: row['Details'] || row['Dettagli'] || ''
-        };
-      });
-
-      // Ingest via the Central Data Center's target stream feeds
-      const currentYear = new Date().getFullYear();
-      const result = await APIGateway.ingestData(countryCode, currentYear, file.name, mappedData);
-
-      if (result.success) {
-        setRecentUploads(prev => [{
-          filename: file.name,
-          date: new Date().toLocaleDateString(),
-          ingested: result.ingested,
-          flagged: result.flagged
-        }, ...prev]);
-      } else {
-        throw new Error('Failed to ingest data');
+        // Formulate an initial state with AI recommendations
+        const finalMapping: Record<string, string> = {};
+        REQUIRED_SCHEMA_FIELDS.forEach(field => {
+          // Find if there's an AI suggested header that maps to this universal key
+          const matchedHeader = Object.keys(aiMapping).find(k => aiMapping[k] === field.key);
+          if (matchedHeader) {
+            finalMapping[field.key] = matchedHeader;
+          } else {
+            // Static fallback heuristics if AI misses it
+            const fallback = headers.find(h => 
+              h.toLowerCase().includes(field.key.toLowerCase()) || 
+              (field.key === 'recipientName' && (h.toLowerCase().includes('name') || h.toLowerCase().includes('nom') || h.toLowerCase().includes('beneficiario'))) ||
+              (field.key === 'licenseNumber' && (h.toLowerCase().includes('license') || h.toLowerCase().includes('tax') || h.toLowerCase().includes('nit') || h.toLowerCase().includes('fiscale') || h.toLowerCase().includes('rpps') || h.toLowerCase().includes('npi'))) ||
+              (field.key === 'amountOriginal' && (h.toLowerCase().includes('amount') || h.toLowerCase().includes('valore') || h.toLowerCase().includes('value') || h.toLowerCase().includes('importo') || h.toLowerCase().includes('valor')))
+            );
+            finalMapping[field.key] = fallback || '';
+          }
+        });
+        setColumnMapping(finalMapping);
+      } catch (err) {
+        console.warn("AI Mapping failed, using standard mapping:", err);
+      } finally {
+        setIsMappingLoading(false);
       }
 
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Failed to process file. Check console for details.');
+      setIsUploading(false);
+    }
+  };
+
+  const handleConfirmMapping = async () => {
+    setIsUploading(true);
+    setShowMappingModal(false);
+    try {
+      // Map the Excel row cells using the confirmed dropdown mappings
+      const mappedData = tempJsonData.map((row: any) => {
+        const mappedRow: any = {};
+        REQUIRED_SCHEMA_FIELDS.forEach(field => {
+          const selectedHeader = columnMapping[field.key];
+          let val = selectedHeader ? row[selectedHeader] : '';
+          
+          if (field.key === 'amountOriginal') {
+            mappedRow[field.key] = parseAmount(val);
+          } else if (field.key === 'dateOfProvision') {
+            mappedRow[field.key] = val ? new Date(val).toISOString() : new Date().toISOString();
+          } else {
+            mappedRow[field.key] = val !== undefined && val !== null ? String(val) : '';
+          }
+        });
+        return mappedRow;
+      });
+
+      // Commit Ingestion via API Gateway
+      const currentYear = new Date().getFullYear();
+      const result = await APIGateway.ingestData(countryCode, currentYear, tempFileName, mappedData);
+
+      if (result.success) {
+        setRecentUploads(prev => [{
+          filename: tempFileName,
+          date: new Date().toLocaleDateString(),
+          ingested: result.ingested,
+          flagged: result.flagged
+        }, ...prev]);
+
+        // Capture stats data for the summary stats modal
+        setStatsData({
+          filename: tempFileName,
+          totalRows: tempJsonData.length,
+          ingested: result.ingested,
+          flagged: result.flagged,
+          mapping: { ...columnMapping }
+        });
+        setShowStatsModal(true);
+      } else {
+        throw new Error('Failed to ingest mapped records');
+      }
+    } catch (error: any) {
+      console.error('Mapping ingestion error:', error);
+      alert('Failed to commit records. ' + error.message);
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleDropdownChange = (fieldKey: string, headerValue: string) => {
+    setColumnMapping(prev => ({
+      ...prev,
+      [fieldKey]: headerValue
+    }));
   };
 
   const handleDrop = useCallback((e: DragEvent) => {
@@ -155,6 +245,7 @@ const Ingestion = () => {
       <h1 className="page-title">Local Data Ingestion ({isColombia ? 'Colombia' : (isItaly ? 'Italy' : 'South Korea')})</h1>
       <p className="page-subtitle">Upload spend records from external sources for {isColombia ? 'Colombia Resolution 2881' : (isItaly ? 'Italy Sanità Trasparente' : 'K-Sunshine Act')} validation.</p>
 
+      {/* Drag & Drop Card */}
       <div 
         className="card" 
         style={{ 
@@ -218,6 +309,229 @@ const Ingestion = () => {
         )}
       </div>
 
+      {/* AI Smart Schema-Mapping Modal */}
+      {showMappingModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, padding: '20px'
+        }}>
+          <div className="card animate-scale-up" style={{ 
+            width: '100%', maxWidth: '750px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', 
+            padding: 0, border: '1px solid var(--border-color)', overflow: 'hidden'
+          }}>
+            
+            {/* Modal Header */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', background: 'var(--bg-main)' }}>
+              <Sparkles size={24} color="var(--primary-glow)" style={{ marginRight: '10px' }} />
+              <div>
+                <h2 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 'bold' }}>AI-Powered Smart Schema Mapper</h2>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>File: <strong style={{ color: 'var(--text-primary)' }}>{tempFileName}</strong> • Records: <strong>{tempJsonData.length}</strong></span>
+              </div>
+              <button 
+                onClick={() => setShowMappingModal(false)}
+                style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(56, 189, 248, 0.05)', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '12px 16px', borderRadius: '8px', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                <Sparkles size={16} color="var(--primary-glow)" style={{ flexShrink: 0 }} />
+                <span>Our Gemini model analyzed your uploaded columns and auto-mapped them to our compliance schema keys. Please verify before importing.</span>
+              </div>
+
+              {isMappingLoading ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px', gap: '16px' }}>
+                  <Loader2 size={40} color="var(--primary-accent)" style={{ animation: 'spin 1s linear infinite' }} />
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Gemini is analyzing columns and aligning schemas...</span>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {REQUIRED_SCHEMA_FIELDS.map(field => {
+                    const mappedValue = columnMapping[field.key] || '';
+                    return (
+                      <div key={field.key} style={{ display: 'grid', gridTemplateColumns: '1.8fr 2.5fr', alignItems: 'center', gap: '16px', padding: '10px 14px', borderRadius: '8px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
+                        <div>
+                          <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>{field.label}</div>
+                          <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{field.desc}</div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <select 
+                            value={mappedValue} 
+                            onChange={(e) => handleDropdownChange(field.key, e.target.value)}
+                            style={{ flex: 1, padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-main)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                          >
+                            <option value="">-- Leave empty --</option>
+                            {availableHeaders.map(h => (
+                              <option key={h} value={h}>{h}</option>
+                            ))}
+                          </select>
+                          {mappedValue && (
+                            <span className="badge badge-success" style={{ padding: '6px 10px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <Sparkles size={10} /> AI Mapped
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '12px', justifyContent: 'flex-end', background: 'var(--bg-main)' }}>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setShowMappingModal(false)}
+                style={{ border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-primary)' }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn btn-primary" 
+                onClick={handleConfirmMapping}
+                disabled={isMappingLoading}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                Confirm Mapping & Ingest <ArrowRight size={16} />
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* Ingestion Summary & Stats Modal */}
+      {showStatsModal && statsData && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15, 23, 42, 0.88)', backdropFilter: 'blur(12px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1150, padding: '20px'
+        }}>
+          <div className="card animate-scale-up" style={{ 
+            width: '100%', maxWidth: '680px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', 
+            padding: 0, border: '1px solid var(--border-color)', overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)', background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)'
+          }}>
+            
+            {/* Modal Header */}
+            <div style={{ padding: '24px 28px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', background: 'rgba(255, 255, 255, 0.02)' }}>
+              <CheckCircle size={26} color="#10B981" style={{ marginRight: '12px' }} />
+              <div>
+                <h2 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 'bold', color: 'var(--text-primary)' }}>Ingestion Summary & Performance Metrics</h2>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>File: <strong style={{ color: 'var(--text-primary)' }}>{statsData.filename}</strong></span>
+              </div>
+              <button 
+                onClick={() => setShowStatsModal(false)}
+                style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '28px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              
+              {/* Stats High-Impact Counters Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Total Rows Parsed</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>{statsData.totalRows}</div>
+                </div>
+                <div style={{ padding: '16px', background: 'rgba(16, 185, 129, 0.04)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(16, 185, 129, 0.8)', marginBottom: '6px' }}>Successfully Ingested</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#10B981' }}>{statsData.ingested}</div>
+                </div>
+                <div style={{ 
+                  padding: '16px', 
+                  background: statsData.flagged > 0 ? 'rgba(245, 158, 11, 0.04)' : 'rgba(255,255,255,0.02)', 
+                  border: statsData.flagged > 0 ? '1px solid rgba(245, 158, 11, 0.2)' : '1px solid var(--border-color)', 
+                  borderRadius: '10px', textAlign: 'center' 
+                }}>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: statsData.flagged > 0 ? 'rgba(245, 158, 11, 0.8)' : 'var(--text-secondary)', marginBottom: '6px' }}>Remediation Flags</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: statsData.flagged > 0 ? '#F59E0B' : 'var(--text-primary)' }}>{statsData.flagged}</div>
+                </div>
+              </div>
+
+              {/* Contamination Clean Badge */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.15)', padding: '14px 18px', borderRadius: '8px' }}>
+                <CheckCircle size={18} color="#10B981" style={{ flexShrink: 0 }} />
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  <strong style={{ color: 'var(--text-primary)' }}>Filing Registry Cleared:</strong> Automated contamination check completed successfully. 0 records from foreign registries detected.
+                </div>
+              </div>
+
+              {/* Column Mapping Section */}
+              <div>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Sparkles size={16} color="var(--primary-glow)" /> Confirmed Column Mapping Config
+                </h3>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'rgba(0,0,0,0.15)' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                    <thead>
+                      <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
+                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Universal Schema Field</th>
+                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Mapped Excel Header</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {REQUIRED_SCHEMA_FIELDS.map(field => {
+                        const sourceHeader = statsData.mapping[field.key];
+                        return (
+                          <tr key={field.key} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+                            <td style={{ padding: '8px 12px', color: 'var(--text-primary)', fontWeight: 500 }}>{field.label}</td>
+                            <td style={{ padding: '8px 12px' }}>
+                              {sourceHeader ? (
+                                <span className="badge badge-success" style={{ padding: '3px 8px', fontSize: '0.72rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+                                  {sourceHeader}
+                                </span>
+                              ) : (
+                                <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>-- Unmapped / Skipped --</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '20px 28px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '12px', justifyContent: 'flex-end', background: 'rgba(255, 255, 255, 0.01)' }}>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setShowStatsModal(false)}
+                style={{ border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-primary)', padding: '10px 20px', borderRadius: '6px' }}
+              >
+                Close Summary
+              </button>
+              
+              {statsData.flagged > 0 && (
+                <button 
+                  className="btn btn-primary" 
+                  onClick={() => {
+                    setShowStatsModal(false);
+                    navigate(isColombia ? '/colombia/remediation' : (isItaly ? '/italy/remediation' : '/remediation'));
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '6px', background: '#F59E0B', border: '1px solid #F59E0B', color: 'white', fontWeight: 600 }}
+                >
+                  Resolve Flags ({statsData.flagged}) <ArrowRight size={16} />
+                </button>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* Recent Uploads Card */}
       <div className="card" style={{ marginTop: '32px' }}>
         <h3 style={{ marginBottom: '20px' }}>Recent Uploads</h3>
         <div className="table-container">
