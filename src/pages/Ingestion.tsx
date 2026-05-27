@@ -313,16 +313,17 @@ const Ingestion = () => {
       {showMappingModal && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(8px)',
+          background: 'rgba(15, 23, 42, 0.45)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, padding: '20px'
         }}>
           <div className="card animate-scale-up" style={{ 
             width: '100%', maxWidth: '750px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', 
-            padding: 0, border: '1px solid var(--border-color)', overflow: 'hidden'
+            padding: 0, border: '1px solid var(--border-color)', overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.15)', background: 'var(--bg-surface)'
           }}>
             
             {/* Modal Header */}
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', background: 'var(--bg-main)' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', background: 'var(--bg-elevated)' }}>
               <Sparkles size={24} color="var(--primary-glow)" style={{ marginRight: '10px' }} />
               <div>
                 <h2 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 'bold' }}>AI-Powered Smart Schema Mapper</h2>
@@ -353,7 +354,7 @@ const Ingestion = () => {
                   {REQUIRED_SCHEMA_FIELDS.map(field => {
                     const mappedValue = columnMapping[field.key] || '';
                     return (
-                      <div key={field.key} style={{ display: 'grid', gridTemplateColumns: '1.8fr 2.5fr', alignItems: 'center', gap: '16px', padding: '10px 14px', borderRadius: '8px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
+                      <div key={field.key} style={{ display: 'grid', gridTemplateColumns: '1.8fr 2.5fr', alignItems: 'center', gap: '16px', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border-color)' }}>
                         <div>
                           <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>{field.label}</div>
                           <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{field.desc}</div>
@@ -362,7 +363,7 @@ const Ingestion = () => {
                           <select 
                             value={mappedValue} 
                             onChange={(e) => handleDropdownChange(field.key, e.target.value)}
-                            style={{ flex: 1, padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-main)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                            style={{ flex: 1, padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                           >
                             <option value="">-- Leave empty --</option>
                             {availableHeaders.map(h => (
@@ -383,7 +384,7 @@ const Ingestion = () => {
             </div>
 
             {/* Modal Footer */}
-            <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '12px', justifyContent: 'flex-end', background: 'var(--bg-main)' }}>
+            <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '12px', justifyContent: 'flex-end', background: 'var(--bg-elevated)' }}>
               <button 
                 className="btn btn-secondary" 
                 onClick={() => setShowMappingModal(false)}
@@ -409,17 +410,17 @@ const Ingestion = () => {
       {showStatsModal && statsData && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(15, 23, 42, 0.88)', backdropFilter: 'blur(12px)',
+          background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1150, padding: '20px'
         }}>
           <div className="card animate-scale-up" style={{ 
             width: '100%', maxWidth: '680px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', 
             padding: 0, border: '1px solid var(--border-color)', overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)', background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)'
+            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.15)', background: 'var(--bg-surface)'
           }}>
             
             {/* Modal Header */}
-            <div style={{ padding: '24px 28px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', background: 'rgba(255, 255, 255, 0.02)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', background: 'var(--bg-elevated)' }}>
               <CheckCircle size={26} color="#10B981" style={{ marginRight: '12px' }} />
               <div>
                 <h2 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 'bold', color: 'var(--text-primary)' }}>Ingestion Summary & Performance Metrics</h2>
@@ -438,22 +439,22 @@ const Ingestion = () => {
               
               {/* Stats High-Impact Counters Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
-                <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Total Rows Parsed</div>
+                <div style={{ padding: '16px', background: 'var(--bg-elevated)', border: '1px solid var(--border-color)', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 500 }}>Total Rows Parsed</div>
                   <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>{statsData.totalRows}</div>
                 </div>
-                <div style={{ padding: '16px', background: 'rgba(16, 185, 129, 0.04)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(16, 185, 129, 0.8)', marginBottom: '6px' }}>Successfully Ingested</div>
-                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#10B981' }}>{statsData.ingested}</div>
+                <div style={{ padding: '16px', background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--success)', marginBottom: '6px', fontWeight: 600 }}>Successfully Ingested</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--success)' }}>{statsData.ingested}</div>
                 </div>
                 <div style={{ 
                   padding: '16px', 
-                  background: statsData.flagged > 0 ? 'rgba(245, 158, 11, 0.04)' : 'rgba(255,255,255,0.02)', 
-                  border: statsData.flagged > 0 ? '1px solid rgba(245, 158, 11, 0.2)' : '1px solid var(--border-color)', 
+                  background: statsData.flagged > 0 ? 'rgba(245, 158, 11, 0.05)' : 'var(--bg-elevated)', 
+                  border: statsData.flagged > 0 ? '1px solid rgba(245, 158, 11, 0.25)' : '1px solid var(--border-color)', 
                   borderRadius: '10px', textAlign: 'center' 
                 }}>
-                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: statsData.flagged > 0 ? 'rgba(245, 158, 11, 0.8)' : 'var(--text-secondary)', marginBottom: '6px' }}>Remediation Flags</div>
-                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: statsData.flagged > 0 ? '#F59E0B' : 'var(--text-primary)' }}>{statsData.flagged}</div>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: statsData.flagged > 0 ? 'var(--warning)' : 'var(--text-secondary)', marginBottom: '6px', fontWeight: 600 }}>Remediation Flags</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: statsData.flagged > 0 ? 'var(--warning)' : 'var(--text-primary)' }}>{statsData.flagged}</div>
                 </div>
               </div>
 
@@ -470,23 +471,23 @@ const Ingestion = () => {
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Sparkles size={16} color="var(--primary-glow)" /> Confirmed Column Mapping Config
                 </h3>
-                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'rgba(0,0,0,0.15)' }}>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-surface)' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                     <thead>
-                      <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
-                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Universal Schema Field</th>
-                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Mapped Excel Header</th>
+                      <tr style={{ background: 'var(--bg-elevated)', borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
+                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-color)' }}>Universal Schema Field</th>
+                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-color)' }}>Mapped Excel Header</th>
                       </tr>
                     </thead>
                     <tbody>
                       {REQUIRED_SCHEMA_FIELDS.map(field => {
                         const sourceHeader = statsData.mapping[field.key];
                         return (
-                          <tr key={field.key} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+                          <tr key={field.key} style={{ borderBottom: '1px solid var(--border-color)' }}>
                             <td style={{ padding: '8px 12px', color: 'var(--text-primary)', fontWeight: 500 }}>{field.label}</td>
                             <td style={{ padding: '8px 12px' }}>
                               {sourceHeader ? (
-                                <span className="badge badge-success" style={{ padding: '3px 8px', fontSize: '0.72rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+                                <span className="badge badge-success" style={{ padding: '3px 8px', fontSize: '0.72rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', color: 'var(--success)' }}>
                                   {sourceHeader}
                                 </span>
                               ) : (
@@ -504,7 +505,7 @@ const Ingestion = () => {
             </div>
 
             {/* Modal Footer */}
-            <div style={{ padding: '20px 28px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '12px', justifyContent: 'flex-end', background: 'rgba(255, 255, 255, 0.01)' }}>
+            <div style={{ padding: '20px 28px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '12px', justifyContent: 'flex-end', background: 'var(--bg-elevated)' }}>
               <button 
                 className="btn btn-secondary" 
                 onClick={() => setShowStatsModal(false)}
@@ -520,7 +521,7 @@ const Ingestion = () => {
                     setShowStatsModal(false);
                     navigate(isColombia ? '/colombia/remediation' : (isItaly ? '/italy/remediation' : '/remediation'));
                   }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '6px', background: '#F59E0B', border: '1px solid #F59E0B', color: 'white', fontWeight: 600 }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '6px', background: 'var(--warning)', border: '1px solid var(--warning)', color: 'white', fontWeight: 600 }}
                 >
                   Resolve Flags ({statsData.flagged}) <ArrowRight size={16} />
                 </button>

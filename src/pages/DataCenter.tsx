@@ -1,12 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, X, FileText, ArrowRight, Sparkles } from 'lucide-react';
+import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, X, FileText, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
 import { APIGateway, type UniversalTransaction, type IngestionBatch, type AuditLog } from '../datacenter/api_gateway';
 import * as XLSX from 'xlsx';
 import { parseAmount, validateReportingCompleteness } from '../datacenter/validation';
 import { useLanguage } from '../components/LanguageContext';
 
 declare const L: any;
+
+// Universal Schema attributes to map to in global uploader (uses spendCategory)
+const REQUIRED_SCHEMA_FIELDS = [
+  { key: 'recipientType', label: 'Recipient Type', desc: 'HCP, THO, or INSTITUTION' },
+  { key: 'recipientName', label: 'Recipient Name', desc: 'Name of clinician or organization' },
+  { key: 'licenseNumber', label: 'License / ID Number', desc: 'NPI, Codice Fiscale, NIT, RPPS, etc.' },
+  { key: 'workplaceInstitution', label: 'Workplace Institution', desc: 'Workplace hospital or clinic name' },
+  { key: 'specialtyDepartment', label: 'Specialty Department', desc: 'Medical specialty or department' },
+  { key: 'spendCategory', label: 'Category of Spend', desc: 'Spend type/category' },
+  { key: 'dateOfProvision', label: 'Provision Date', desc: 'Date of value transfer' },
+  { key: 'placeOfProvision', label: 'Place of Provision', desc: 'City or state location' },
+  { key: 'purposeOfBenefit', label: 'Purpose of Benefit', desc: 'Reason or event name' },
+  { key: 'amountOriginal', label: 'Amount (Original)', desc: 'Transaction value' },
+  { key: 'details', label: 'Additional Details', desc: 'Notes or equipment descriptions' }
+];
 
 interface DataCenterProps {
   defaultTab?: 'overview' | 'compliance_map' | 'uploader' | 'transactions' | 'source_files';
@@ -42,6 +57,14 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
   const [targetYear, setTargetYear] = useState<number>(2026);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // AI Schema Mapping Modal states
+  const [showMappingModal, setShowMappingModal] = useState<boolean>(false);
+  const [tempJsonData, setTempJsonData] = useState<any[]>([]);
+  const [tempFileName, setTempFileName] = useState<string>('');
+  const [availableHeaders, setAvailableHeaders] = useState<string[]>([]);
+  const [columnMapping, setColumnMapping] = useState<Record<string, string>>({});
+  const [isMappingLoading, setIsMappingLoading] = useState<boolean>(false);
 
   // Ingestion Summary & Stats Modal states
   const [showStatsModal, setShowStatsModal] = useState<boolean>(false);
@@ -287,6 +310,12 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const json = XLSX.utils.sheet_to_json(sheet) as any[];
 
+        if (json.length === 0) {
+          alert("The uploaded file is empty.");
+          setIsUploading(false);
+          return;
+        }
+
         // Content-based country verification before submission
         const hasItalianHeaders = json.some((row: any) => 
           row['Codice Fiscale'] !== undefined || 
@@ -315,87 +344,42 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           throw new Error("Validation Error: The uploaded file contains Korean Won or Italian specific columns, but target is set to Colombia [CO]. Ingestion blocked to prevent data contamination.");
         }
 
-        // Standardize headers dynamically based on target country rules
-        const mockRows = json.map((row: any) => {
-          // Detect original local currency amount based on uploader selection and fallbacks
-          const rawAmount = 
-            row['Amount (EUR)'] ||
-            row['Amount (KRW)'] ||
-            row['Amount (USD)'] ||
-            row['Amount'] ||
-            row['amount'] ||
-            row['Valore'] ||
-            row['valore'] ||
-            row['Importo'] ||
-            row['importo'] ||
-            row['Montant'] ||
-            row['montant'] ||
-            row['Value'] ||
-            row['value'] ||
-            0;
-            
-          const amountOriginal = parseAmount(rawAmount);
+        // Extract raw column headers from spreadsheet keys
+        const headers = Object.keys(json[0] as object);
+        setAvailableHeaders(headers);
+        setTempJsonData(json);
+        setTempFileName(selectedFile.name);
 
-          return {
-            recipientType: row['Recipient Type'] || row['Type'] || 'HCP',
-            recipientName: row['Recipient Name'] || row['Nom'] || row['Name'] || '',
-            licenseNumber: String(row['License Number'] || row['RPPS'] || row['NPI'] || row['Codice Fiscale'] || ''),
-            workplaceInstitution: row['Workplace'] || row['Hopital'] || row['Institution'] || row['Struttura'] || '',
-            specialtyDepartment: row['Specialty'] || row['Specialite'] || row['Specializzazione'] || '',
-            spendCategory: row['Category of Benefit'] || row['Categorie'] || row['Tipologia'] || 'PRESENTATION',
-            dateOfProvision: row['Date of Provision'] || row['Date'] || row['Data'] ? new Date(row['Date of Provision'] || row['Date'] || row['Data']).toISOString() : new Date().toISOString(),
-            placeOfProvision: row['Place'] || row['Lieu'] || row['Lieu'] || '',
-            purposeOfBenefit: row['Purpose'] || row['Objet'] || row['Oggetto'] || '',
-            details: row['Details'] || row['Dettagli'] || '',
-            amountOriginal: amountOriginal
-          };
-        });
+        // Open interactive mapping panel and request dynamic AI column mappings
+        setShowMappingModal(true);
+        setIsMappingLoading(true);
 
-        const result = await APIGateway.ingestData(targetCountry, targetYear, selectedFile.name, mockRows);
-        if (result.success) {
-          // Reload central ledger
-          const txs = await APIGateway.getTransactions('GLOBAL');
-          const bts = await APIGateway.getBatches();
-          const committedTxs = await APIGateway.getCommittedTransactions();
-          setTransactions(txs);
-          setBatches(bts);
-          setCommittedTransactions(committedTxs);
+        try {
+          const aiMapping = await APIGateway.mapColumns(headers);
           
-          const globalStaging = await APIGateway.getTransactions('GLOBAL');
-          setAllStagingTransactions(globalStaging);
-
-          // Dynamically compute columns mapping to show in stats summary
-          const firstRow = json[0] || {};
-          const headersInFile = Object.keys(firstRow);
-          const findMappedHeader = (keys: string[]) => {
-            return headersInFile.find(h => keys.includes(h)) || '';
-          };
-          const finalMapping = {
-            recipientType: findMappedHeader(['Recipient Type', 'Type']),
-            recipientName: findMappedHeader(['Recipient Name', 'Nom', 'Name']),
-            licenseNumber: findMappedHeader(['License Number', 'RPPS', 'NPI', 'Codice Fiscale']),
-            workplaceInstitution: findMappedHeader(['Workplace', 'Hopital', 'Institution', 'Struttura']),
-            specialtyDepartment: findMappedHeader(['Specialty', 'Specialite', 'Specializzazione']),
-            spendCategory: findMappedHeader(['Category of Benefit', 'Categorie', 'Tipologia']),
-            dateOfProvision: findMappedHeader(['Date of Provision', 'Date', 'Data']),
-            purposeOfBenefit: findMappedHeader(['Purpose', 'Objet', 'Oggetto']),
-            details: findMappedHeader(['Details', 'Dettagli']),
-            amountOriginal: findMappedHeader(['Amount (EUR)', 'Amount (KRW)', 'Amount (USD)', 'Amount', 'amount', 'Valore', 'valore', 'Importo', 'importo', 'Montant', 'montant', 'Value', 'value'])
-          };
-
-          // Capture stats data for the summary stats modal
-          setStatsData({
-            filename: selectedFile.name,
-            totalRows: json.length,
-            ingested: result.ingested,
-            flagged: result.flagged,
-            countryCode: targetCountry,
-            mapping: finalMapping
+          // Formulate initial mapping recommendations using Gemini or smart regex fallback rules
+          const finalMapping: Record<string, string> = {};
+          REQUIRED_SCHEMA_FIELDS.forEach(field => {
+            const matchedHeader = Object.keys(aiMapping).find(k => aiMapping[k] === field.key);
+            if (matchedHeader) {
+              finalMapping[field.key] = matchedHeader;
+            } else {
+              const fallback = headers.find(h => 
+                h.toLowerCase().includes(field.key.toLowerCase()) || 
+                (field.key === 'recipientName' && (h.toLowerCase().includes('name') || h.toLowerCase().includes('nom') || h.toLowerCase().includes('beneficiario'))) ||
+                (field.key === 'licenseNumber' && (h.toLowerCase().includes('license') || h.toLowerCase().includes('tax') || h.toLowerCase().includes('nit') || h.toLowerCase().includes('fiscale') || h.toLowerCase().includes('rpps') || h.toLowerCase().includes('npi'))) ||
+                (field.key === 'amountOriginal' && (h.toLowerCase().includes('amount') || h.toLowerCase().includes('valore') || h.toLowerCase().includes('value') || h.toLowerCase().includes('importo') || h.toLowerCase().includes('valor') || h.toLowerCase().includes('montant')))
+              );
+              finalMapping[field.key] = fallback || '';
+            }
           });
-          setShowStatsModal(true);
-
-          setSelectedFile(null);
+          setColumnMapping(finalMapping);
+        } catch (err) {
+          console.warn("AI Mapping failed, using standard mapping:", err);
+        } finally {
+          setIsMappingLoading(false);
         }
+
       } catch (err: any) {
         console.error('Failed central data mapping:', err);
         alert(err.message || 'Data center mapping failed. Check file column structure.');
@@ -403,6 +387,73 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
         setIsUploading(false);
       }
     }, 500);
+  };
+
+  const handleConfirmMapping = async () => {
+    setIsUploading(true);
+    setShowMappingModal(false);
+    try {
+      // Map the Excel row cells using the confirmed dropdown mappings
+      const mappedData = tempJsonData.map((row: any) => {
+        const mappedRow: any = {};
+        REQUIRED_SCHEMA_FIELDS.forEach(field => {
+          const selectedHeader = columnMapping[field.key];
+          let val = selectedHeader ? row[selectedHeader] : '';
+          
+          if (field.key === 'amountOriginal') {
+            mappedRow[field.key] = parseAmount(val);
+          } else if (field.key === 'dateOfProvision') {
+            mappedRow[field.key] = val ? new Date(val).toISOString() : new Date().toISOString();
+          } else {
+            mappedRow[field.key] = val !== undefined && val !== null ? String(val) : '';
+          }
+        });
+        return mappedRow;
+      });
+
+      // Commit Ingestion via API Gateway
+      const result = await APIGateway.ingestData(targetCountry, targetYear, tempFileName, mappedData);
+
+      if (result.success) {
+        // Reload central staging and committed databases
+        const txs = await APIGateway.getTransactions('GLOBAL');
+        const bts = await APIGateway.getBatches();
+        const committedTxs = await APIGateway.getCommittedTransactions();
+        setTransactions(txs);
+        setBatches(bts);
+        setCommittedTransactions(committedTxs);
+        
+        const globalStaging = await APIGateway.getTransactions('GLOBAL');
+        setAllStagingTransactions(globalStaging);
+
+        // Capture stats data for the summary stats modal
+        setStatsData({
+          filename: tempFileName,
+          totalRows: tempJsonData.length,
+          ingested: result.ingested,
+          flagged: result.flagged,
+          countryCode: targetCountry,
+          mapping: { ...columnMapping }
+        });
+        setShowStatsModal(true);
+
+        setSelectedFile(null);
+      } else {
+        throw new Error('Failed to ingest mapped records');
+      }
+    } catch (error: any) {
+      console.error('Mapping ingestion error:', error);
+      alert('Failed to commit records. ' + error.message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleDropdownChange = (fieldKey: string, headerValue: string) => {
+    setColumnMapping(prev => ({
+      ...prev,
+      [fieldKey]: headerValue
+    }));
   };
 
 
@@ -2174,21 +2225,118 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
         );
       })()}
 
+      {/* AI Smart Schema-Mapping Modal */}
+      {showMappingModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15, 23, 42, 0.45)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, padding: '20px'
+        }}>
+          <div className="card animate-scale-up" style={{ 
+            width: '100%', maxWidth: '750px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', 
+            padding: 0, border: '1px solid var(--border-color)', overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.15)', background: 'var(--bg-surface)'
+          }}>
+            
+            {/* Modal Header */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', background: 'var(--bg-elevated)' }}>
+              <Sparkles size={24} color="var(--primary-glow)" style={{ marginRight: '10px' }} />
+              <div>
+                <h2 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 'bold', color: 'var(--text-primary)' }}>AI-Powered Smart Schema Mapper</h2>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>File: <strong style={{ color: 'var(--text-primary)' }}>{tempFileName}</strong> • Records: <strong>{tempJsonData.length}</strong></span>
+              </div>
+              <button 
+                onClick={() => setShowMappingModal(false)}
+                style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(124, 58, 237, 0.05)', border: '1px solid rgba(124, 58, 237, 0.25)', padding: '12px 16px', borderRadius: '8px', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                <Sparkles size={16} color="var(--primary-glow)" style={{ flexShrink: 0 }} />
+                <span>Our Gemini model analyzed your uploaded columns and auto-mapped them to our global compliance schema keys. Please verify before importing.</span>
+              </div>
+
+              {isMappingLoading ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px', gap: '16px' }}>
+                  <Loader2 size={40} color="var(--primary-accent)" style={{ animation: 'spin 1s linear infinite' }} />
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Gemini is analyzing columns and aligning schemas...</span>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {REQUIRED_SCHEMA_FIELDS.map(field => {
+                    const mappedValue = columnMapping[field.key] || '';
+                    return (
+                      <div key={field.key} style={{ display: 'grid', gridTemplateColumns: '1.8fr 2.5fr', alignItems: 'center', gap: '16px', padding: '10px 14px', borderRadius: '8px', background: 'var(--bg-elevated)', border: '1px solid var(--border-color)' }}>
+                        <div>
+                          <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>{field.label}</div>
+                          <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{field.desc}</div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <select 
+                            value={mappedValue} 
+                            onChange={(e) => handleDropdownChange(field.key, e.target.value)}
+                            style={{ flex: 1, padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'var(--bg-surface)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                          >
+                            <option value="">-- Leave empty --</option>
+                            {availableHeaders.map(h => (
+                              <option key={h} value={h}>{h}</option>
+                            ))}
+                          </select>
+                          {mappedValue && (
+                            <span className="badge badge-success" style={{ padding: '6px 10px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <Sparkles size={10} /> AI Mapped
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '12px', justifyContent: 'flex-end', background: 'var(--bg-elevated)' }}>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setShowMappingModal(false)}
+                style={{ border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-primary)' }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn btn-primary" 
+                onClick={handleConfirmMapping}
+                disabled={isMappingLoading}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                Confirm Mapping & Ingest <ArrowRight size={16} />
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
       {/* Ingestion Summary & Stats Modal */}
       {showStatsModal && statsData && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(15, 23, 42, 0.88)', backdropFilter: 'blur(12px)',
+          background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1150, padding: '20px'
         }}>
           <div className="card animate-scale-up" style={{ 
             width: '100%', maxWidth: '680px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', 
             padding: 0, border: '1px solid var(--border-color)', overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)', background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%)'
+            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.15)', background: 'var(--bg-surface)'
           }}>
             
             {/* Modal Header */}
-            <div style={{ padding: '24px 28px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', background: 'rgba(255, 255, 255, 0.02)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', background: 'var(--bg-elevated)' }}>
               <CheckCircle size={26} color="#10B981" style={{ marginRight: '12px' }} />
               <div>
                 <h2 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 'bold', color: 'var(--text-primary)' }}>Ingestion Summary & Performance Metrics</h2>
@@ -2207,22 +2355,22 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
               
               {/* Stats High-Impact Counters Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
-                <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', borderRadius: '10px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Total Rows Parsed</div>
+                <div style={{ padding: '16px', background: 'var(--bg-elevated)', border: '1px solid var(--border-color)', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 500 }}>Total Rows Parsed</div>
                   <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>{statsData.totalRows}</div>
                 </div>
-                <div style={{ padding: '16px', background: 'rgba(16, 185, 129, 0.04)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(16, 185, 129, 0.8)', marginBottom: '6px' }}>Successfully Ingested</div>
-                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#10B981' }}>{statsData.ingested}</div>
+                <div style={{ padding: '16px', background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--success)', marginBottom: '6px', fontWeight: 600 }}>Successfully Ingested</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: 'var(--success)' }}>{statsData.ingested}</div>
                 </div>
                 <div style={{ 
                   padding: '16px', 
-                  background: statsData.flagged > 0 ? 'rgba(245, 158, 11, 0.04)' : 'rgba(255,255,255,0.02)', 
-                  border: statsData.flagged > 0 ? '1px solid rgba(245, 158, 11, 0.2)' : '1px solid var(--border-color)', 
+                  background: statsData.flagged > 0 ? 'rgba(245, 158, 11, 0.05)' : 'var(--bg-elevated)', 
+                  border: statsData.flagged > 0 ? '1px solid rgba(245, 158, 11, 0.25)' : '1px solid var(--border-color)', 
                   borderRadius: '10px', textAlign: 'center' 
                 }}>
-                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: statsData.flagged > 0 ? 'rgba(245, 158, 11, 0.8)' : 'var(--text-secondary)', marginBottom: '6px' }}>Remediation Flags</div>
-                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: statsData.flagged > 0 ? '#F59E0B' : 'var(--text-primary)' }}>{statsData.flagged}</div>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: statsData.flagged > 0 ? 'var(--warning)' : 'var(--text-secondary)', marginBottom: '6px', fontWeight: 600 }}>Remediation Flags</div>
+                  <div style={{ fontSize: '1.75rem', fontWeight: 'bold', color: statsData.flagged > 0 ? 'var(--warning)' : 'var(--text-primary)' }}>{statsData.flagged}</div>
                 </div>
               </div>
 
@@ -2239,12 +2387,12 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Sparkles size={16} color="var(--primary-glow)" /> Confirmed UDM Header Mapping
                 </h3>
-                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'rgba(0,0,0,0.15)' }}>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-surface)' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                     <thead>
-                      <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
-                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Universal Schema Field</th>
-                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)' }}>Mapped Excel Header</th>
+                      <tr style={{ background: 'var(--bg-elevated)', borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
+                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-color)' }}>Universal Schema Field</th>
+                        <th style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-color)' }}>Mapped Excel Header</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2262,11 +2410,11 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                       ].map(field => {
                         const sourceHeader = statsData.mapping[field.key];
                         return (
-                          <tr key={field.key} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+                          <tr key={field.key} style={{ borderBottom: '1px solid var(--border-color)' }}>
                             <td style={{ padding: '8px 12px', color: 'var(--text-primary)', fontWeight: 500 }}>{field.label}</td>
                             <td style={{ padding: '8px 12px' }}>
                               {sourceHeader ? (
-                                <span className="badge badge-success" style={{ padding: '3px 8px', fontSize: '0.72rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+                                <span className="badge badge-success" style={{ padding: '3px 8px', fontSize: '0.72rem', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', color: 'var(--success)' }}>
                                   {sourceHeader}
                                 </span>
                               ) : (
@@ -2284,7 +2432,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
             </div>
 
             {/* Modal Footer */}
-            <div style={{ padding: '20px 28px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '12px', justifyContent: 'flex-end', background: 'rgba(255, 255, 255, 0.01)' }}>
+            <div style={{ padding: '20px 28px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '12px', justifyContent: 'flex-end', background: 'var(--bg-elevated)' }}>
               <button 
                 className="btn btn-secondary" 
                 onClick={() => {
@@ -2305,7 +2453,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                     const path = code === 'kr' ? '/remediation' : `/${code}/remediation`;
                     navigate(path);
                   }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '6px', background: '#F59E0B', border: '1px solid #F59E0B', color: 'white', fontWeight: 600 }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '6px', background: 'var(--warning)', border: '1px solid var(--warning)', color: 'white', fontWeight: 600 }}
                 >
                   Resolve Flags ({statsData.flagged}) <ArrowRight size={16} />
                 </button>

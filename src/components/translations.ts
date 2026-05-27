@@ -24,7 +24,7 @@ export const translations = {
     },
     login: {
       welcome: 'Welcome Back',
-      subtitle: 'Sign in to access Global Transparency Manager',
+      subtitle: 'Sign in to access Intelligent Transparency',
       username: 'Username',
       password: 'Password',
       signIn: 'Sign In'
@@ -50,7 +50,7 @@ export const translations = {
       complianceCalendar: 'Compliance Calendar'
     },
     datacenter: {
-      title: 'Global Transparency Manager Data Center',
+      title: 'Intelligent Transparency Data Center',
       incomingReview: 'Incoming Data Review',
       loadData: 'Load Data',
       sourceExplorer: 'Source Files Explorer',
@@ -105,7 +105,7 @@ export const translations = {
     },
     login: {
       welcome: 'Bentornato',
-      subtitle: 'Accedi per gestire Global Transparency Manager',
+      subtitle: 'Accedi per gestire Intelligent Transparency',
       username: 'Nome utente',
       password: 'Password',
       signIn: 'Accedi'
@@ -131,7 +131,7 @@ export const translations = {
       complianceCalendar: 'Calendario Conformità'
     },
     datacenter: {
-      title: 'Data Center Global Transparency Manager',
+      title: 'Data Center Intelligent Transparency',
       incomingReview: 'Revisione Dati in Ingresso',
       loadData: 'Carica Dati',
       sourceExplorer: 'Esploratore File Sorgente',
@@ -186,7 +186,7 @@ export const translations = {
     },
     login: {
       welcome: '환영합니다',
-      subtitle: '글로벌 투명성 관리 시스템(Global Transparency Manager)에 로그인하세요',
+      subtitle: '지능형 투명성 시스템(Intelligent Transparency)에 로그인하세요',
       username: '사용자 이름',
       password: '비밀번호',
       signIn: '로그인'
@@ -267,7 +267,7 @@ export const translations = {
     },
     login: {
       welcome: 'Bienvenido de nuevo',
-      subtitle: 'Inicie sesión para acceder a Global Transparency Manager',
+      subtitle: 'Inicie sesión para acceder a Intelligent Transparency',
       username: 'Usuario',
       password: 'Contraseña',
       signIn: 'Iniciar sesión'
@@ -293,7 +293,7 @@ export const translations = {
       complianceCalendar: 'Calendario Cumplimiento'
     },
     datacenter: {
-      title: 'Centro de Datos Global Transparency Manager',
+      title: 'Centro de Datos Intelligent Transparency',
       incomingReview: 'Revisión de Datos Entrantes',
       loadData: 'Cargar Datos',
       sourceExplorer: 'Explorador de Archivos Fuente',
