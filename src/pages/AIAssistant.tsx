@@ -237,7 +237,7 @@ How can I help you audit your global transparency ledger today?`;
                 <img src="https://www.qordata.com/wp-content/uploads/2019/10/Updated_Logo_transparent.png" alt="EngageAgent" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               </div>
               <div style={{ background: 'var(--bg-main)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
-                Consulting the PAA guidelines...
+                Researching...
               </div>
             </div>
           )}
