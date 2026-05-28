@@ -20,6 +20,7 @@ const AIAssistant = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isRulesEngineMode, setIsRulesEngineMode] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -50,10 +51,13 @@ const AIAssistant = () => {
         throw new Error('Fallback to offline intelligence');
       }
       
+      const isFallback = reply.includes("Running in Local Rules-Engine Mode");
+      setIsRulesEngineMode(isFallback);
+
       const cleanedReply = reply
-        .replace(/k-transparency/gi, 'Global Transparency Manager')
-        .replace(/K-Sunshine Compliance AI/g, 'Global Transparency Compliance AI')
-        .replace(/k-sunshine/gi, 'Global Transparency');
+        .replace(/k-transparency/gi, 'Intelligent Transparency')
+        .replace(/K-Sunshine Compliance AI/g, 'Intelligent Transparency Compliance AI')
+        .replace(/k-sunshine/gi, 'Intelligent Transparency');
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -64,24 +68,89 @@ const AIAssistant = () => {
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.warn("Using high-performance local compliance rules-engine:", error);
+      setIsRulesEngineMode(true);
       
       const text = userMessage.text.toLowerCase();
-      let reply = "That is an excellent compliance query. Under our central Global Transparency rules, all transfers of value to Healthcare Professionals (HCPs) and Medical Institutions must be tracked in our Universal Data Model. Let me know if you would like me to review specific ledger items or generate compliance-ready reports!";
+      let header = `*(⚠️ Running in Local Client Rules-Engine Mode. The compliance backend is offline. Showing rule-based statutory answers.)*\n\n`;
+      let reply = header + `### Intelligent Transparency Rules Engine Active
+Your question was analyzed by the local client-side compliance rules-engine.
+
+#### Local Rules Capabilities:
+- **South Korea Sunshine Act (PAA Article 47-2)**: Meal caps, promotional limits, advisory session caps.
+- **Italy Sanità Trasparente (Law 62/2022)**: CF validation, €1k agreements, €5k sponsorships thresholds.
+- **Colombia SISPRO (Resolution 2881)**: 1,500,000 COP reporting limit, 4,000 COP exchange rate routing.
+- **France Loi Bertrand**: €10 benefit minimum registry publication.
+- **United States CMS Open Payments**: $500 covered clinician warning cap.
+
+To query a jurisdiction directly, type its name (e.g. *Korea*, *Italy*, *Colombia*, *France*, *USA*), ask about *limits* / *meals*, or ask about *remediation* procedures.
+
+*To re-enable live Gemini 3.5 Flash semantic analysis, please start the backend API gateway server.*`;
       
       if (text.includes('colombia') || text.includes('rtvss') || text.includes('2881') || text.includes('cop')) {
-        reply = "Under Colombia's RTVSS (Resolution 2881 of 2018), any individual value transfer exceeding **1,500,000 COP** (approx. $375 USD) to an HCP must be reported via SISPRO. Semi-annual deadlines are September 30 (for H1) and March 31 (for H2). Mapped categories are HONORARIOS, REUNIONES, VIAJES, and DONACIONES.";
+        reply = header + `### Colombia Transparency Rules (Resolution 2881 / RTVSS)
+Under Colombia's Resolution 2881 of 2018, any transfer of value exceeding **1,500,000 COP** (approx. $375 USD) to a Healthcare Professional (HCP) must be reported via the SISPRO platform.
+- **Reporting Deadlines**: Semi-annual. Sept 30 (for H1: Jan-Jun) and March 31 (for H2: Jul-Dec).
+- **Core Categories**: HONORARIOS (Fees), REUNIONES (Briefings/Meals), VIAJES (Travel), and DONACIONES (Donations).
+- **Standard Exchange Rate**: 1 USD = 4,000 COP for system mapping.`;
       } else if (text.includes('france') || text.includes('bertrand') || text.includes('loi')) {
-        reply = "Under France's Loi Bertrand, agreements are reportable regardless of value, and benefits/remuneration of **€10 or more** must be declared. Hospitality exceeding **€150** or advisory fees exceeding **€500** will trigger compliance alerts. Reports must be pushed semi-annually to the official Transparence Santé register (March 1 for H2, September 1 for H1).";
+        reply = header + `### France Transparency Rules (Loi Bertrand / Transparence Santé)
+Under France's Loi Bertrand, life science companies producing or marketing cosmetics, medical devices, or pharmaceuticals must publicly disclose all agreements, benefits, and remuneration:
+- **Core Thresholds**: Benefits/remuneration of **€10 or more** must be declared. Agreements are reportable regardless of value.
+- **Compliance Alerts**: Hospitality exceeding **€150** or advisory fees exceeding **€500** will trigger system alerts.
+- **Reporting Deadlines**: Semi-annual. H1 data due Sept 1; H2 data due March 1.`;
       } else if (text.includes('italy') || text.includes('sanita') || text.includes('62/2022') || text.includes('legge') || text.includes('trasparente')) {
-        reply = "Under Italy's Sanità Trasparente (Law 62/2022), HCP agreements above **€1,000** or HCO sponsorships/donations above **€5,000** must be uploaded to the electronic registry managed by the Ministry of Health. Deadlines follow semi-annual windows (Phase 1 due April 30, Phase 2 due October 31). Failure to report results in high administrative fines.";
+        reply = header + `### Italy Transparency Rules (Sanità Trasparente / Law 62 of 2022)
+Under Italy's Law 62/2022 (Sanità Trasparente), manufacturers must report all relationships with HCPs and HCOs:
+- **Core Thresholds**: HCP agreements above **€1,000** or HCO donations/sponsorships above **€5,000** must be uploaded.
+- **Filing Window**: Phase 1 is typically due by April 30, and Phase 2 by October 31.
+- **Required Identifiers**: A valid 16-character Codice Fiscale or Partita IVA is mandatory for all recipients.`;
       } else if (text.includes('usa') || text.includes('us ') || text.includes('open payments') || text.includes('cms')) {
-        reply = "Under the USA CMS Open Payments (Physician Payments Sunshine Act), applicable manufacturers must report all transfers of value above **$500** to covered clinicians (MDs, DOs, NPs, PAs, etc.). Data is compiled annually (January 1 - December 31) and must be submitted to the CMS Open Payments system by March 31 of the following year.";
+        reply = header + `### USA Transparency Rules (CMS Open Payments / Physician Payments Sunshine Act)
+Under the US Physician Payments Sunshine Act, manufacturers must report all transfers of value to covered recipients (physicians, teaching hospitals, and advanced practice clinicians):
+- **Core Thresholds**: Individual value transfers above **$500** trigger compliance warning thresholds.
+- **Reporting Deadlines**: Annual collection (Jan 1 - Dec 31). Submission must be completed by March 31 of the following year.`;
       } else if (text.includes('south korea') || text.includes('korea') || text.includes('sunshine') || text.includes('krpia')) {
-        reply = "Under Article 47-2 of South Korea's Pharmaceutical Affairs Act, reportable transfers include food, beverages, and promotional goods. Educational events exceeding **100,000 KRW** for meals and **10,000 KRW** for promotional items (50,000 KRW for multi-institution events) are subject to strict disclosure requirements. Advisory panels are capped at **500,000 KRW** per session. Reports are submitted annually to the Ministry of Health and Welfare (MOHW).";
-      } else if (text.includes('limit') || text.includes('presentation') || text.includes('briefing') || text.includes('food') || text.includes('beverage') || text.includes('meal')) {
-        reply = "Statutory meal, presentation, and threshold limits vary significantly by jurisdiction under global rules:\n\n• **South Korea**: Meals capped at **₩100,000** per HCP per session, promotional items at **₩10,000** or less, and advisory panels capped at **₩500,000** per session.\n• **Italy**: Agreements above **€1,000** or donations/sponsorships above **€5,000** must be disclosed. Hospitality during educational briefings is reportable and capped at **€150** per event.\n• **Colombia**: Food and travel expenses are tracked under Resolution 2881 with an individual value transfer disclosure threshold of **1,500,000 COP** per transaction.\n• **United States**: Transfers of value (including meals) above **$500** per covered clinician must be reported to the CMS Open Payments system.";
+        reply = header + `### South Korea Sunshine Act (Pharmaceutical Affairs Act Article 47-2)
+Under South Korea's Sunshine Act, applicable manufacturers must log all value transfers including food, beverages, promotional items, and academic support:
+- **Statutory Limits**:
+  - **Meals**: Capped at **₩100,000** per HCP per session.
+  - **Promotional Items**: Capped at **₩10,000** (₩50,000 for multi-institution events).
+  - **Consultancy/Advisory**: Capped at **₩500,000** per session, **₩1,000,000** per day, and a cumulative annual cap of **₩3,000,000** per HCP.
+- **Filing Window**: Annual compilation within 3 months of fiscal year-end, with a mandated 5-year retention for MOHW audits.`;
+      } else if (text.includes('limit') || text.includes('presentation') || text.includes('briefing') || text.includes('food') || text.includes('beverage') || text.includes('meal') || text.includes('threshold')) {
+        reply = header + `### Statutory Compliance Thresholds Comparison
+
+Here is a comparative summary of global transparency thresholds configured in the system:
+
+| Jurisdiction | Meal Cap | Promotional Cap | Advisory Cap | Submission Deadline |
+| :--- | :--- | :--- | :--- | :--- |
+| **South Korea** | ₩100,000 / session | ₩10,000 (₩50,000 multi-inst) | ₩500,000 / session | Annual (within 3 months of FY end) |
+| **Italy** | €150 (Hospitality cap) | N/A | €1,000 threshold | Semi-annual (Apr 30 / Oct 31) |
+| **France** | €150 (Hospitality cap) | €10 minimum threshold | €500 threshold | Semi-annual (Sept 1 / March 1) |
+| **Colombia** | Included in 1.5M COP limit | N/A | 1,500,000 COP threshold | Semi-annual (Sept 30 / March 31) |
+| **United States** | N/A | N/A | $500 threshold | Annual (by March 31) |
+
+*Transactions exceeding these regional caps in the Global Data Center will be automatically flagged for compliance remediation.*`;
       } else if (text.includes('remediation') || text.includes('flagged') || text.includes('resolved') || text.includes('violation')) {
-        reply = "The Remediation engine automatically flags transactions exceeding standard regional limits. Users can review, approve, or reject these records under the 'Data Remediation' panel. All decisions are logged in the cryptographic Audit Trail.";
+        reply = header + `### Data Center Remediation Workflow
+The remediation engine automatically flags transactions exceeding standard regional limits.
+- **Actionable Steps**:
+  1. Navigate to the **Data Remediation** dashboard.
+  2. View any flagged items (marked in amber/red).
+  3. Edit records directly using the inline explorer to fix missing fields (e.g. License Number / Codice Fiscale).
+  4. Approve/resolve the transactions to prepare them for final ledger commitment.`;
+      } else if (text.includes('hello') || text.includes('hi') || text.includes('welcome') || text.includes('help')) {
+        reply = `### Welcome to the Intelligent Transparency Compliance Assistant!
+I am operating in **Local Rules-Engine Fallback Mode** because the compliance backend is offline.
+
+#### Suggested Compliance Questions:
+* *"What is the meal cap for South Korea Sunshine Act?"*
+* *"Explain Italy's Law 62/2022 filing deadlines."*
+* *"What are Colombia's Resolution 2881 thresholds?"*
+* *"Show me a comparison table of statutory limits by country."*
+* *"How do I resolve flagged records?"*
+
+How can I help you audit your global transparency ledger today?`;
       }
 
       const botMessage: Message = {
@@ -111,6 +180,25 @@ const AIAssistant = () => {
       </div>
       <p className="page-subtitle" style={{ marginBottom: '24px' }}>Powered by Google Gemini. Ask any questions about global transparency reporting limits, statutory regulations, or safe harbors.</p>
  
+      {isRulesEngineMode && (
+        <div style={{
+          background: 'rgba(245, 158, 11, 0.1)',
+          border: '1px solid rgba(245, 158, 11, 0.3)',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          color: '#f59e0b'
+        }}>
+          <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+          <div style={{ fontSize: '0.85rem', lineHeight: '1.4' }}>
+            <strong>Local Rules-Engine Active:</strong> Operating in local fallback mode because the live Gemini AI engine is unconfigured or offline. Ask any statutory compliance question!
+          </div>
+        </div>
+      )}
+
       <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' }}>
         
         {/* Chat History */}

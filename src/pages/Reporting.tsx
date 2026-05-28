@@ -476,7 +476,7 @@ const Reporting = () => {
         doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(15);
-        doc.text('GLOBAL TRANSPARENCY MANAGER STATUTORY AUDIT & COMPLIANCE REPORT', 14, 12);
+        doc.text('INTELLIGENT TRANSPARENCY STATUTORY AUDIT & COMPLIANCE REPORT', 14, 12);
         
         doc.setTextColor(167, 139, 250); // violet-300 (accent light glow)
         doc.setFont('helvetica', 'normal');

@@ -461,14 +461,19 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
   const handleEditClick = (tx: UniversalTransaction) => {
     setEditingId(tx.id);
     setEditFormData({
+      recipientType: tx.recipientType,
       recipientName: tx.recipientName,
+      licenseNumber: tx.licenseNumber,
       workplaceInstitution: tx.workplaceInstitution,
       specialtyDepartment: tx.specialtyDepartment,
       spendCategory: tx.spendCategory,
-      dateOfProvision: tx.dateOfProvision.split('T')[0],
+      dateOfProvision: tx.dateOfProvision ? tx.dateOfProvision.split('T')[0] : '',
+      placeOfProvision: tx.placeOfProvision,
       purposeOfBenefit: tx.purposeOfBenefit,
       details: tx.details,
-      amountOriginal: tx.amountOriginal
+      amountOriginal: tx.amountOriginal,
+      currencyOriginal: tx.currencyOriginal,
+      reportingYear: tx.reportingYear
     });
   };
 
@@ -483,25 +488,29 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
       if (!targetTx) return;
 
       const origAmount = editFormData.amountOriginal !== undefined ? parseAmount(editFormData.amountOriginal) : targetTx.amountOriginal;
+      const originalCurrency = editFormData.currencyOriginal !== undefined ? editFormData.currencyOriginal : targetTx.currencyOriginal;
       
-      // Calculate updated normalized USD amount based on country rules
+      // Calculate updated normalized USD amount based on currency context, with country Code fallback
       let amountUSD = origAmount;
-      if (targetTx.countryCode === 'KR') amountUSD = origAmount / 1300;
-      if (targetTx.countryCode === 'FR' || targetTx.countryCode === 'IT') amountUSD = origAmount * 1.09;
-      if (targetTx.countryCode === 'CO') amountUSD = origAmount / 4000;
+      if (originalCurrency === 'KRW' || targetTx.countryCode === 'KR') amountUSD = origAmount / 1300;
+      else if (originalCurrency === 'EUR' || targetTx.countryCode === 'FR' || targetTx.countryCode === 'IT') amountUSD = origAmount * 1.09;
+      else if (originalCurrency === 'COP' || targetTx.countryCode === 'CO') amountUSD = origAmount / 4000;
+      else if (originalCurrency === 'GBP') amountUSD = origAmount * 1.30;
       
       const updatedTxFields = {
-        recipientType: targetTx.recipientType,
+        recipientType: editFormData.recipientType !== undefined ? editFormData.recipientType : targetTx.recipientType,
         recipientName: editFormData.recipientName !== undefined ? editFormData.recipientName : targetTx.recipientName,
-        licenseNumber: targetTx.licenseNumber,
+        licenseNumber: editFormData.licenseNumber !== undefined ? editFormData.licenseNumber : targetTx.licenseNumber,
         workplaceInstitution: editFormData.workplaceInstitution !== undefined ? editFormData.workplaceInstitution : targetTx.workplaceInstitution,
         specialtyDepartment: editFormData.specialtyDepartment !== undefined ? editFormData.specialtyDepartment : targetTx.specialtyDepartment,
         spendCategory: editFormData.spendCategory !== undefined ? editFormData.spendCategory : targetTx.spendCategory,
         dateOfProvision: editFormData.dateOfProvision ? new Date(editFormData.dateOfProvision).toISOString() : targetTx.dateOfProvision,
-        placeOfProvision: targetTx.placeOfProvision,
+        placeOfProvision: editFormData.placeOfProvision !== undefined ? editFormData.placeOfProvision : targetTx.placeOfProvision,
         purposeOfBenefit: editFormData.purposeOfBenefit !== undefined ? editFormData.purposeOfBenefit : targetTx.purposeOfBenefit,
         details: editFormData.details !== undefined ? editFormData.details : targetTx.details,
-        amountOriginal: origAmount
+        amountOriginal: origAmount,
+        currencyOriginal: originalCurrency,
+        reportingYear: editFormData.reportingYear !== undefined ? Number(editFormData.reportingYear) : targetTx.reportingYear
       };
 
       const completeness = validateReportingCompleteness(targetTx.countryCode, updatedTxFields);
@@ -514,14 +523,19 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
         (targetTx.countryCode === 'US' && origAmount > 500);
 
       const updatedValues: Partial<UniversalTransaction> = {
+        recipientType: updatedTxFields.recipientType as any,
         recipientName: updatedTxFields.recipientName,
+        licenseNumber: updatedTxFields.licenseNumber,
         workplaceInstitution: updatedTxFields.workplaceInstitution,
         specialtyDepartment: updatedTxFields.specialtyDepartment,
         spendCategory: updatedTxFields.spendCategory,
         dateOfProvision: updatedTxFields.dateOfProvision,
+        placeOfProvision: updatedTxFields.placeOfProvision,
         purposeOfBenefit: updatedTxFields.purposeOfBenefit,
         details: updatedTxFields.details,
         amountOriginal: origAmount,
+        currencyOriginal: originalCurrency,
+        reportingYear: updatedTxFields.reportingYear,
         amountUSD: parseFloat(amountUSD.toFixed(2)),
         remediationStatus: (limitExceeded || !completeness.isComplete) ? 'PENDING_REVIEW' : 'APPROVED'
       };
@@ -1332,16 +1346,17 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                 
                                 // Run dynamic validation checking on this record
                                 const completeness = validateReportingCompleteness(tx.countryCode, {
+                                  recipientType: isEditing ? (editFormData.recipientType !== undefined ? editFormData.recipientType : tx.recipientType) : tx.recipientType,
                                   recipientName: isEditing ? (editFormData.recipientName !== undefined ? editFormData.recipientName : tx.recipientName) : tx.recipientName,
+                                  licenseNumber: isEditing ? (editFormData.licenseNumber !== undefined ? editFormData.licenseNumber : tx.licenseNumber) : tx.licenseNumber,
                                   workplaceInstitution: isEditing ? (editFormData.workplaceInstitution !== undefined ? editFormData.workplaceInstitution : tx.workplaceInstitution) : tx.workplaceInstitution,
                                   specialtyDepartment: isEditing ? (editFormData.specialtyDepartment !== undefined ? editFormData.specialtyDepartment : tx.specialtyDepartment) : tx.specialtyDepartment,
                                   spendCategory: isEditing ? (editFormData.spendCategory !== undefined ? editFormData.spendCategory : tx.spendCategory) : tx.spendCategory,
-                                  dateOfProvision: tx.dateOfProvision,
-                                  placeOfProvision: tx.placeOfProvision,
+                                  dateOfProvision: isEditing ? (editFormData.dateOfProvision !== undefined ? editFormData.dateOfProvision : tx.dateOfProvision) : tx.dateOfProvision,
+                                  placeOfProvision: isEditing ? (editFormData.placeOfProvision !== undefined ? editFormData.placeOfProvision : tx.placeOfProvision) : tx.placeOfProvision,
                                   purposeOfBenefit: isEditing ? (editFormData.purposeOfBenefit !== undefined ? editFormData.purposeOfBenefit : tx.purposeOfBenefit) : tx.purposeOfBenefit,
                                   details: isEditing ? (editFormData.details !== undefined ? editFormData.details : tx.details) : tx.details,
-                                  amountOriginal: isEditing ? (editFormData.amountOriginal !== undefined ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) : tx.amountOriginal,
-                                  licenseNumber: tx.licenseNumber
+                                  amountOriginal: isEditing ? (editFormData.amountOriginal !== undefined ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) : tx.amountOriginal
                                 });
                                 
                                 const limitExceeded = 
@@ -1359,25 +1374,55 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                     {/* 2. Recipient & Institution */}
                                     <td style={{ padding: '12px 16px' }}>
                                       {isEditing ? (
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '220px' }}>
+                                          <div style={{ display: 'flex', gap: '6px' }}>
+                                            <select
+                                              value={editFormData.recipientType || 'HCP'}
+                                              onChange={(e) => handleChange(e, 'recipientType')}
+                                              style={{ padding: '4px 6px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.78rem', width: '90px' }}
+                                            >
+                                              <option value="HCP">HCP</option>
+                                              <option value="THO">THO</option>
+                                              <option value="INSTITUTION">INSTITUTION</option>
+                                            </select>
+                                            <input 
+                                              value={editFormData.recipientName || ''} 
+                                              onChange={(e) => handleChange(e, 'recipientName')} 
+                                              style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.78rem', flex: 1 }} 
+                                              placeholder="Recipient Name" 
+                                            />
+                                          </div>
                                           <input 
-                                            value={editFormData.recipientName || ''} 
-                                            onChange={(e) => handleChange(e, 'recipientName')} 
-                                            style={{ padding: '6px 8px', width: '130px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.85rem' }} 
-                                            placeholder="Recipient Name" 
+                                            value={editFormData.licenseNumber || ''} 
+                                            onChange={(e) => handleChange(e, 'licenseNumber')} 
+                                            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)', fontSize: '0.75rem' }} 
+                                            placeholder="License / Tax ID Number" 
                                           />
                                           <input 
                                             value={editFormData.workplaceInstitution || ''} 
                                             onChange={(e) => handleChange(e, 'workplaceInstitution')} 
-                                            style={{ padding: '4px 8px', width: '130px', fontSize: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)' }} 
-                                            placeholder="Institution/Workplace" 
+                                            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)', fontSize: '0.75rem' }} 
+                                            placeholder="Workplace Institution" 
+                                          />
+                                          <input 
+                                            value={editFormData.specialtyDepartment || ''} 
+                                            onChange={(e) => handleChange(e, 'specialtyDepartment')} 
+                                            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)', fontSize: '0.75rem' }} 
+                                            placeholder="Specialty Department" 
                                           />
                                         </div>
                                       ) : (
                                         <div>
-                                          <div style={{ fontWeight: 'bold' }}>{tx.recipientName}</div>
-                                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                                            {tx.licenseNumber} | {tx.workplaceInstitution}
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                                            <span className="badge" style={{ fontSize: '0.68rem', padding: '2px 6px', background: 'var(--border-color)', color: 'var(--text-primary)', fontWeight: 600 }}>
+                                              {tx.recipientType}
+                                            </span>
+                                            <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{tx.recipientName}</span>
+                                          </div>
+                                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                            <div><strong>License/Tax ID:</strong> {tx.licenseNumber || <em style={{ color: 'var(--text-muted)' }}>None</em>}</div>
+                                            <div><strong>Workplace:</strong> {tx.workplaceInstitution || <em style={{ color: 'var(--text-muted)' }}>None</em>}</div>
+                                            <div><strong>Specialty:</strong> {tx.specialtyDepartment || <em style={{ color: 'var(--text-muted)' }}>None</em>}</div>
                                           </div>
                                         </div>
                                       )}
@@ -1386,18 +1431,31 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                     {/* 3. Category */}
                                     <td style={{ padding: '12px 16px' }}>
                                       {isEditing ? (
-                                        <select 
-                                          value={editFormData.spendCategory || ''} 
-                                          onChange={(e) => handleChange(e, 'spendCategory')} 
-                                          style={{ padding: '6px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
-                                        >
-                                          <option value="PRESENTATION">PRESENTATION</option>
-                                          <option value="SAMPLES">SAMPLES</option>
-                                          <option value="CONSULTANCY">CONSULTANCY</option>
-                                          <option value="CONVENZIONI">CONVENZIONI</option>
-                                          <option value="DONAZIONI">DONAZIONI</option>
-                                          <option value="CONFERENCE_SUPPORT">CONFERENCE_SUPPORT</option>
-                                        </select>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '150px' }}>
+                                          <select 
+                                            value={['PRESENTATION', 'SAMPLES', 'CONSULTANCY', 'CONVENZIONI', 'DONAZIONI', 'CONFERENCE_SUPPORT'].includes(editFormData.spendCategory || '') ? (editFormData.spendCategory || '') : 'CUSTOM'} 
+                                            onChange={(e) => {
+                                              if (e.target.value !== 'CUSTOM') {
+                                                setEditFormData(prev => ({ ...prev, spendCategory: e.target.value }));
+                                              }
+                                            }} 
+                                            style={{ padding: '6px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
+                                          >
+                                            <option value="PRESENTATION">PRESENTATION</option>
+                                            <option value="SAMPLES">SAMPLES</option>
+                                            <option value="CONSULTANCY">CONSULTANCY</option>
+                                            <option value="CONVENZIONI">CONVENZIONI</option>
+                                            <option value="DONAZIONI">DONAZIONI</option>
+                                            <option value="CONFERENCE_SUPPORT">CONFERENCE_SUPPORT</option>
+                                            <option value="CUSTOM">-- Enter Custom --</option>
+                                          </select>
+                                          <input 
+                                            value={editFormData.spendCategory || ''} 
+                                            onChange={(e) => handleChange(e, 'spendCategory')} 
+                                            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.75rem' }}
+                                            placeholder="Spend Category"
+                                          />
+                                        </div>
                                       ) : (
                                         <span className="badge" style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', fontSize: '0.72rem' }}>
                                           {tx.spendCategory}
@@ -1405,48 +1463,84 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                       )}
                                     </td>
                                     
-                                    {/* 4. Purpose & Provision */}
+                                    {/* 4. Benefit & Provision Details */}
                                     <td style={{ padding: '12px 16px' }}>
                                       {isEditing ? (
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '220px' }}>
                                           <input 
                                             value={editFormData.purposeOfBenefit || ''} 
                                             onChange={(e) => handleChange(e, 'purposeOfBenefit')} 
-                                            style={{ padding: '6px 8px', width: '150px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.85rem' }} 
-                                            placeholder="Purpose" 
+                                            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.78rem' }} 
+                                            placeholder="Purpose of Benefit" 
+                                          />
+                                          <input 
+                                            value={editFormData.placeOfProvision || ''} 
+                                            onChange={(e) => handleChange(e, 'placeOfProvision')} 
+                                            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.78rem' }} 
+                                            placeholder="Place of Provision" 
+                                          />
+                                          <input 
+                                            type="date"
+                                            value={editFormData.dateOfProvision || ''} 
+                                            onChange={(e) => handleChange(e, 'dateOfProvision')} 
+                                            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.78rem' }} 
                                           />
                                           <input 
                                             value={editFormData.details || ''} 
                                             onChange={(e) => handleChange(e, 'details')} 
-                                            style={{ padding: '4px 8px', width: '150px', fontSize: '0.75rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)' }} 
-                                            placeholder="Details/Reference" 
+                                            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-secondary)', fontSize: '0.75rem' }} 
+                                            placeholder="Additional Details" 
                                           />
                                         </div>
                                       ) : (
-                                        <div>
-                                          <div>{tx.purposeOfBenefit || <em style={{ color: 'var(--text-muted)' }}>None</em>}</div>
-                                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                                            {tx.placeOfProvision} {tx.details ? `| ${tx.details}` : ''}
-                                          </div>
+                                        <div style={{ fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                          <div><strong>Purpose:</strong> {tx.purposeOfBenefit || <em style={{ color: 'var(--text-muted)' }}>None</em>}</div>
+                                          <div><strong>Place:</strong> {tx.placeOfProvision || <em style={{ color: 'var(--text-muted)' }}>None</em>}</div>
+                                          <div><strong>Date:</strong> {tx.dateOfProvision ? tx.dateOfProvision.split('T')[0] : <em style={{ color: 'var(--text-muted)' }}>None</em>}</div>
+                                          <div><strong>Details:</strong> {tx.details || <em style={{ color: 'var(--text-muted)' }}>None</em>}</div>
                                         </div>
                                       )}
                                     </td>
                                     
-                                    {/* 5. Original Spend */}
+                                    {/* 5. Spend Details */}
                                     <td style={{ padding: '12px 16px' }}>
                                       {isEditing ? (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{tx.currencyOriginal}</span>
-                                          <input 
-                                            type="number" 
-                                            value={editFormData.amountOriginal || 0} 
-                                            onChange={(e) => handleChange(e, 'amountOriginal')} 
-                                            style={{ padding: '6px 8px', width: '80px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', textAlign: 'right', fontSize: '0.85rem' }} 
-                                          />
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '130px' }}>
+                                          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                            <select
+                                              value={editFormData.currencyOriginal || 'USD'}
+                                              onChange={(e) => handleChange(e, 'currencyOriginal')}
+                                              style={{ padding: '4px 6px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.78rem', width: '65px' }}
+                                            >
+                                              <option value="KRW">KRW</option>
+                                              <option value="EUR">EUR</option>
+                                              <option value="USD">USD</option>
+                                              <option value="COP">COP</option>
+                                              <option value="GBP">GBP</option>
+                                            </select>
+                                            <input 
+                                              type="number" 
+                                              value={editFormData.amountOriginal || 0} 
+                                              onChange={(e) => handleChange(e, 'amountOriginal')} 
+                                              style={{ padding: '4px 6px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.78rem', flex: 1, textAlign: 'right' }} 
+                                            />
+                                          </div>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Year:</span>
+                                            <input 
+                                              type="number" 
+                                              value={editFormData.reportingYear || 2026} 
+                                              onChange={(e) => handleChange(e, 'reportingYear')} 
+                                              style={{ padding: '4px 6px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.75rem', width: '60px' }} 
+                                            />
+                                          </div>
                                         </div>
                                       ) : (
-                                        <div>
-                                          {tx.currencyOriginal} {tx.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2, maximumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2 })}
+                                        <div style={{ fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                          <div style={{ fontWeight: 'bold' }}>
+                                            {tx.currencyOriginal} {tx.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2, maximumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2 })}
+                                          </div>
+                                          <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}><strong>Year:</strong> {tx.reportingYear}</div>
                                         </div>
                                       )}
                                     </td>

@@ -46,7 +46,10 @@ export interface AuditLog {
   timestamp: string;
 }
 
-const BACKEND_URL = "https://k-sunshine-backend-381662135057.us-central1.run.app";
+const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const BACKEND_URL = isLocal 
+  ? "http://localhost:8080" 
+  : "https://k-sunshine-backend-381662135057.us-central1.run.app";
 
 export const APIGateway = {
   // Fetch transactions with country database routing

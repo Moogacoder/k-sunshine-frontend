@@ -18,6 +18,40 @@ const AgentWidget = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Drag Resizing States (defaults matching original static sizes)
+  const [width, setWidth] = useState(350);
+  const [height, setHeight] = useState(500);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startWidth = width;
+    const startHeight = height;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = moveEvent.clientX - startX;
+      const deltaY = moveEvent.clientY - startY;
+
+      // Resizing from top-left anchors to bottom-right:
+      // Leftward drag (negative deltaX) increases width.
+      // Upward drag (negative deltaY) increases height.
+      const newWidth = Math.max(300, Math.min(800, startWidth - deltaX));
+      const newHeight = Math.max(400, Math.min(800, startHeight - deltaY));
+
+      setWidth(newWidth);
+      setHeight(newHeight);
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
   // Determine standard route greeting
   const getGreetingForRoute = (path: string) => {
     let contextName = "Global compliance transparency databases";
@@ -76,9 +110,9 @@ const AgentWidget = () => {
       const reply = await APIGateway.sendChatQuery(userMsg.text, location.pathname);
       
       const cleanedReply = reply
-        .replace(/k-transparency/gi, 'Global Transparency Manager')
-        .replace(/K-Sunshine Compliance AI/g, 'Global Transparency Compliance AI')
-        .replace(/k-sunshine/gi, 'Global Transparency');
+        .replace(/k-transparency/gi, 'Intelligent Transparency')
+        .replace(/K-Sunshine Compliance AI/g, 'Intelligent Transparency Compliance AI')
+        .replace(/k-sunshine/gi, 'Intelligent Transparency');
 
       const botMsg: Message = {
         id: (Date.now() + 1).toString(),
@@ -110,7 +144,34 @@ const AgentWidget = () => {
 
   return (
     <div className="agent-widget" style={{ zIndex: 1000 }}>
-      <div className={`agent-panel ${isOpen ? '' : 'hidden'}`} style={{ display: 'flex', flexDirection: 'column' }}>
+      <div 
+        className={`agent-panel ${isOpen ? '' : 'hidden'}`} 
+        style={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          width: `${width}px`,
+          height: `${height}px`,
+          position: 'absolute',
+          bottom: '80px',
+          right: 0
+        }}
+      >
+        {/* Resizable drag handle (top-left corner) */}
+        <div 
+          onMouseDown={handleMouseDown}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '16px',
+            height: '16px',
+            cursor: 'nwse-resize',
+            zIndex: 110,
+            borderTop: '2px solid var(--text-muted)',
+            borderLeft: '2px solid var(--text-muted)',
+            borderTopLeftRadius: 'var(--radius-md)'
+          }}
+        />
         <div className="agent-header" style={{ padding: '16px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center' }}>
           <img src="https://www.qordata.com/wp-content/uploads/2019/10/Updated_Logo_transparent.png" alt="EngageAgent" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'contain', background: 'white', padding: '2px', border: '1px solid var(--border-color)' }} />
           <div style={{ marginLeft: '10px' }}>
