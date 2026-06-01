@@ -128,6 +128,35 @@ export const validateReportingCompleteness = (
   } else if (countryCode === 'US') {
     // USA CMS Open Payments
     if (!licenseNumber) missingFields.push('NPI Identifier');
+  } else if (countryCode === 'CO') {
+    // Colombia Resolution 2881 (RTVSS) specifics
+    if (!licenseNumber) {
+      missingFields.push('Número de Identificación (NIT / CC)');
+    }
+    // Must be HONORARIOS, REUNIONES, VIAJES, or DONACIONES
+    if (category !== 'HONORARIOS' && category !== 'REUNIONES' && category !== 'VIAJES' && category !== 'DONACIONES') {
+      missingFields.push('Category must be HONORARIOS, REUNIONES, VIAJES or DONACIONES');
+    }
+    if (!purpose) {
+      missingFields.push('Purpose of Value Transfer (Resolución 2881)');
+    }
+  } else if (countryCode === 'EU') {
+    // Europe EFPIA Disclosure Code specifics
+    if (!licenseNumber) {
+      missingFields.push('Professional Registration Number / Tax ID');
+    }
+    // Must be DONATIONS_AND_GRANTS, EVENT_CONTRIBUTION, FEES_FOR_SERVICE, or RESEARCH_AND_DEVELOPMENT
+    if (
+      category !== 'DONATIONS_AND_GRANTS' &&
+      category !== 'EVENT_CONTRIBUTION' &&
+      category !== 'FEES_FOR_SERVICE' &&
+      category !== 'RESEARCH_AND_DEVELOPMENT'
+    ) {
+      missingFields.push('Category must be DONATIONS_AND_GRANTS, EVENT_CONTRIBUTION, FEES_FOR_SERVICE or RESEARCH_AND_DEVELOPMENT');
+    }
+    if (!purpose) {
+      missingFields.push('Purpose of Value Transfer (EFPIA Code)');
+    }
   }
 
   return {

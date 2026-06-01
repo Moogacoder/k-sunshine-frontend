@@ -50,7 +50,8 @@ const Calendar: React.FC = () => {
           IT: { staging: 0, committed: 0 },
           FR: { staging: 0, committed: 0 },
           US: { staging: 0, committed: 0 },
-          CO: { staging: 0, committed: 0 }
+          CO: { staging: 0, committed: 0 },
+          EU: { staging: 0, committed: 0 }
         };
 
         staging.forEach(tx => {
@@ -183,6 +184,18 @@ const Calendar: React.FC = () => {
       flag: '🇺🇸',
       threshold: 'All plan sponsors and health issuers',
       link: '/datacenter'
+    },
+    {
+      id: 'eu-efpia-2025',
+      countryCode: 'EU',
+      countryName: 'Europe (EFPIA)',
+      title: 'EFPIA Annual Disclosure 2025',
+      date: new Date(2026, 5, 30), // June 30, 2026
+      desc: 'Statutory deadline to publish all pharmaceutical value transfers to HCPs and HCOs across participating European countries under the EFPIA Disclosure Code.',
+      color: '#003399', // Royal Blue
+      flag: '🇪🇺',
+      threshold: 'Hospitality > €150, Consultancy > €1,000',
+      link: '/efpia/reporting'
     },
     {
       id: 'us-ma-conduct-2025',

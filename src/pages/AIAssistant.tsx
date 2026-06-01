@@ -71,7 +71,7 @@ const AIAssistant = () => {
       setIsRulesEngineMode(true);
       
       const text = userMessage.text.toLowerCase();
-      let header = `*(⚠️ Running in Local Client Rules-Engine Mode. The compliance backend is offline. Showing rule-based statutory answers.)*\n\n`;
+      let header = `Researching... \n*(⚠️ Running in Local Client Rules-Engine Mode. The compliance backend is offline. Showing rule-based statutory answers.)*\n\n`;
       let reply = header + `### Intelligent Transparency Rules Engine Active
 Your question was analyzed by the local client-side compliance rules-engine.
 

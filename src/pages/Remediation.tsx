@@ -25,7 +25,8 @@ const Remediation = () => {
   const location = useLocation();
   const isItaly = location.pathname.includes('/italy');
   const isColombia = location.pathname.includes('/colombia');
-  const countryCode = isColombia ? 'CO' : (isItaly ? 'IT' : 'KR');
+  const isEFPIA = location.pathname.includes('/efpia');
+  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : 'KR'));
 
   const [flags, setFlags] = useState<RemediationFlag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,7 +55,7 @@ const Remediation = () => {
         const completeness = validateReportingCompleteness(t.countryCode, t);
         const limitExceeded = 
           (t.countryCode === 'KR' && t.amountOriginal > 500000) ||
-          ((t.countryCode === 'FR' || t.countryCode === 'IT') && t.amountOriginal > 150) ||
+          ((t.countryCode === 'FR' || t.countryCode === 'IT' || t.countryCode === 'EU') && t.amountOriginal > 150) ||
           (t.countryCode === 'CO' && t.amountOriginal > 1500000) ||
           (t.countryCode === 'US' && t.amountOriginal > 500);
 
@@ -167,8 +168,8 @@ const Remediation = () => {
       
       {/* Flagged Records List */}
       <div style={{ flex: 1 }}>
-        <h1 className="page-title">Data Remediation Workflow ({isColombia ? 'Colombia' : (isItaly ? 'Italy' : 'South Korea')})</h1>
-        <p className="page-subtitle">Review flagged transactions that violate local {isColombia ? 'Colombia Resolution 2881' : (isItaly ? 'Italy Sanità Trasparente Law 31/2022' : 'K-Sunshine Act')} compliance thresholds or contain data anomalies.</p>
+        <h1 className="page-title">Data Remediation Workflow ({isEFPIA ? 'Europe (EFPIA)' : (isColombia ? 'Colombia' : (isItaly ? 'Italy' : 'South Korea'))})</h1>
+        <p className="page-subtitle">Review flagged transactions that violate local {isEFPIA ? 'Europe EFPIA Disclosure Code' : (isColombia ? 'Colombia Resolution 2881' : (isItaly ? 'Italy Sanità Trasparente Law 31/2022' : 'K-Sunshine Act'))} compliance thresholds or contain data anomalies.</p>
 
         <div className="card">
           <h3 style={{ marginBottom: '20px' }}>Flagged Records Queue</h3>

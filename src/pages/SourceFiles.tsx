@@ -38,8 +38,9 @@ const SourceFiles = () => {
   const { t } = useLanguage();
   const isItaly = location.pathname.includes('/italy');
   const isColombia = location.pathname.includes('/colombia');
-  const countryCode = isColombia ? 'CO' : (isItaly ? 'IT' : 'KR');
-  const currencySymbol = isColombia ? '$' : (isItaly ? '€' : '₩');
+  const isEFPIA = location.pathname.includes('/efpia');
+  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : 'KR'));
+  const currencySymbol = isEFPIA ? '€' : (isColombia ? '$' : (isItaly ? '€' : '₩'));
 
   const [files, setFiles] = useState<FileStat[]>([]);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -184,7 +185,7 @@ const SourceFiles = () => {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                   <span>{f.recordCount} records</span>
-                  <span>{currencySymbol}{f.totalAmountKRW.toLocaleString(undefined, { minimumFractionDigits: isItaly ? 2 : 0 })}</span>
+                  <span>{currencySymbol}{f.totalAmountKRW.toLocaleString(undefined, { minimumFractionDigits: isItaly || isEFPIA ? 2 : 0 })}</span>
                 </div>
               </div>
             ))
@@ -249,7 +250,7 @@ const SourceFiles = () => {
                       <th>Institution</th>
                       <th>Category</th>
                       <th>Purpose</th>
-                      <th>Amount ({isColombia ? 'COP' : (isItaly ? 'EUR' : 'KRW')})</th>
+                      <th>Amount ({isColombia ? 'COP' : (isItaly || isEFPIA ? 'EUR' : 'KRW')})</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -267,7 +268,7 @@ const SourceFiles = () => {
                         <td>{tx.categoryOfBenefit}</td>
                         <td>{tx.purposeOfBenefit || '-'}</td>
                         <td style={{ fontWeight: 500 }}>
-                          {tx.currency} {tx.amountKRW.toLocaleString(undefined, { minimumFractionDigits: isItaly ? 2 : 0 })}
+                          {tx.currency} {tx.amountKRW.toLocaleString(undefined, { minimumFractionDigits: isItaly || isEFPIA ? 2 : 0 })}
                         </td>
                       </tr>
                     ))}

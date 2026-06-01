@@ -12,15 +12,16 @@ const Sidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // Detect which country is currently active
   const isKoreaActive = ['/dashboard', '/data', '/source-files', '/remediation', '/ingestion', '/reporting'].includes(currentPath);
   const isItalyActive = currentPath.startsWith('/italy');
   const isColombiaActive = currentPath.startsWith('/colombia');
+  const isEfpiaActive = currentPath.startsWith('/efpia');
 
   // Accordion toggle states (auto-expand active portal country)
   const [isKoreaExpanded, setIsKoreaExpanded] = useState(isKoreaActive);
   const [isItalyExpanded, setIsItalyExpanded] = useState(isItalyActive);
   const [isColombiaExpanded, setIsColombiaExpanded] = useState(isColombiaActive);
+  const [isEfpiaExpanded, setIsEfpiaExpanded] = useState(isEfpiaActive);
 
   // Track the previous path to only auto-expand on actual navigation events
   const prevPathRef = useRef(currentPath);
@@ -32,22 +33,31 @@ const Sidebar = () => {
         setIsKoreaExpanded(true);
         setIsItalyExpanded(false);
         setIsColombiaExpanded(false);
+        setIsEfpiaExpanded(false);
       } else if (isItalyActive) {
         setIsKoreaExpanded(false);
         setIsItalyExpanded(true);
         setIsColombiaExpanded(false);
+        setIsEfpiaExpanded(false);
       } else if (isColombiaActive) {
         setIsKoreaExpanded(false);
         setIsItalyExpanded(false);
         setIsColombiaExpanded(true);
+        setIsEfpiaExpanded(false);
+      } else if (isEfpiaActive) {
+        setIsKoreaExpanded(false);
+        setIsItalyExpanded(false);
+        setIsColombiaExpanded(false);
+        setIsEfpiaExpanded(true);
       } else {
         setIsKoreaExpanded(false);
         setIsItalyExpanded(false);
         setIsColombiaExpanded(false);
+        setIsEfpiaExpanded(false);
       }
       prevPathRef.current = currentPath;
     }
-  }, [currentPath, isKoreaActive, isItalyActive, isColombiaActive]);
+  }, [currentPath, isKoreaActive, isItalyActive, isColombiaActive, isEfpiaActive]);
 
   // Unified mutual-exclusion toggle handlers
   const handleKoreaToggle = () => {
@@ -56,6 +66,7 @@ const Sidebar = () => {
     if (nextState) {
       setIsItalyExpanded(false);
       setIsColombiaExpanded(false);
+      setIsEfpiaExpanded(false);
     }
   };
 
@@ -65,6 +76,7 @@ const Sidebar = () => {
     if (nextState) {
       setIsKoreaExpanded(false);
       setIsColombiaExpanded(false);
+      setIsEfpiaExpanded(false);
     }
   };
 
@@ -74,6 +86,17 @@ const Sidebar = () => {
     if (nextState) {
       setIsKoreaExpanded(false);
       setIsItalyExpanded(false);
+      setIsEfpiaExpanded(false);
+    }
+  };
+
+  const handleEfpiaToggle = () => {
+    const nextState = !isEfpiaExpanded;
+    setIsEfpiaExpanded(nextState);
+    if (nextState) {
+      setIsKoreaExpanded(false);
+      setIsItalyExpanded(false);
+      setIsColombiaExpanded(false);
     }
   };
 
@@ -325,6 +348,69 @@ const Sidebar = () => {
           </NavLink>
 
           <NavLink to="/colombia/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <FileText size={20} />
+            <span>{t('sidebar.statutoryDisclosures')}</span>
+          </NavLink>
+        </div>
+
+        <div style={{ margin: '6px 0', borderTop: '1px solid var(--border-color)', opacity: 0.3 }}></div>
+
+        {/* Europe EFPIA Portal Accordion */}
+        <button
+          onClick={handleEfpiaToggle}
+          style={{
+            border: 'none',
+            width: '100%',
+            padding: '10px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            fontSize: '0.72rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            fontWeight: 'bold',
+            transition: 'all 0.2s ease',
+            textAlign: 'left',
+            fontFamily: 'inherit',
+          }}
+          className={`accordion-header ${isEfpiaActive ? 'active' : ''}`}
+        >
+          <span>🇪🇺 {t('sidebar.efpia')}</span>
+          {isEfpiaExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        </button>
+
+        <div style={{
+          display: isEfpiaExpanded ? 'flex' : 'none',
+          flexDirection: 'column',
+          paddingLeft: '4px'
+        }}>
+          <NavLink to="/efpia/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <LayoutDashboard size={20} />
+            <span>{t('sidebar.dashboard')} (EU)</span>
+          </NavLink>
+
+          <NavLink to="/efpia/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <Database size={20} />
+            <span>{t('sidebar.dataExplorer')}</span>
+          </NavLink>
+
+          <NavLink to="/efpia/source-files" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <FileUp size={20} />
+            <span>{t('sidebar.sourceFiles')}</span>
+          </NavLink>
+
+          <NavLink to="/efpia/remediation" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <AlertCircle size={20} />
+            <span>{t('sidebar.remediation')}</span>
+          </NavLink>
+
+          <NavLink to="/efpia/ingestion" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <UploadCloud size={20} />
+            <span>{t('sidebar.localIngestion')}</span>
+          </NavLink>
+
+          <NavLink to="/efpia/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <FileText size={20} />
             <span>{t('sidebar.statutoryDisclosures')}</span>
           </NavLink>

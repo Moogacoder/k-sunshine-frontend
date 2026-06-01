@@ -26,9 +26,10 @@ const DataExplorer = () => {
   const location = useLocation();
   const isItaly = location.pathname.includes('/italy');
   const isColombia = location.pathname.includes('/colombia');
+  const isEFPIA = location.pathname.includes('/efpia');
   
-  const countryCode = isColombia ? 'CO' : (isItaly ? 'IT' : 'KR');
-  const currencyLabel = isColombia ? 'Amount (COP)' : (isItaly ? 'Amount (EUR)' : 'Amount (KRW)');
+  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : 'KR'));
+  const currencyLabel = isEFPIA ? 'Amount (EUR)' : (isColombia ? 'Amount (COP)' : (isItaly ? 'Amount (EUR)' : 'Amount (KRW)'));
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +59,7 @@ const DataExplorer = () => {
           amountKRW: t.amountOriginal,
           currency: t.currencyOriginal,
           details: t.details,
-          sourceFile: batch ? batch.sourceFileName : (isColombia ? 'Colombia_RTVSS_Transactions_Q1.xlsx' : (isItaly ? 'Italy_Transparency_Transactions_Q1.xlsx' : 'KR_Sunshine_Transactions_Q1.xlsx')),
+          sourceFile: batch ? batch.sourceFileName : (isEFPIA ? 'EFPIA_Disclosure_Transactions_Q1.xlsx' : (isColombia ? 'Colombia_RTVSS_Transactions_Q1.xlsx' : (isItaly ? 'Italy_Transparency_Transactions_Q1.xlsx' : 'KR_Sunshine_Transactions_Q1.xlsx'))),
           entity: {
             recipientType: t.recipientType,
             recipientName: t.recipientName,
@@ -204,8 +205,8 @@ const DataExplorer = () => {
 
   return (
     <div>
-      <h1 className="page-title">Data Explorer ({isColombia ? 'Colombia' : (isItaly ? 'Italy' : 'South Korea')})</h1>
-      <p className="page-subtitle">Search, sort, and securely edit ingested {isColombia ? 'Colombia Resolution 2881' : (isItaly ? 'Italy Sanità Trasparente' : 'K-Sunshine Act')} data records. All modifications are logged.</p>
+      <h1 className="page-title">Data Explorer ({isEFPIA ? 'Europe (EFPIA)' : (isColombia ? 'Colombia' : (isItaly ? 'Italy' : 'South Korea'))})</h1>
+      <p className="page-subtitle">Search, sort, and securely edit ingested {isEFPIA ? 'Europe EFPIA Disclosure Code' : (isColombia ? 'Colombia Resolution 2881' : (isItaly ? 'Italy Sanità Trasparente' : 'K-Sunshine Act'))} data records. All modifications are logged.</p>
 
       <div className="card" style={{ marginBottom: '24px', display: 'flex', gap: '16px', padding: '16px' }}>
         <div style={{ position: 'relative', flex: 1 }}>

@@ -30,11 +30,11 @@ interface DataCenterProps {
 const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'overview' | 'compliance_map' | 'uploader' | 'transactions' | 'source_files'>(defaultTab || 'overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'compliance_map' | 'uploader' | 'transactions' | 'source_files'>(defaultTab || 'uploader');
   const [mapMetricFilter, setMapMetricFilter] = useState<'ingested' | 'pushed' | 'reports'>('ingested');
 
   useEffect(() => {
-    setActiveTab(defaultTab || 'overview');
+    setActiveTab(defaultTab || 'uploader');
   }, [defaultTab]);
 
   
@@ -520,7 +520,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
         (targetTx.countryCode === 'KR' && origAmount > 500000) ||
         ((targetTx.countryCode === 'FR' || targetTx.countryCode === 'IT') && origAmount > 150) ||
         (targetTx.countryCode === 'CO' && origAmount > 1500000) ||
-        (targetTx.countryCode === 'US' && origAmount > 500);
+        (targetTx.countryCode === 'US' && origAmount > 500) ||
+        (targetTx.countryCode === 'EU' && origAmount > 150);
 
       const updatedValues: Partial<UniversalTransaction> = {
         recipientType: updatedTxFields.recipientType as any,
@@ -757,6 +758,32 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
         'Amount (COP)': 320000
       }];
       filename = 'template_colombia_rtvss.xlsx';
+    } else if (countryCode === 'EU') {
+      headers = [
+        'Company Name', 'Recipient Name', 'Recipient Type', 
+        'Tax ID / License Number', 'Affiliated Healthcare Institution', 'Date of Value Transfer', 
+        'Purpose (Meeting/Congress Name)', 'Contribution Amount (EUR)'
+      ];
+      sampleData = [{
+        'Company Name': 'Qordata Europe (Demo)',
+        'Recipient Name': 'Dr. Hans Mueller',
+        'Recipient Type': 'HCP',
+        'Tax ID / License Number': 'DE-1928472',
+        'Affiliated Healthcare Institution': 'Charite Berlin',
+        'Date of Value Transfer': '2026-03-15',
+        'Purpose (Meeting/Congress Name)': 'European Cardiology Congress 2026',
+        'Contribution Amount (EUR)': 450
+      }, {
+        'Company Name': 'Qordata Europe (Demo)',
+        'Recipient Name': 'St. Thomas Hospital London',
+        'Recipient Type': 'HCO',
+        'Tax ID / License Number': 'GB-9928472',
+        'Affiliated Healthcare Institution': 'St. Thomas Hospital',
+        'Date of Value Transfer': '2026-05-10',
+        'Purpose (Meeting/Congress Name)': 'Educational Grant Cardiology',
+        'Contribution Amount (EUR)': 5000
+      }];
+      filename = 'template_europe_efpia.xlsx';
     }
 
     const worksheet = XLSX.utils.json_to_sheet(sampleData, { header: headers });
@@ -846,6 +873,23 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
       } catch {
         reports = 0;
       }
+    } else if (codeUpper === 'EU') {
+      name = 'Europe (EFPIA)';
+      flag = '🇪🇺';
+      color = '#1d4ed8'; // Royal Blue
+      coords = { x: 440, y: 105 };
+      reportsLabel = 'EFPIA Reports';
+      try {
+        const cached = localStorage.getItem('eu_efpia_archived_reports');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) {
+            reports = parsed.filter((r: any) => String(r.reportYear) === '2026').length;
+          }
+        }
+      } catch {
+        reports = 0;
+      }
     }
     
     return {
@@ -876,18 +920,19 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           {/* Tabs Menu */}
           <div style={{ display: 'flex', gap: '12px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
             <button 
-              onClick={() => setActiveTab('overview')}
-              className={`btn ${activeTab === 'overview' ? 'btn-primary' : ''}`}
-              style={{ background: activeTab === 'overview' ? '' : 'transparent', color: activeTab === 'overview' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
-            >
-              <Database size={18} /> {t('datacenter.incomingReview')}
-            </button>
-            <button 
               onClick={() => setActiveTab('uploader')}
               className={`btn ${activeTab === 'uploader' ? 'btn-primary' : ''}`}
               style={{ background: activeTab === 'uploader' ? '' : 'transparent', color: activeTab === 'uploader' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
             >
               <UploadCloud size={18} /> {t('datacenter.loadData')}
+            </button>
+            
+            <button 
+              onClick={() => setActiveTab('overview')}
+              className={`btn ${activeTab === 'overview' ? 'btn-primary' : ''}`}
+              style={{ background: activeTab === 'overview' ? '' : 'transparent', color: activeTab === 'overview' ? '' : 'var(--text-secondary)', padding: '10px 16px', fontWeight: 600 }}
+            >
+              <Database size={18} /> {t('datacenter.incomingReview')}
             </button>
 
             <button 
@@ -1363,7 +1408,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                   (tx.countryCode === 'KR' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 500000) ||
                                   ((tx.countryCode === 'FR' || tx.countryCode === 'IT') && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 150) ||
                                   (tx.countryCode === 'CO' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 1500000) ||
-                                  (tx.countryCode === 'US' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 500);
+                                  (tx.countryCode === 'US' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 500) ||
+                                  (tx.countryCode === 'EU' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 150);
                                 
                                 return (
                                   <tr key={tx.id} style={{ background: isEditing ? 'rgba(124, 58, 237, 0.01)' : 'transparent', borderBottom: '1px solid var(--border-color)' }}>
@@ -1433,7 +1479,15 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                       {isEditing ? (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '150px' }}>
                                           <select 
-                                            value={['PRESENTATION', 'SAMPLES', 'CONSULTANCY', 'CONVENZIONI', 'DONAZIONI', 'CONFERENCE_SUPPORT'].includes(editFormData.spendCategory || '') ? (editFormData.spendCategory || '') : 'CUSTOM'} 
+                                            value={
+                                              (tx.countryCode === 'KR' && ['PRESENTATION', 'SAMPLES', 'CONSULTANCY', 'CONFERENCE_SUPPORT'].includes(editFormData.spendCategory || '')) ||
+                                              (tx.countryCode === 'IT' && ['CONVENZIONI', 'DONAZIONI'].includes(editFormData.spendCategory || '')) ||
+                                              (tx.countryCode === 'CO' && ['HONORARIOS', 'REUNIONES', 'VIAJES', 'DONACIONES'].includes(editFormData.spendCategory || '')) ||
+                                              (tx.countryCode === 'EU' && ['DONATIONS_AND_GRANTS', 'EVENT_CONTRIBUTION', 'FEES_FOR_SERVICE', 'RESEARCH_AND_DEVELOPMENT'].includes(editFormData.spendCategory || '')) ||
+                                              (!['KR', 'IT', 'CO', 'EU'].includes(tx.countryCode) && ['PRESENTATION', 'SAMPLES', 'CONSULTANCY', 'CONVENZIONI', 'DONAZIONI', 'CONFERENCE_SUPPORT', 'HONORARIOS', 'REUNIONES', 'VIAJES'].includes(editFormData.spendCategory || ''))
+                                                ? (editFormData.spendCategory || '')
+                                                : 'CUSTOM'
+                                            }
                                             onChange={(e) => {
                                               if (e.target.value !== 'CUSTOM') {
                                                 setEditFormData(prev => ({ ...prev, spendCategory: e.target.value }));
@@ -1441,12 +1495,49 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                             }} 
                                             style={{ padding: '6px 8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-base)', color: 'var(--text-primary)', fontSize: '0.85rem' }}
                                           >
-                                            <option value="PRESENTATION">PRESENTATION</option>
-                                            <option value="SAMPLES">SAMPLES</option>
-                                            <option value="CONSULTANCY">CONSULTANCY</option>
-                                            <option value="CONVENZIONI">CONVENZIONI</option>
-                                            <option value="DONAZIONI">DONAZIONI</option>
-                                            <option value="CONFERENCE_SUPPORT">CONFERENCE_SUPPORT</option>
+                                            {tx.countryCode === 'KR' && (
+                                              <>
+                                                <option value="PRESENTATION">PRESENTATION</option>
+                                                <option value="SAMPLES">SAMPLES</option>
+                                                <option value="CONSULTANCY">CONSULTANCY</option>
+                                                <option value="CONFERENCE_SUPPORT">CONFERENCE_SUPPORT</option>
+                                              </>
+                                            )}
+                                            {tx.countryCode === 'IT' && (
+                                              <>
+                                                <option value="CONVENZIONI">CONVENZIONI</option>
+                                                <option value="DONAZIONI">DONAZIONI</option>
+                                              </>
+                                            )}
+                                            {tx.countryCode === 'CO' && (
+                                              <>
+                                                <option value="HONORARIOS">HONORARIOS</option>
+                                                <option value="REUNIONES">REUNIONES</option>
+                                                <option value="VIAJES">VIAJES</option>
+                                                <option value="DONACIONES">DONACIONES</option>
+                                              </>
+                                            )}
+                                            {tx.countryCode === 'EU' && (
+                                              <>
+                                                <option value="DONATIONS_AND_GRANTS">DONATIONS & GRANTS</option>
+                                                <option value="EVENT_CONTRIBUTION">EVENT CONTRIBUTION</option>
+                                                <option value="FEES_FOR_SERVICE">FEES FOR SERVICE</option>
+                                                <option value="RESEARCH_AND_DEVELOPMENT">RESEARCH & DEVELOPMENT</option>
+                                              </>
+                                            )}
+                                            {!['KR', 'IT', 'CO', 'EU'].includes(tx.countryCode) && (
+                                              <>
+                                                <option value="PRESENTATION">PRESENTATION</option>
+                                                <option value="SAMPLES">SAMPLES</option>
+                                                <option value="CONSULTANCY">CONSULTANCY</option>
+                                                <option value="CONFERENCE_SUPPORT">CONFERENCE_SUPPORT</option>
+                                                <option value="CONVENZIONI">CONVENZIONI</option>
+                                                <option value="DONAZIONI">DONAZIONI</option>
+                                                <option value="HONORARIOS">HONORARIOS</option>
+                                                <option value="REUNIONES">REUNIONES</option>
+                                                <option value="VIAJES">VIAJES</option>
+                                              </>
+                                            )}
                                             <option value="CUSTOM">-- Enter Custom --</option>
                                           </select>
                                           <input 
@@ -1625,7 +1716,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
               <div>
                 <h3 style={{ color: 'var(--danger)', margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 'bold' }}>Danger Zone (Administrative Resets)</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>
-                  Irreversibly wipe all SQL databases (Staging, South Korea, Italy, Ingestion Batches, and secure Audit Logs) to reset your testing workspace.
+                  Irreversibly wipe all SQL databases (Staging, South Korea, Italy, Colombia, Europe (EFPIA), Ingestion Batches, and secure Audit Logs) to reset your testing workspace.
                 </p>
               </div>
               <button 
@@ -1833,7 +1924,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                 { code: 'IT', name: 'Italy', flag: '🇮🇹' },
                 { code: 'FR', name: 'France', flag: '🇫🇷' },
                 { code: 'US', name: 'United States', flag: '🇺🇸' },
-                { code: 'CO', name: 'Colombia', flag: '🇨🇴' }
+                { code: 'CO', name: 'Colombia', flag: '🇨🇴' },
+                { code: 'EU', name: 'Europe (EFPIA)', flag: '🇪🇺' }
               ].map(tpl => (
                 <button
                   key={tpl.code}
@@ -1884,6 +1976,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                   <option value="FR">🇫🇷 France (Loi Bertrand transparency)</option>
                   <option value="US">🇺🇸 United States (CMS Open Payments)</option>
                   <option value="CO">🇨🇴 Colombia (Resolution 2881 RTVSS)</option>
+                  <option value="EU">🇪🇺 Europe (EFPIA Disclosure Code)</option>
                 </select>
               </div>
               <div style={{ width: '120px' }}>
