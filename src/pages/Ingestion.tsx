@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import type { DragEvent, ChangeEvent } from 'react';
 import { UploadCloud, FileSpreadsheet, Loader2, CheckCircle, AlertTriangle, Sparkles, ArrowRight, X } from 'lucide-react';
 import * as XLSX from 'xlsx';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { APIGateway } from '../datacenter/api_gateway';
 import { parseAmount } from '../datacenter/validation';
 
@@ -34,8 +34,13 @@ const Ingestion = () => {
   const isItaly = location.pathname.includes('/italy');
   const isColombia = location.pathname.includes('/colombia');
   const isEFPIA = location.pathname.includes('/efpia');
+  const isKorea = location.pathname.includes('/korea');
   
-  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : 'KR'));
+  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : (isKorea ? 'KR' : '')));
+
+  if (!countryCode) {
+    return <Navigate to="/datacenter" replace />;
+  }
 
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -88,8 +93,7 @@ const Ingestion = () => {
       const hasItalianHeaders = json.some((row: any) => 
         row['Codice Fiscale'] !== undefined || 
         row['Struttura'] !== undefined || 
-        row['Tipologia'] !== undefined ||
-        row['Amount (EUR)'] !== undefined
+        row['Tipologia'] !== undefined
       );
 
       const hasKoreanHeaders = json.some((row: any) => 
@@ -136,8 +140,8 @@ const Ingestion = () => {
         return;
       }
 
-      if (countryCode === 'EU' && (hasKoreanHeaders || hasItalianHeaders || hasColombianHeaders)) {
-        alert("Contamination Warning: The uploaded dataset contains South Korean, Italian, or Colombian disclosures, which cannot be loaded into the Europe EFPIA registry. Ingestion rejected to prevent database contamination.");
+      if (countryCode === 'EU' && (hasKoreanHeaders || hasColombianHeaders)) {
+        alert("Contamination Warning: The uploaded dataset contains South Korean or Colombian disclosures, which cannot be loaded into the Europe EFPIA registry. Ingestion rejected to prevent database contamination.");
         setIsUploading(false);
         return;
       }
@@ -541,7 +545,7 @@ const Ingestion = () => {
                   className="btn btn-primary" 
                   onClick={() => {
                     setShowStatsModal(false);
-                    navigate(isEFPIA ? '/efpia/remediation' : (isColombia ? '/colombia/remediation' : (isItaly ? '/italy/remediation' : '/remediation')));
+                     navigate(isEFPIA ? '/efpia/remediation' : (isColombia ? '/colombia/remediation' : (isItaly ? '/italy/remediation' : (isKorea ? '/korea/remediation' : '/datacenter'))));
                   }}
                   style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '6px', background: 'var(--warning)', border: '1px solid var(--warning)', color: 'white', fontWeight: 600 }}
                 >

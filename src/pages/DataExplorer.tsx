@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Search, Filter, SlidersHorizontal, AlertCircle, Edit2, Save, X, ArrowUp, ArrowDown } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Navigate } from 'react-router-dom';
 import { APIGateway } from '../datacenter/api_gateway';
 
 interface Transaction {
@@ -27,8 +27,13 @@ const DataExplorer = () => {
   const isItaly = location.pathname.includes('/italy');
   const isColombia = location.pathname.includes('/colombia');
   const isEFPIA = location.pathname.includes('/efpia');
+  const isKorea = location.pathname.includes('/korea');
   
-  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : 'KR'));
+  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : (isKorea ? 'KR' : '')));
+
+  if (!countryCode) {
+    return <Navigate to="/datacenter" replace />;
+  }
   const currencyLabel = isEFPIA ? 'Amount (EUR)' : (isColombia ? 'Amount (COP)' : (isItaly ? 'Amount (EUR)' : 'Amount (KRW)'));
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);

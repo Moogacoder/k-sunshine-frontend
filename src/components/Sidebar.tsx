@@ -12,7 +12,7 @@ const Sidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const isKoreaActive = ['/dashboard', '/data', '/source-files', '/remediation', '/ingestion', '/reporting'].includes(currentPath);
+  const isKoreaActive = currentPath.startsWith('/korea');
   const isItalyActive = currentPath.startsWith('/italy');
   const isColombiaActive = currentPath.startsWith('/colombia');
   const isEfpiaActive = currentPath.startsWith('/efpia');
@@ -196,32 +196,32 @@ const Sidebar = () => {
           flexDirection: 'column',
           paddingLeft: '4px'
         }}>
-          <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <NavLink to="/korea/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <LayoutDashboard size={20} />
             <span>{t('sidebar.dashboardKorea')}</span>
           </NavLink>
           
-          <NavLink to="/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <NavLink to="/korea/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <Database size={20} />
             <span>{t('sidebar.dataExplorer')}</span>
           </NavLink>
 
-          <NavLink to="/source-files" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <NavLink to="/korea/source-files" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <FileUp size={20} />
             <span>{t('sidebar.sourceFiles')}</span>
           </NavLink>
 
-          <NavLink to="/remediation" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <NavLink to="/korea/remediation" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <AlertCircle size={20} />
             <span>{t('sidebar.remediation')}</span>
           </NavLink>
 
-          <NavLink to="/ingestion" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <NavLink to="/korea/ingestion" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <UploadCloud size={20} />
             <span>{t('sidebar.localIngestion')}</span>
           </NavLink>
           
-          <NavLink to="/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <NavLink to="/korea/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <FileText size={20} />
             <span>{t('sidebar.mohwReports')}</span>
           </NavLink>

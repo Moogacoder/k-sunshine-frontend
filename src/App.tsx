@@ -32,11 +32,17 @@ const AppLayout = () => {
           <Route path="/" element={<Navigate to="/datacenter" replace />} />
           <Route path="/datacenter" element={<DataCenter />} />
           <Route path="/global-data-status" element={<DataCenter defaultTab="compliance_map" />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/source-files" element={<SourceFiles />} />
-          <Route path="/ingestion" element={<Ingestion />} />
-          <Route path="/remediation" element={<Remediation />} />
-          <Route path="/reporting" element={<Reporting />} />
+          <Route path="/dashboard" element={<Navigate to="/datacenter" replace />} />
+          <Route path="/source-files" element={<Navigate to="/datacenter" replace />} />
+          <Route path="/ingestion" element={<Navigate to="/datacenter" replace />} />
+          <Route path="/remediation" element={<Navigate to="/datacenter" replace />} />
+          <Route path="/reporting" element={<Navigate to="/datacenter" replace />} />
+          <Route path="/korea/dashboard" element={<Dashboard />} />
+          <Route path="/korea/reporting" element={<Reporting />} />
+          <Route path="/korea/data" element={<DataExplorer />} />
+          <Route path="/korea/remediation" element={<Remediation />} />
+          <Route path="/korea/ingestion" element={<Ingestion />} />
+          <Route path="/korea/source-files" element={<SourceFiles />} />
           <Route path="/italy/dashboard" element={<ItalyDashboard />} />
           <Route path="/italy/reporting" element={<ItalyReporting />} />
           <Route path="/italy/data" element={<DataExplorer />} />
@@ -55,7 +61,7 @@ const AppLayout = () => {
           <Route path="/efpia/remediation" element={<Remediation />} />
           <Route path="/efpia/ingestion" element={<Ingestion />} />
           <Route path="/efpia/source-files" element={<SourceFiles />} />
-          <Route path="/data" element={<DataExplorer />} />
+          <Route path="/data" element={<Navigate to="/datacenter" replace />} />
           <Route path="/audit" element={<AuditLogs />} />
           <Route path="/assistant" element={<AIAssistant />} />
           <Route path="/calendar" element={<Calendar />} />

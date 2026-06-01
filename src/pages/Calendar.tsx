@@ -99,7 +99,7 @@ const Calendar: React.FC = () => {
       color: '#8b5cf6', // Purple
       flag: '🇰🇷',
       threshold: 'Meals > 100,000 KRW, Consultancy > 500,000 KRW',
-      link: '/reporting'
+      link: '/korea/reporting'
     },
     {
       id: 'us-open-2025',

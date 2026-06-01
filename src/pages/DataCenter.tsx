@@ -228,7 +228,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
 
       circle.on('click', () => {
         if (code === 'KR') {
-          navigate('/dashboard');
+          navigate('/korea/dashboard');
         } else if (code === 'IT') {
           navigate('/italy/dashboard');
         } else if (code === 'CO') {
@@ -2637,7 +2637,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                   onClick={() => {
                     setShowStatsModal(false);
                     const code = statsData.countryCode.toLowerCase();
-                    const path = code === 'kr' ? '/remediation' : `/${code}/remediation`;
+                    const path = code === 'kr' ? '/korea/remediation' : (code === 'eu' ? '/efpia/remediation' : `/${code}/remediation`);
                     navigate(path);
                   }}
                   style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '6px', background: 'var(--warning)', border: '1px solid var(--warning)', color: 'white', fontWeight: 600 }}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle, Sparkles, Loader2, X, AlertTriangle } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Navigate } from 'react-router-dom';
 import { APIGateway } from '../datacenter/api_gateway';
 import type { UniversalTransaction } from '../datacenter/api_gateway';
 import { validateReportingCompleteness } from '../datacenter/validation';
@@ -26,7 +26,12 @@ const Remediation = () => {
   const isItaly = location.pathname.includes('/italy');
   const isColombia = location.pathname.includes('/colombia');
   const isEFPIA = location.pathname.includes('/efpia');
-  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : 'KR'));
+  const isKorea = location.pathname.includes('/korea');
+  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : (isKorea ? 'KR' : '')));
+
+  if (!countryCode) {
+    return <Navigate to="/datacenter" replace />;
+  }
 
   const [flags, setFlags] = useState<RemediationFlag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
