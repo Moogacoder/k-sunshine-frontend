@@ -110,7 +110,15 @@ const Ingestion = () => {
         row['Contribution Amount (EUR)'] !== undefined
       );
 
-      if (countryCode === 'KR' && (hasItalianHeaders || hasColombianHeaders || hasEFPIAHeaders)) {
+      const hasEuropeanIdentifiers = json.some((row: any) =>
+        Object.values(row as object).some(val => 
+          typeof val === 'string' && 
+          (/HCP-(ITA|FRA|POL|GER|SWI|SWE|BEL|SPA|IRE|UNI|AUS|NET)/i.test(val) || 
+           /^(Italy|France|Poland|Germany|Switzerland|Sweden|Belgium|Spain|Ireland|United Kingdom|Austria|Netherlands)$/i.test(val))
+        )
+      );
+
+      if (countryCode === 'KR' && (hasItalianHeaders || hasColombianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers)) {
         alert("Contamination Warning: The uploaded dataset contains European or Colombian disclosures, which cannot be loaded into the South Korea Sunshine Act registry. Ingestion rejected to prevent database contamination.");
         setIsUploading(false);
         return;
@@ -122,7 +130,7 @@ const Ingestion = () => {
         return;
       }
 
-      if (countryCode === 'CO' && (hasKoreanHeaders || hasItalianHeaders || hasEFPIAHeaders)) {
+      if (countryCode === 'CO' && (hasKoreanHeaders || hasItalianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers)) {
         alert("Contamination Warning: The uploaded dataset contains South Korean Won (KRW), European EFPIA, or Italian disclosures, which cannot be loaded into the Colombia RTVSS registry. Ingestion rejected to prevent database contamination.");
         setIsUploading(false);
         return;
