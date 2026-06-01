@@ -333,15 +333,28 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           row['Amount (COP)'] !== undefined ||
           row['Valor Transferencia (COP)'] !== undefined
         );
+        const hasEFPIAHeaders = json.some((row: any) =>
+          row['Company Name'] !== undefined ||
+          row['Recipient Type'] !== undefined ||
+          row['Tax ID / License Number'] !== undefined ||
+          row['Contribution Amount (EUR)'] !== undefined
+        );
+        const hasEuropeanIdentifiers = json.some((row: any) =>
+          Object.values(row as object).some(val => 
+            typeof val === 'string' && 
+            (/HCP-(ITA|FRA|POL|GER|SWI|SWE|BEL|SPA|IRE|UNI|AUS|NET)/i.test(val) || 
+             /^(Italy|France|Poland|Germany|Switzerland|Sweden|Belgium|Spain|Ireland|United Kingdom|Austria|Netherlands)$/i.test(val))
+          )
+        );
 
-        if (targetCountry === 'KR' && (hasItalianHeaders || hasColombianHeaders)) {
-          throw new Error("Validation Error: The uploaded file contains European or Colombian specific columns, but target is set to South Korea [KR]. Ingestion blocked to prevent data contamination.");
+        if (targetCountry === 'KR' && (hasItalianHeaders || hasColombianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers)) {
+          throw new Error("Validation Error: The uploaded file contains European or Colombian specific columns/disclosures, but target is set to South Korea [KR]. Ingestion blocked to prevent data contamination.");
         }
-        if ((targetCountry === 'IT' || targetCountry === 'FR') && (hasKoreanHeaders || hasColombianHeaders)) {
+        if ((targetCountry === 'IT' || targetCountry === 'FR' || targetCountry === 'EU') && (hasKoreanHeaders || hasColombianHeaders)) {
           throw new Error("Validation Error: The uploaded file contains Korean Won or Colombian Peso specific columns, but target is set to European registries.");
         }
-        if (targetCountry === 'CO' && (hasKoreanHeaders || hasItalianHeaders)) {
-          throw new Error("Validation Error: The uploaded file contains Korean Won or Italian specific columns, but target is set to Colombia [CO]. Ingestion blocked to prevent data contamination.");
+        if (targetCountry === 'CO' && (hasKoreanHeaders || hasItalianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers)) {
+          throw new Error("Validation Error: The uploaded file contains Korean Won, European, or Italian disclosures, but target is set to Colombia [CO]. Ingestion blocked to prevent data contamination.");
         }
 
         // Extract raw column headers from spreadsheet keys
@@ -1261,7 +1274,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                               {batch.sourceFileName}
                             </span>
                             <span className="badge" style={{ fontSize: '0.7rem', padding: '2px 6px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>
-                              {batch.countryCode === 'KR' ? '🇰🇷 KR' : batch.countryCode === 'IT' ? '🇮🇹 IT' : batch.countryCode === 'FR' ? '🇫🇷 FR' : batch.countryCode === 'CO' ? '🇨🇴 CO' : '🇺🇸 US'}
+                              {batch.countryCode === 'KR' ? '🇰🇷 KR' : batch.countryCode === 'IT' ? '🇮🇹 IT' : batch.countryCode === 'FR' ? '🇫🇷 FR' : batch.countryCode === 'CO' ? '🇨🇴 CO' : batch.countryCode === 'EU' ? '🇪🇺 EU' : '🇺🇸 US'}
                             </span>
                           </div>
                           
@@ -2293,7 +2306,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {['KR', 'IT', 'FR', 'US', 'CO'].map(code => {
+                      {['KR', 'IT', 'FR', 'US', 'CO', 'EU'].map(code => {
                         const countryTxs = commitTxs.filter(t => t.countryCode === code);
                         if (countryTxs.length === 0) return null;
 
@@ -2304,7 +2317,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                         return (
                           <tr key={code}>
                             <td style={{ fontWeight: 'bold' }}>
-                              {code === 'KR' ? '🇰🇷 South Korea [KR]' : code === 'IT' ? '🇮🇹 Italy [IT]' : code === 'FR' ? '🇫🇷 France [FR]' : code === 'US' ? '🇺🇸 USA [US]' : '🇨🇴 Colombia [CO]'}
+                              {code === 'KR' ? '🇰🇷 South Korea [KR]' : code === 'IT' ? '🇮🇹 Italy [IT]' : code === 'FR' ? '🇫🇷 France [FR]' : code === 'US' ? '🇺🇸 USA [US]' : code === 'CO' ? '🇨🇴 Colombia [CO]' : '🇪🇺 Europe [EU]'}
                             </td>
                             <td style={{ textAlign: 'center', color: 'var(--success)' }}>{compliantCount} Approved</td>
                             <td style={{ textAlign: 'center', color: flaggedCount > 0 ? 'var(--warning)' : 'var(--text-muted)', fontWeight: flaggedCount > 0 ? 'bold' : 'normal' }}>
