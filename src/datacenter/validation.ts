@@ -157,6 +157,27 @@ export const validateReportingCompleteness = (
     if (!purpose) {
       missingFields.push('Purpose of Value Transfer (EFPIA Code)');
     }
+  } else if (countryCode === 'JP') {
+    // Japan JPMA Guidelines & Fair Competition Code specifics
+    if (!licenseNumber) {
+      missingFields.push('Physician/Institution Registration Code');
+    }
+    // Must be RESEARCH_DEV, ACADEMIC_DONATION, LECTURE_FEES, PROMOTIONAL_INFO, or OTHER_MEALS
+    if (
+      category !== 'RESEARCH_DEV' &&
+      category !== 'ACADEMIC_DONATION' &&
+      category !== 'LECTURE_FEES' &&
+      category !== 'PROMOTIONAL_INFO' &&
+      category !== 'OTHER_MEALS'
+    ) {
+      missingFields.push('Category must be RESEARCH_DEV, ACADEMIC_DONATION, LECTURE_FEES, PROMOTIONAL_INFO or OTHER_MEALS');
+    }
+    if (!purpose) {
+      missingFields.push('Purpose of Value Transfer (JPMA Guidelines)');
+    }
+    if (!record.placeOfProvision || !record.placeOfProvision.trim()) {
+      missingFields.push('Place of Provision (City)');
+    }
   }
 
   return {

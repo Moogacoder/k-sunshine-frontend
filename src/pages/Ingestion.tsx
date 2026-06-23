@@ -20,7 +20,7 @@ const REQUIRED_SCHEMA_FIELDS = [
   { key: 'licenseNumber', label: 'License / ID Number', desc: 'NPI, Codice Fiscale, NIT, RPPS, etc.' },
   { key: 'workplaceInstitution', label: 'Workplace Institution', desc: 'Workplace hospital or clinic name' },
   { key: 'specialtyDepartment', label: 'Specialty Department', desc: 'Medical specialty or department' },
-  { key: 'categoryOfBenefit', label: 'Category of Spend', desc: 'Spend type/category' },
+  { key: 'spendCategory', label: 'Category of Spend', desc: 'Spend type/category' },
   { key: 'dateOfProvision', label: 'Provision Date', desc: 'Date of value transfer' },
   { key: 'placeOfProvision', label: 'Place of Provision', desc: 'City or state location' },
   { key: 'purposeOfBenefit', label: 'Purpose of Benefit', desc: 'Reason or event name' },
@@ -170,6 +170,7 @@ const Ingestion = () => {
             // Static fallback heuristics if AI misses it
             const fallback = headers.find(h => 
               h.toLowerCase().includes(field.key.toLowerCase()) || 
+              (field.key === 'spendCategory' && (h.toLowerCase().includes('category') || h.toLowerCase().includes('spend') || h.toLowerCase().includes('benefit') || h.toLowerCase().includes('tipologia') || h.toLowerCase().includes('tipo') || h.toLowerCase().includes('convenzione') || h.toLowerCase().includes('donazione') || h.toLowerCase().includes('desembolso'))) ||
               (field.key === 'recipientName' && (h.toLowerCase().includes('name') || h.toLowerCase().includes('nom') || h.toLowerCase().includes('beneficiario'))) ||
               (field.key === 'licenseNumber' && (h.toLowerCase().includes('license') || h.toLowerCase().includes('tax') || h.toLowerCase().includes('nit') || h.toLowerCase().includes('fiscale') || h.toLowerCase().includes('rpps') || h.toLowerCase().includes('npi'))) ||
               (field.key === 'amountOriginal' && (h.toLowerCase().includes('amount') || h.toLowerCase().includes('valore') || h.toLowerCase().includes('value') || h.toLowerCase().includes('importo') || h.toLowerCase().includes('valor')))

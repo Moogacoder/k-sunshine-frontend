@@ -159,7 +159,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
     }
 
     const map = mapRef.current;
-    const countries = ['KR', 'IT', 'FR', 'US', 'CO'];
+    const countries = ['KR', 'IT', 'FR', 'US', 'CO', 'JP'];
 
     // Coordinates mapping
     const coords: { [key: string]: [number, number] } = {
@@ -167,7 +167,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
       IT: [41.9028, 12.4964],  // Rome
       FR: [48.8566, 2.3522],   // Paris
       US: [38.9072, -77.0369], // Washington D.C.
-      CO: [4.7110, -74.0721]   // Bogotá
+      CO: [4.7110, -74.0721],  // Bogotá
+      JP: [35.6762, 139.6503]   // Tokyo
     };
 
     // Calculate max value for the active metric to normalize sizes
@@ -233,6 +234,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           navigate('/italy/dashboard');
         } else if (code === 'CO') {
           navigate('/colombia/dashboard');
+        } else if (code === 'JP') {
+          navigate('/japan/dashboard');
         } else {
           alert(`Compliance Portal: The local reporting database for ${stats.name} is active in staging. Standard operations are currently logged via the primary data load queues.`);
         }
@@ -346,15 +349,24 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
              /^(Italy|France|Poland|Germany|Switzerland|Sweden|Belgium|Spain|Ireland|United Kingdom|Austria|Netherlands)$/i.test(val))
           )
         );
+        const hasJapanHeaders = json.some((row: any) =>
+          row['Amount (JPY)'] !== undefined ||
+          row['JPMA Category'] !== undefined ||
+          row['医師免許番号'] !== undefined ||
+          row['Japan Sunshine'] !== undefined
+        );
 
-        if (targetCountry === 'KR' && (hasItalianHeaders || hasColombianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers)) {
-          throw new Error("Validation Error: The uploaded file contains European or Colombian specific columns/disclosures, but target is set to South Korea [KR]. Ingestion blocked to prevent data contamination.");
+        if (targetCountry === 'KR' && (hasItalianHeaders || hasColombianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers || hasJapanHeaders)) {
+          throw new Error("Validation Error: The uploaded file contains European, Colombian or Japanese specific columns/disclosures, but target is set to South Korea [KR]. Ingestion blocked to prevent data contamination.");
         }
-        if ((targetCountry === 'IT' || targetCountry === 'FR' || targetCountry === 'EU') && (hasKoreanHeaders || hasColombianHeaders)) {
-          throw new Error("Validation Error: The uploaded file contains Korean Won or Colombian Peso specific columns, but target is set to European registries.");
+        if ((targetCountry === 'IT' || targetCountry === 'FR' || targetCountry === 'EU') && (hasKoreanHeaders || hasColombianHeaders || hasJapanHeaders)) {
+          throw new Error("Validation Error: The uploaded file contains Korean Won, Colombian Peso or Japanese Yen specific columns, but target is set to European registries.");
         }
-        if (targetCountry === 'CO' && (hasKoreanHeaders || hasItalianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers)) {
-          throw new Error("Validation Error: The uploaded file contains Korean Won, European, or Italian disclosures, but target is set to Colombia [CO]. Ingestion blocked to prevent data contamination.");
+        if (targetCountry === 'CO' && (hasKoreanHeaders || hasItalianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers || hasJapanHeaders)) {
+          throw new Error("Validation Error: The uploaded file contains Korean Won, European, Italian or Japanese disclosures, but target is set to Colombia [CO]. Ingestion blocked to prevent data contamination.");
+        }
+        if (targetCountry === 'JP' && (hasKoreanHeaders || hasItalianHeaders || hasColombianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers)) {
+          throw new Error("Validation Error: The uploaded file contains other country specific disclosures, but target is set to Japan [JP]. Ingestion blocked to prevent data contamination.");
         }
 
         // Extract raw column headers from spreadsheet keys
@@ -508,6 +520,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
       if (originalCurrency === 'KRW' || targetTx.countryCode === 'KR') amountUSD = origAmount / 1300;
       else if (originalCurrency === 'EUR' || targetTx.countryCode === 'FR' || targetTx.countryCode === 'IT') amountUSD = origAmount * 1.09;
       else if (originalCurrency === 'COP' || targetTx.countryCode === 'CO') amountUSD = origAmount / 4000;
+      else if (originalCurrency === 'JPY' || targetTx.countryCode === 'JP') amountUSD = origAmount / 150;
       else if (originalCurrency === 'GBP') amountUSD = origAmount * 1.30;
       
       const updatedTxFields = {
@@ -534,7 +547,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
         ((targetTx.countryCode === 'FR' || targetTx.countryCode === 'IT') && origAmount > 150) ||
         (targetTx.countryCode === 'CO' && origAmount > 1500000) ||
         (targetTx.countryCode === 'US' && origAmount > 500) ||
-        (targetTx.countryCode === 'EU' && origAmount > 150);
+        (targetTx.countryCode === 'EU' && origAmount > 150) ||
+        (targetTx.countryCode === 'JP' && origAmount > 20000);
 
       const updatedValues: Partial<UniversalTransaction> = {
         recipientType: updatedTxFields.recipientType as any,
@@ -797,6 +811,38 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
         'Contribution Amount (EUR)': 5000
       }];
       filename = 'template_europe_efpia.xlsx';
+    } else if (countryCode === 'JP') {
+      headers = [
+        'Recipient Type', 'Recipient Name', 'License Number', 
+        'Workplace', 'Specialty', 'Category of Benefit', 
+        'Date of Provision', 'Place', 'Purpose', 'Details', 'Amount (JPY)'
+      ];
+      sampleData = [{
+        'Recipient Type': 'HCP',
+        'Recipient Name': 'Dr. Taro Yamada (山田 太郎)',
+        'License Number': 'JP-8849201',
+        'Workplace': 'Tokyo University Hospital',
+        'Specialty': 'Oncology',
+        'Category of Benefit': 'LECTURE_FEES',
+        'Date of Provision': '2026-03-22',
+        'Place': 'Tokyo',
+        'Purpose': 'JPMA Oncology Symposium Lecture',
+        'Details': 'Speaker Fee',
+        'Amount (JPY)': 50000
+      }, {
+        'Recipient Type': 'HCO',
+        'Recipient Name': 'Japan Cancer Association',
+        'License Number': 'JP-1192834',
+        'Workplace': 'Association Office',
+        'Specialty': '',
+        'Category of Benefit': 'ACADEMIC_DONATION',
+        'Date of Provision': '2026-04-10',
+        'Place': 'Kyoto',
+        'Purpose': 'Annual JCA Meeting Support',
+        'Details': 'Donation',
+        'Amount (JPY)': 1000000
+      }];
+      filename = 'template_japan_jpma.xlsx';
     }
 
     const worksheet = XLSX.utils.json_to_sheet(sampleData, { header: headers });
@@ -894,6 +940,23 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
       reportsLabel = 'EFPIA Reports';
       try {
         const cached = localStorage.getItem('eu_efpia_archived_reports');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) {
+            reports = parsed.filter((r: any) => String(r.reportYear) === '2026').length;
+          }
+        }
+      } catch {
+        reports = 0;
+      }
+    } else if (codeUpper === 'JP') {
+      name = 'Japan';
+      flag = '🇯🇵';
+      color = '#ec4899'; // Pink
+      coords = { x: 745, y: 140 };
+      reportsLabel = 'JPMA Disclosures';
+      try {
+        const cached = localStorage.getItem('jp_transparency_archived_reports');
         if (cached) {
           const parsed = JSON.parse(cached);
           if (Array.isArray(parsed)) {
@@ -1422,7 +1485,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                   ((tx.countryCode === 'FR' || tx.countryCode === 'IT') && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 150) ||
                                   (tx.countryCode === 'CO' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 1500000) ||
                                   (tx.countryCode === 'US' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 500) ||
-                                  (tx.countryCode === 'EU' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 150);
+                                  (tx.countryCode === 'EU' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 150) ||
+                                  (tx.countryCode === 'JP' && (isEditing ? parseAmount(editFormData.amountOriginal) : tx.amountOriginal) > 20000);
                                 
                                 return (
                                   <tr key={tx.id} style={{ background: isEditing ? 'rgba(124, 58, 237, 0.01)' : 'transparent', borderBottom: '1px solid var(--border-color)' }}>
@@ -1497,7 +1561,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                               (tx.countryCode === 'IT' && ['CONVENZIONI', 'DONAZIONI'].includes(editFormData.spendCategory || '')) ||
                                               (tx.countryCode === 'CO' && ['HONORARIOS', 'REUNIONES', 'VIAJES', 'DONACIONES'].includes(editFormData.spendCategory || '')) ||
                                               (tx.countryCode === 'EU' && ['DONATIONS_AND_GRANTS', 'EVENT_CONTRIBUTION', 'FEES_FOR_SERVICE', 'RESEARCH_AND_DEVELOPMENT'].includes(editFormData.spendCategory || '')) ||
-                                              (!['KR', 'IT', 'CO', 'EU'].includes(tx.countryCode) && ['PRESENTATION', 'SAMPLES', 'CONSULTANCY', 'CONVENZIONI', 'DONAZIONI', 'CONFERENCE_SUPPORT', 'HONORARIOS', 'REUNIONES', 'VIAJES'].includes(editFormData.spendCategory || ''))
+                                              (tx.countryCode === 'JP' && ['RESEARCH_DEV', 'ACADEMIC_DONATION', 'LECTURE_FEES', 'PROMOTIONAL_INFO', 'OTHER_MEALS'].includes(editFormData.spendCategory || '')) ||
+                                              (!['KR', 'IT', 'CO', 'EU', 'JP'].includes(tx.countryCode) && ['PRESENTATION', 'SAMPLES', 'CONSULTANCY', 'CONVENZIONI', 'DONAZIONI', 'CONFERENCE_SUPPORT', 'HONORARIOS', 'REUNIONES', 'VIAJES'].includes(editFormData.spendCategory || ''))
                                                 ? (editFormData.spendCategory || '')
                                                 : 'CUSTOM'
                                             }
@@ -1538,7 +1603,16 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                                 <option value="RESEARCH_AND_DEVELOPMENT">RESEARCH & DEVELOPMENT</option>
                                               </>
                                             )}
-                                            {!['KR', 'IT', 'CO', 'EU'].includes(tx.countryCode) && (
+                                            {tx.countryCode === 'JP' && (
+                                              <>
+                                                <option value="RESEARCH_DEV">RESEARCH & DEVELOPMENT</option>
+                                                <option value="ACADEMIC_DONATION">ACADEMIC DONATION</option>
+                                                <option value="LECTURE_FEES">LECTURING / CONSULTING FEES</option>
+                                                <option value="PROMOTIONAL_INFO">PROMOTIONAL INFO EXPENSES</option>
+                                                <option value="OTHER_MEALS">OTHER EXPENSES / MEALS</option>
+                                              </>
+                                            )}
+                                            {!['KR', 'IT', 'CO', 'EU', 'JP'].includes(tx.countryCode) && (
                                               <>
                                                 <option value="PRESENTATION">PRESENTATION</option>
                                                 <option value="SAMPLES">SAMPLES</option>
@@ -1938,7 +2012,8 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                 { code: 'FR', name: 'France', flag: '🇫🇷' },
                 { code: 'US', name: 'United States', flag: '🇺🇸' },
                 { code: 'CO', name: 'Colombia', flag: '🇨🇴' },
-                { code: 'EU', name: 'Europe (EFPIA)', flag: '🇪🇺' }
+                { code: 'EU', name: 'Europe (EFPIA)', flag: '🇪🇺' },
+                { code: 'JP', name: 'Japan', flag: '🇯🇵' }
               ].map(tpl => (
                 <button
                   key={tpl.code}
@@ -1990,6 +2065,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                   <option value="US">🇺🇸 United States (CMS Open Payments)</option>
                   <option value="CO">🇨🇴 Colombia (Resolution 2881 RTVSS)</option>
                   <option value="EU">🇪🇺 Europe (EFPIA Disclosure Code)</option>
+                  <option value="JP">🇯🇵 Japan (JPMA Transparency Guidelines)</option>
                 </select>
               </div>
               <div style={{ width: '120px' }}>

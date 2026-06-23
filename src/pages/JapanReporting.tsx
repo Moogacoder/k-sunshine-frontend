@@ -11,7 +11,7 @@ interface Transaction {
   dateOfProvision: string;
   placeOfProvision: string;
   purposeOfBenefit: string;
-  amountEUR: number;
+  amountJPY: number;
   currency: string;
   details: string;
   entity: {
@@ -33,7 +33,7 @@ interface ArchivedReport {
   createdAt: string;
 }
 
-const EFPIAReporting = () => {
+const JapanReporting = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [archivedReports, setArchivedReports] = useState<ArchivedReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,7 +57,7 @@ const EFPIAReporting = () => {
     setShowAiStatement(true);
     setIsStatementLoading(true);
     try {
-      const draft = await APIGateway.getComplianceStatement('EU', 2026);
+      const draft = await APIGateway.getComplianceStatement('JP', 2026);
       setStatementContent(draft);
     } catch (err) {
       console.error("Failed to generate compliance statement:", err);
@@ -69,15 +69,14 @@ const EFPIAReporting = () => {
 
   const fetchData = async () => {
     try {
-      // 1. Fetch transactions from the Central Data Center's Europe stream feeds
-      const euSpend = await APIGateway.getTransactions('EU');
-      const mappedTx = euSpend.map(t => ({
+      const jpSpend = await APIGateway.getTransactions('JP');
+      const mappedTx = jpSpend.map(t => ({
         id: t.id,
         categoryOfBenefit: t.spendCategory,
         dateOfProvision: t.dateOfProvision,
         placeOfProvision: t.placeOfProvision,
         purposeOfBenefit: t.purposeOfBenefit,
-        amountEUR: t.amountOriginal,
+        amountJPY: t.amountOriginal,
         currency: t.currencyOriginal,
         details: t.details,
         entity: {
@@ -90,15 +89,14 @@ const EFPIAReporting = () => {
       }));
       setTransactions(mappedTx);
 
-      // 2. Fetch reports from local storage
-      const cached = localStorage.getItem('eu_efpia_archived_reports');
+      const cached = localStorage.getItem('jp_transparency_archived_reports');
       if (cached) {
         setArchivedReports(JSON.parse(cached));
       } else {
         const seedArchives: ArchivedReport[] = [
           {
-            id: 'ARC-EU-SEED-001',
-            templateName: 'EFPIA Template 3: Donations and Grants to HCOs',
+            id: 'ARC-JP-SEED-001',
+            templateName: 'JPMA Template 3: Lecturing & Consulting Fees',
             reportYear: '2026',
             generatedBy: 'SYSTEM',
             payload: JSON.stringify([]),
@@ -107,10 +105,10 @@ const EFPIAReporting = () => {
           }
         ];
         setArchivedReports(seedArchives);
-        localStorage.setItem('eu_efpia_archived_reports', JSON.stringify(seedArchives));
+        localStorage.setItem('jp_transparency_archived_reports', JSON.stringify(seedArchives));
       }
     } catch (err) {
-      console.error("Failed to fetch EFPIA reports data:", err);
+      console.error("Failed to fetch JPMA reports data:", err);
     } finally {
       setIsLoading(false);
     }
@@ -124,7 +122,7 @@ const EFPIAReporting = () => {
     try {
       const currentYear = new Date().getFullYear().toString();
       const newReport: ArchivedReport = {
-        id: `ARC-EU-${Date.now()}`,
+        id: `ARC-JP-${Date.now()}`,
         templateName,
         reportYear: currentYear,
         generatedBy: 'ADMIN',
@@ -135,9 +133,9 @@ const EFPIAReporting = () => {
       
       const updated = [newReport, ...archivedReports];
       setArchivedReports(updated);
-      localStorage.setItem('eu_efpia_archived_reports', JSON.stringify(updated));
+      localStorage.setItem('jp_transparency_archived_reports', JSON.stringify(updated));
     } catch (err) {
-      console.error("Failed to archive EFPIA report:", err);
+      console.error("Failed to archive Japan report:", err);
     }
   };
 
@@ -147,75 +145,80 @@ const EFPIAReporting = () => {
 
     switch (templateNumber) {
       case 1:
-        filename = "EFPIA_Template_1_Event_Sponsorships.csv";
+        filename = "JPMA_Template_1_RD_Expenses.csv";
         dataToExport = transactions
-          .filter(t => {
-            const cat = (t.categoryOfBenefit || '').toLowerCase();
-            return cat === 'event_contribution' || cat.includes('event') || cat.includes('sponsorship') || cat.includes('accommodation') || cat.includes('travel') || cat.includes('congress') || cat.includes('meeting') || cat.includes('contribution');
-          })
+          .filter(t => (t.categoryOfBenefit || '').toLowerCase() === 'research_dev')
           .map(t => ({
-            'Company Name': 'Qordata Europe (Demo)',
-            'Recipient Name': t.entity.recipientName,
-            'Recipient Type': t.entity.recipientType,
-            'Tax ID / License Number': t.entity.licenseNumber,
-            'Affiliated Healthcare Institution': t.entity.workplaceInstitution,
-            'Date of Value Transfer': new Date(t.dateOfProvision).toLocaleDateString('en-GB'),
-            'Purpose (Meeting/Congress Name)': t.purposeOfBenefit,
-            'Contribution Amount (EUR)': t.amountEUR
+            'Company Name': 'Qordata Japan (Demo)',
+            'Recipient Institution/HCO': t.entity.recipientName,
+            'Registration Code': t.entity.licenseNumber,
+            'Affiliation': t.entity.workplaceInstitution,
+            'Clinical Trial / Study Name': t.purposeOfBenefit,
+            'Phase/Details': t.details,
+            'Date of Transfer': new Date(t.dateOfProvision).toLocaleDateString('ja-JP'),
+            'R&D Spend (JPY)': t.amountJPY
           }));
         break;
 
       case 2:
-        filename = "EFPIA_Template_2_Fees_for_Service.csv";
+        filename = "JPMA_Template_2_Academic_Donations.csv";
         dataToExport = transactions
-          .filter(t => {
-            const cat = (t.categoryOfBenefit || '').toLowerCase();
-            return cat === 'fees_for_service' || cat.includes('fee') || cat.includes('service') || cat.includes('consultancy') || cat.includes('honorarium');
-          })
+          .filter(t => (t.categoryOfBenefit || '').toLowerCase() === 'academic_donation')
           .map(t => ({
-            'Company Name': 'Qordata Europe (Demo)',
-            'HCP Name': t.entity.recipientName,
-            'Registration Number': t.entity.licenseNumber,
-            'Consultancy/Service Description': t.purposeOfBenefit,
-            'Related Expenses (Travel/Lodging)': t.details,
-            'Date of Transfer': new Date(t.dateOfProvision).toLocaleDateString('en-GB'),
-            'Honoraria / Fees (EUR)': t.amountEUR
+            'Company Name': 'Qordata Japan (Demo)',
+            'Recipient Organization': t.entity.recipientName,
+            'HCO Registration Code': t.entity.licenseNumber,
+            'Purpose of Donation': t.purposeOfBenefit,
+            'Project Details': t.details,
+            'Date of Donation': new Date(t.dateOfProvision).toLocaleDateString('ja-JP'),
+            'Amount (JPY)': t.amountJPY
           }));
         break;
 
       case 3:
-        filename = "EFPIA_Template_3_Donations_Grants.csv";
+        filename = "JPMA_Template_3_Lecture_Fees.csv";
         dataToExport = transactions
-          .filter(t => {
-            const cat = (t.categoryOfBenefit || '').toLowerCase();
-            return cat === 'donations_and_grants' || cat.includes('donation') || cat.includes('grant');
-          })
+          .filter(t => (t.categoryOfBenefit || '').toLowerCase() === 'lecture_fees')
           .map(t => ({
-            'Company Name': 'Qordata Europe (Demo)',
-            'Recipient HCO': t.entity.recipientName,
-            'HCO Tax Number': t.entity.licenseNumber,
-            'Description of Grant/Donation': t.purposeOfBenefit,
-            'Project / Equipment Details': t.details,
-            'Date of Grant': new Date(t.dateOfProvision).toLocaleDateString('en-GB'),
-            'Donation Value (EUR)': t.amountEUR
+            'Company Name': 'Qordata Japan (Demo)',
+            'HCP Name': t.entity.recipientName,
+            'License Number / ID': t.entity.licenseNumber,
+            'Affiliation': t.entity.workplaceInstitution,
+            'Specialty': t.entity.specialtyDepartment,
+            'Consulting / Lecture Description': t.purposeOfBenefit,
+            'Details': t.details,
+            'Date of Provision': new Date(t.dateOfProvision).toLocaleDateString('ja-JP'),
+            'Lecture Fees (JPY)': t.amountJPY
           }));
         break;
 
       case 4:
-        filename = "EFPIA_Template_4_Research_Development.csv";
+        filename = "JPMA_Template_4_Promotional_Info.csv";
         dataToExport = transactions
-          .filter(t => {
-            const cat = (t.categoryOfBenefit || '').toLowerCase();
-            return cat === 'research_and_development' || cat.includes('research') || cat.includes('clinical') || cat.includes('study') || cat.includes('trial') || cat.includes('development');
-          })
+          .filter(t => (t.categoryOfBenefit || '').toLowerCase() === 'promotional_info')
           .map(t => ({
-            'Company Name': 'Qordata Europe (Demo)',
-            'Recipient Institution/HCO': t.entity.recipientName,
-            'Tax ID / Registration Number': t.entity.licenseNumber,
-            'Clinical Trial / Study Name': t.purposeOfBenefit || 'Clinical Trial',
-            'Study Phase / Details': t.details || 'R&D Study Support',
-            'Date of Transfer': new Date(t.dateOfProvision).toLocaleDateString('en-GB'),
-            'R&D Spend (EUR)': t.amountEUR
+            'Company Name': 'Qordata Japan (Demo)',
+            'Recipient / Meeting Name': t.entity.recipientName,
+            'Information Dissemination Details': t.purposeOfBenefit,
+            'Materials Details': t.details,
+            'Date': new Date(t.dateOfProvision).toLocaleDateString('ja-JP'),
+            'Cost (JPY)': t.amountJPY
+          }));
+        break;
+
+      case 5:
+        filename = "JPMA_Template_5_Other_Meals.csv";
+        dataToExport = transactions
+          .filter(t => (t.categoryOfBenefit || '').toLowerCase() === 'other_meals')
+          .map(t => ({
+            'Company Name': 'Qordata Japan (Demo)',
+            'HCP Name': t.entity.recipientName,
+            'Affiliated Institution': t.entity.workplaceInstitution,
+            'Meeting/Event Purpose': t.purposeOfBenefit,
+            'Date of Provision': new Date(t.dateOfProvision).toLocaleDateString('ja-JP'),
+            'Place': t.placeOfProvision,
+            'Expense Details': t.details,
+            'Amount (JPY)': t.amountJPY
           }));
         break;
     }
@@ -223,20 +226,22 @@ const EFPIAReporting = () => {
     if (dataToExport.length === 0) {
       const emptyRow: any = {};
       if (templateNumber === 1) {
-        emptyRow['Company Name'] = ''; emptyRow['Recipient Name'] = ''; emptyRow['Recipient Type'] = ''; emptyRow['Tax ID / License Number'] = ''; emptyRow['Affiliated Healthcare Institution'] = ''; emptyRow['Date of Value Transfer'] = ''; emptyRow['Purpose (Meeting/Congress Name)'] = ''; emptyRow['Contribution Amount (EUR)'] = '';
+        emptyRow['Company Name'] = ''; emptyRow['Recipient Institution/HCO'] = ''; emptyRow['Registration Code'] = ''; emptyRow['Affiliation'] = ''; emptyRow['Clinical Trial / Study Name'] = ''; emptyRow['Phase/Details'] = ''; emptyRow['Date of Transfer'] = ''; emptyRow['R&D Spend (JPY)'] = '';
       } else if (templateNumber === 2) {
-        emptyRow['Company Name'] = ''; emptyRow['HCP Name'] = ''; emptyRow['Registration Number'] = ''; emptyRow['Consultancy/Service Description'] = ''; emptyRow['Related Expenses (Travel/Lodging)'] = ''; emptyRow['Date of Transfer'] = ''; emptyRow['Honoraria / Fees (EUR)'] = '';
+        emptyRow['Company Name'] = ''; emptyRow['Recipient Organization'] = ''; emptyRow['HCO Registration Code'] = ''; emptyRow['Purpose of Donation'] = ''; emptyRow['Project Details'] = ''; emptyRow['Date of Donation'] = ''; emptyRow['Amount (JPY)'] = '';
       } else if (templateNumber === 3) {
-        emptyRow['Company Name'] = ''; emptyRow['Recipient HCO'] = ''; emptyRow['HCO Tax Number'] = ''; emptyRow['Description of Grant/Donation'] = ''; emptyRow['Project / Equipment Details'] = ''; emptyRow['Date of Grant'] = ''; emptyRow['Donation Value (EUR)'] = '';
+        emptyRow['Company Name'] = ''; emptyRow['HCP Name'] = ''; emptyRow['License Number / ID'] = ''; emptyRow['Affiliation'] = ''; emptyRow['Specialty'] = ''; emptyRow['Consulting / Lecture Description'] = ''; emptyRow['Details'] = ''; emptyRow['Date of Provision'] = ''; emptyRow['Lecture Fees (JPY)'] = '';
       } else if (templateNumber === 4) {
-        emptyRow['Company Name'] = ''; emptyRow['Recipient Institution/HCO'] = ''; emptyRow['Tax ID / Registration Number'] = ''; emptyRow['Clinical Trial / Study Name'] = ''; emptyRow['Study Phase / Details'] = ''; emptyRow['Date of Transfer'] = ''; emptyRow['R&D Spend (EUR)'] = '';
+        emptyRow['Company Name'] = ''; emptyRow['Recipient / Meeting Name'] = ''; emptyRow['Information Dissemination Details'] = ''; emptyRow['Materials Details'] = ''; emptyRow['Date'] = ''; emptyRow['Cost (JPY)'] = '';
+      } else if (templateNumber === 5) {
+        emptyRow['Company Name'] = ''; emptyRow['HCP Name'] = ''; emptyRow['Affiliated Institution'] = ''; emptyRow['Meeting/Event Purpose'] = ''; emptyRow['Date of Provision'] = ''; emptyRow['Place'] = ''; emptyRow['Expense Details'] = ''; emptyRow['Amount (JPY)'] = '';
       }
       dataToExport = [emptyRow];
     }
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "EFPIA Disclosures");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "JPMA Disclosures");
     XLSX.writeFile(workbook, filename, { bookType: 'csv' });
 
     // Save to the archive database
@@ -249,14 +254,13 @@ const EFPIAReporting = () => {
       const filename = `Archived_${report.templateName.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date(report.createdAt).toISOString().split('T')[0]}.csv`;
       const worksheet = XLSX.utils.json_to_sheet(dataToExport);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "EFPIA Disclosures");
+      XLSX.utils.book_append_sheet(workbook, worksheet, "JPMA Disclosures");
       XLSX.writeFile(workbook, filename, { bookType: 'csv' });
     } catch (err) {
-      console.error("Failed to re-download EFPIA archive:", err);
+      console.error("Failed to re-download Japan archive:", err);
     }
   };
 
-  // PDF Preview Cleanups to prevent memory leak
   useEffect(() => {
     return () => {
       if (previewPdfUrl) {
@@ -283,86 +287,84 @@ const EFPIAReporting = () => {
         let totalAmount = 0;
 
         if (templateNumber === 1) {
-          filteredTx = transactions.filter(t => {
-            const cat = (t.categoryOfBenefit || '').toLowerCase();
-            return cat === 'event_contribution' || cat.includes('event') || cat.includes('sponsorship') || cat.includes('accommodation') || cat.includes('travel') || cat.includes('congress') || cat.includes('meeting') || cat.includes('contribution');
-          });
-          columns = ['Company', 'Recipient', 'Recipient Type', 'Tax ID/License', 'Healthcare Institution', 'Transfer Date', 'Congress Purpose', 'Amount (EUR)'];
+          filteredTx = transactions.filter(t => (t.categoryOfBenefit || '').toLowerCase() === 'research_dev');
+          columns = ['Company', 'Institution/HCO', 'Reg Code', 'Affiliation', 'Clinical Trial / Study Name', 'Transfer Date', 'Amount (JPY)'];
           bodyRows = filteredTx.map(t => [
-            'Qordata Europe',
+            'Qordata Japan',
             t.entity.recipientName,
-            t.entity.recipientType,
             t.entity.licenseNumber || 'N/A',
             t.entity.workplaceInstitution || 'N/A',
-            new Date(t.dateOfProvision).toLocaleDateString('en-GB'),
-            t.purposeOfBenefit || 'Event Support',
-            'EUR ' + t.amountEUR.toLocaleString('de-DE', { minimumFractionDigits: 2 })
+            t.purposeOfBenefit || 'Clinical Trial',
+            new Date(t.dateOfProvision).toLocaleDateString('ja-JP'),
+            'JPY ¥' + t.amountJPY.toLocaleString()
           ]);
         } else if (templateNumber === 2) {
-          filteredTx = transactions.filter(t => {
-            const cat = (t.categoryOfBenefit || '').toLowerCase();
-            return cat === 'fees_for_service' || cat.includes('fee') || cat.includes('service') || cat.includes('consultancy') || cat.includes('honorarium');
-          });
-          columns = ['Company', 'HCP Name', 'Registration ID', 'Service Description', 'Lodging/Travel Expenses', 'Provision Date', 'Honoraria (EUR)'];
+          filteredTx = transactions.filter(t => (t.categoryOfBenefit || '').toLowerCase() === 'academic_donation');
+          columns = ['Company', 'Recipient Organization', 'Registration Code', 'Purpose of Donation', 'Grant Details', 'Date of Donation', 'Amount (JPY)'];
           bodyRows = filteredTx.map(t => [
-            'Qordata Europe',
+            'Qordata Japan',
             t.entity.recipientName,
             t.entity.licenseNumber || 'N/A',
-            t.purposeOfBenefit || 'Consultancy Service',
+            t.purposeOfBenefit || 'Educational Support',
             t.details || 'N/A',
-            new Date(t.dateOfProvision).toLocaleDateString('en-GB'),
-            'EUR ' + t.amountEUR.toLocaleString('de-DE', { minimumFractionDigits: 2 })
+            new Date(t.dateOfProvision).toLocaleDateString('ja-JP'),
+            'JPY ¥' + t.amountJPY.toLocaleString()
           ]);
         } else if (templateNumber === 3) {
-          filteredTx = transactions.filter(t => {
-            const cat = (t.categoryOfBenefit || '').toLowerCase();
-            return cat === 'donations_and_grants' || cat.includes('donation') || cat.includes('grant');
-          });
-          columns = ['Company', 'Recipient HCO', 'HCO Tax Number', 'Donation Description', 'Equipment Details', 'Date of Grant', 'Value (EUR)'];
+          filteredTx = transactions.filter(t => (t.categoryOfBenefit || '').toLowerCase() === 'lecture_fees');
+          columns = ['Company', 'HCP Name', 'License/ID', 'Affiliated Workplace', 'Lecture / Consulting Description', 'Date', 'Lecture Fees (JPY)'];
           bodyRows = filteredTx.map(t => [
-            'Qordata Europe',
+            'Qordata Japan',
             t.entity.recipientName,
             t.entity.licenseNumber || 'N/A',
-            t.purposeOfBenefit || 'Donation / Grant Support',
-            t.details || 'N/A',
-            new Date(t.dateOfProvision).toLocaleDateString('en-GB'),
-            'EUR ' + t.amountEUR.toLocaleString('de-DE', { minimumFractionDigits: 2 })
+            t.entity.workplaceInstitution || 'N/A',
+            t.purposeOfBenefit || 'Oncology Lecture',
+            new Date(t.dateOfProvision).toLocaleDateString('ja-JP'),
+            'JPY ¥' + t.amountJPY.toLocaleString()
           ]);
         } else if (templateNumber === 4) {
-          filteredTx = transactions.filter(t => {
-            const cat = (t.categoryOfBenefit || '').toLowerCase();
-            return cat === 'research_and_development' || cat.includes('research') || cat.includes('clinical') || cat.includes('study') || cat.includes('trial') || cat.includes('development');
-          });
-          columns = ['Company', 'Recipient Institution', 'Tax ID/Reg Number', 'Study / Trial Name', 'Study Phase/Details', 'Transfer Date', 'Amount (EUR)'];
+          filteredTx = transactions.filter(t => (t.categoryOfBenefit || '').toLowerCase() === 'promotional_info');
+          columns = ['Company', 'Recipient / Meeting Name', 'Information Details', 'Materials Details', 'Date of Transfer', 'Cost (JPY)'];
           bodyRows = filteredTx.map(t => [
-            'Qordata Europe',
+            'Qordata Japan',
             t.entity.recipientName,
-            t.entity.licenseNumber || 'N/A',
-            t.purposeOfBenefit || 'Clinical Trial',
-            t.details || 'R&D Study Support',
-            new Date(t.dateOfProvision).toLocaleDateString('en-GB'),
-            'EUR ' + t.amountEUR.toLocaleString('de-DE', { minimumFractionDigits: 2 })
+            t.purposeOfBenefit || 'Educational Meeting',
+            t.details || 'N/A',
+            new Date(t.dateOfProvision).toLocaleDateString('ja-JP'),
+            'JPY ¥' + t.amountJPY.toLocaleString()
+          ]);
+        } else if (templateNumber === 5) {
+          filteredTx = transactions.filter(t => (t.categoryOfBenefit || '').toLowerCase() === 'other_meals');
+          columns = ['Company', 'HCP Name', 'Workplace', 'Meeting/Event Purpose', 'Date', 'Place', 'Expense Details', 'Amount (JPY)'];
+          bodyRows = filteredTx.map(t => [
+            'Qordata Japan',
+            t.entity.recipientName,
+            t.entity.workplaceInstitution || 'N/A',
+            t.purposeOfBenefit || 'Scientific Advisory Meeting',
+            new Date(t.dateOfProvision).toLocaleDateString('ja-JP'),
+            t.placeOfProvision || 'N/A',
+            t.details || 'N/A',
+            'JPY ¥' + t.amountJPY.toLocaleString()
           ]);
         }
 
-        totalAmount = filteredTx.reduce((sum, t) => sum + t.amountEUR, 0);
+        totalAmount = filteredTx.reduce((sum, t) => sum + t.amountJPY, 0);
 
-        // 1. Brand Header Banner (deep Blue RGB 0, 51, 153 for EU EFPIA branding)
-        doc.setFillColor(0, 51, 153); 
+        // Brand Header Banner (Pink RGB 236, 72, 153 for Japan portal branding)
+        doc.setFillColor(236, 72, 153); 
         doc.rect(0, 0, 297, 28, 'F');
         
-        // Header Text
         doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(14);
-        doc.text('EUROPEAN PHARMACEUTICAL TRANSPARENCY REGISTRY — EFPIA DISCLOSURE CODE', 14, 12);
+        doc.text('JAPAN PHARMACEUTICAL TRANSPARENCY REGISTRY — JPMA GUIDELINES', 14, 12);
         
-        doc.setTextColor(191, 219, 254); // light blue-200 accent
+        doc.setTextColor(251, 207, 232); // light pink-200 accent
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8.5);
-        doc.text('STATUTORY VALUE TRANSFER LEDGER IN COMPLIANCE WITH EFPIA CODE OF PRACTICE (HCP / HCO TRANSPARENCY DISCLOSURES)', 14, 18);
+        doc.text('STATUTORY VALUE TRANSFER LEDGER IN COMPLIANCE WITH JPMA TRANSPARENCY GUIDELINES (HCP / HCO TRANSPARENCY DISCLOSURES)', 14, 18);
 
-        doc.setFillColor(30, 64, 175); 
+        doc.setFillColor(219, 39, 119); 
         doc.rect(0, 26, 297, 2, 'F');
 
         // Executive Summary Card
@@ -383,29 +385,28 @@ const EFPIAReporting = () => {
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(30, 41, 59); 
         doc.text(title.toUpperCase(), 65, 42);
-        doc.text(new Date().toLocaleString('en-GB'), 65, 48);
+        doc.text(new Date().toLocaleString('ja-JP'), 65, 48);
         doc.setTextColor(22, 163, 74); // success green
         doc.setFont('helvetica', 'bold');
-        doc.text('COMPLIANT & SECURE (EFPIA DE-IDENTIFIED LEGISLATIVE PUBLIC RECORD)', 65, 54);
+        doc.text('COMPLIANT & SECURE (JPMA LEGISLATIVE PUBLIC RECORD)', 65, 54);
         doc.setTextColor(30, 41, 59); 
         doc.setFont('helvetica', 'normal');
-        doc.text('MANDATORY RETENTION RECORD OF 3 YEARS (EFPIA PUBLIC STATUTORY ARCHIVE)', 65, 60);
+        doc.text('MANDATORY RETENTION RECORD OF 3 YEARS (JPMA PUBLIC STATUTORY ARCHIVE)', 65, 60);
 
         // Total sum
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(100, 116, 139); 
         doc.text('CONSOLIDATED DISCLOSURE VALUE', 200, 42);
         
-        doc.setTextColor(0, 51, 153); 
+        doc.setTextColor(236, 72, 153); 
         doc.setFontSize(16);
-        doc.text('EUR €' + totalAmount.toLocaleString('de-DE', { minimumFractionDigits: 2 }), 200, 50);
+        doc.text('JPY ¥' + totalAmount.toLocaleString(), 200, 50);
 
         doc.setTextColor(100, 116, 139); 
         doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
         doc.text('Total records: ' + filteredTx.length + ' compliant rows', 200, 56);
 
-        // Generate dynamic table or empty fallback
         if (bodyRows.length === 0) {
           doc.setFillColor(254, 242, 242); 
           doc.rect(14, 74, 269, 40, 'F');
@@ -421,7 +422,7 @@ const EFPIAReporting = () => {
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(9);
           doc.text('No transparency transactions corresponding to this category were identified for the active fiscal period.', 20, 96);
-          doc.text('Please load your regional spend spreadsheet in the Ingestion Portal to execute EU standard normalization.', 20, 102);
+          doc.text('Please load your regional spend spreadsheet in the Ingestion Portal to execute Japan standard normalization.', 20, 102);
         } else {
           autoTable(doc, {
             startY: 74,
@@ -464,8 +465,8 @@ const EFPIAReporting = () => {
           doc.setFontSize(7.5);
           doc.setTextColor(148, 163, 184); 
           doc.setFont('helvetica', 'normal');
-          doc.text('EFPIA EUROPE STATUTORY DISCLOSURE PREVIEW | GENERATED DIRECTLY BY THE QORDATA COMPLIANCE MODULE', 14, 199);
-          doc.text('CONFORMITY WITH EFPIA DISCLOSURE CODE REGULATIONS | RETENTION TIME REQUIREMENTS FOR AUDIT RESTRICTED', 14, 203);
+          doc.text('JPMA JAPAN STATUTORY DISCLOSURE PREVIEW | GENERATED DIRECTLY BY THE QORDATA COMPLIANCE MODULE', 14, 199);
+          doc.text('CONFORMITY WITH JPMA TRANSPARENCY GUIDELINES | RETENTION TIME REQUIREMENTS FOR AUDIT RESTRICTED', 14, 203);
           
           doc.setFont('helvetica', 'bold');
           doc.text('PAGE ' + i + ' OF ' + totalPages, 270, 199);
@@ -481,7 +482,7 @@ const EFPIAReporting = () => {
         setPreviewPdfUrl(url);
         setIsPreviewing(true);
       } catch (err) {
-        console.error('Failed to generate EFPIA PDF:', err);
+        console.error('Failed to generate Japan PDF:', err);
         alert('An error occurred during report construction.');
       } finally {
         setIsGeneratingPdf(false);
@@ -490,30 +491,30 @@ const EFPIAReporting = () => {
   };
 
   const templates = [
-    { id: 1, title: 'Template 1: Event Sponsorships & Costs', desc: 'Contributions to Event Costs including sponsorship packages, registration fees, travel and accommodation provided to HCPs.' },
-    { id: 2, title: 'Template 2: Fees for Service & Consultancy', desc: 'Disclosures regarding consultancy agreements, honoraria payments, speaker fees, and related travel and lodging expenses.' },
-    { id: 3, title: 'Template 3: Donations and Grants to HCOs', desc: 'Physical goods, educational grants, clinical equipment, or direct financial support provided strictly to Healthcare Organizations.' },
-    { id: 4, title: 'Template 4: Research and Development Spend', desc: 'Statutory research & development spend, clinical trial funding, and study-related investigator fees.' }
+    { id: 1, title: 'Template 1: R&D Expenses', desc: 'Joint research funding, clinical trial costs, post-marketing clinical trials, and side-effect reporting support.' },
+    { id: 2, title: 'Template 2: Academic Donations', desc: 'Financial donations for academic promotion, academic society support, and co-sponsored seminars.' },
+    { id: 3, title: 'Template 3: Lecturing & Consulting', desc: 'Lecturing fees, consulting service contracts, authoring/writing fees, and advisory panels.' },
+    { id: 4, title: 'Template 4: Promotional Information', desc: 'Costs of promotional materials, printing/distributing medical information, and educational briefings.' },
+    { id: 5, title: 'Template 5: Other Expenses & Meals', desc: 'Meetings, food & beverage support, hospitality, and taxi/transport support for HCPs.' }
   ];
 
   return (
     <div style={{ paddingBottom: '40px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
         <div>
-          <h1 className="page-title" style={{ margin: 0 }}>EFPIA Statutory Disclosures</h1>
-          <p className="page-subtitle" style={{ margin: '8px 0 0 0' }}>Generate and audit compliant reports in accordance with the European Federation of Pharmaceutical Industries and Associations (EFPIA) Disclosure Code.</p>
+          <h1 className="page-title" style={{ margin: 0 }}>JPMA Statutory Disclosures</h1>
+          <p className="page-subtitle" style={{ margin: '8px 0 0 0' }}>Generate and audit compliant reports in accordance with the JPMA transparency guidelines.</p>
         </div>
         <button 
           className="btn btn-primary" 
           onClick={handleGenerateStatement}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', backgroundColor: '#ec4899', borderColor: '#ec4899' }}
         >
           <Sparkles size={16} /> 
           {showAiStatement ? 'Hide Cover Statement' : 'Generate Compliance Statement'}
         </button>
       </div>
 
-      {/* AI Compliance Statement Collapsible Container */}
       {showAiStatement && (
         <div className="card animate-scale-up" style={{ 
           marginBottom: '32px', 
@@ -522,9 +523,9 @@ const EFPIAReporting = () => {
           backdropFilter: 'blur(10px)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <Sparkles size={20} color="var(--primary-glow)" />
-            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 'bold' }}>AI-Generated Filing Cover Statement (EFPIA Draft)</h3>
-            {isStatementLoading && <Loader2 size={16} color="var(--primary-accent)" style={{ animation: 'spin 1s linear infinite' }} />}
+            <Sparkles size={20} color="#ec4899" />
+            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 'bold' }}>AI-Generated Filing Cover Statement (JPMA Draft)</h3>
+            {isStatementLoading && <Loader2 size={16} color="#ec4899" style={{ animation: 'spin 1s linear infinite' }} />}
           </div>
           
           {isStatementLoading ? (
@@ -535,7 +536,7 @@ const EFPIAReporting = () => {
               dangerouslySetInnerHTML={{ 
                 __html: statementContent
                   .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                  .replace(/### (.*?)\n/g, '<h4 style="color:var(--primary-glow);margin-top:16px;margin-bottom:8px;font-size:0.95rem;">$1</h4>')
+                  .replace(/### (.*?)\n/g, '<h4 style="color:#ec4899;margin-top:16px;margin-bottom:8px;font-size:0.95rem;">$1</h4>')
                   .replace(/## (.*?)\n/g, '<h3 style="color:var(--text-primary);margin-top:20px;margin-bottom:10px;font-size:1.1rem;">$1</h3>')
               }}
             />
@@ -558,7 +559,7 @@ const EFPIAReporting = () => {
                   <button 
                     className="btn btn-primary" 
                     onClick={() => exportTemplate(tpl.id, tpl.title)} 
-                    style={{ flex: 1, justifyContent: 'center' }}
+                    style={{ flex: 1, justifyContent: 'center', backgroundColor: '#ec4899', borderColor: '#ec4899' }}
                   >
                     <FileSpreadsheet size={18} /> CSV
                   </button>
@@ -593,9 +594,9 @@ const EFPIAReporting = () => {
           <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: '40px 0' }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-            <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600 }}>Archived EFPIA Disclosure Records (3 Years)</h2>
+            <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600 }}>Archived JPMA Disclosure Records (3 Years)</h2>
           </div>
-          <p className="page-subtitle" style={{ marginBottom: '24px' }}>Historical log of all statutory CSV reports generated and compiled under EFPIA guidelines.</p>
+          <p className="page-subtitle" style={{ marginBottom: '24px' }}>Historical log of all statutory CSV reports generated and compiled under JPMA guidelines.</p>
 
           <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
             <div className="table-container" style={{ margin: 0 }}>
@@ -603,7 +604,7 @@ const EFPIAReporting = () => {
                 <thead>
                   <tr>
                     <th style={{ width: '180px' }}>Archive Date</th>
-                    <th>EFPIA Template Title</th>
+                    <th>JPMA Template Title</th>
                     <th>Filing Year</th>
                     <th>Operator</th>
                     <th>Compliance Status</th>
@@ -631,7 +632,7 @@ const EFPIAReporting = () => {
                           {report.generatedBy}
                         </td>
                         <td>
-                          <span className="badge badge-success" style={{ fontSize: '0.75rem' }}>
+                          <span className="badge badge-success" style={{ fontSize: '0.75rem', backgroundColor: 'rgba(236, 72, 153, 0.1)', color: '#ec4899', border: '1px solid rgba(236, 72, 153, 0.3)' }}>
                             {report.status}
                           </span>
                         </td>
@@ -639,7 +640,7 @@ const EFPIAReporting = () => {
                           <button 
                             className="btn btn-primary" 
                             onClick={() => reDownloadArchive(report)}
-                            style={{ padding: '4px 8px', fontSize: '0.8rem' }}
+                            style={{ padding: '4px 8px', fontSize: '0.8rem', backgroundColor: '#ec4899', borderColor: '#ec4899' }}
                           >
                             <Download size={14} /> Download
                           </button>
@@ -660,15 +661,15 @@ const EFPIAReporting = () => {
           <div className="pdf-modal-container">
             <div className="pdf-toolbar">
               <div className="pdf-toolbar-title">
-                <Eye size={20} color="var(--primary-glow)" />
+                <Eye size={20} color="#ec4899" />
                 <span>Statutory PDF Preview — {activeTemplateTitle}</span>
               </div>
               <div className="pdf-toolbar-actions">
                 <a 
                   href={previewPdfUrl} 
-                  download={`EFPIA_Statutory_${activeTemplateTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`}
+                  download={`JPMA_Statutory_${activeTemplateTitle.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`}
                   className="btn btn-primary"
-                  style={{ padding: '8px 16px', fontSize: '0.9rem', textDecoration: 'none' }}
+                  style={{ padding: '8px 16px', fontSize: '0.9rem', textDecoration: 'none', backgroundColor: '#ec4899', borderColor: '#ec4899' }}
                 >
                   <Download size={16} /> Download PDF
                 </a>
@@ -707,4 +708,4 @@ const EFPIAReporting = () => {
   );
 };
 
-export default EFPIAReporting;
+export default JapanReporting;

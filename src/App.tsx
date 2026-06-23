@@ -17,6 +17,8 @@ import ColombiaDashboard from './pages/ColombiaDashboard';
 import ColombiaReporting from './pages/ColombiaReporting';
 import EFPIADashboard from './pages/EFPIADashboard';
 import EFPIAReporting from './pages/EFPIAReporting';
+import JapanDashboard from './pages/JapanDashboard';
+import JapanReporting from './pages/JapanReporting';
 import Calendar from './pages/Calendar';
 import { AuthProvider } from './components/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -61,6 +63,12 @@ const AppLayout = () => {
           <Route path="/efpia/remediation" element={<Remediation />} />
           <Route path="/efpia/ingestion" element={<Ingestion />} />
           <Route path="/efpia/source-files" element={<SourceFiles />} />
+          <Route path="/japan/dashboard" element={<JapanDashboard />} />
+          <Route path="/japan/reporting" element={<JapanReporting />} />
+          <Route path="/japan/data" element={<DataExplorer />} />
+          <Route path="/japan/remediation" element={<Remediation />} />
+          <Route path="/japan/ingestion" element={<Ingestion />} />
+          <Route path="/japan/source-files" element={<SourceFiles />} />
           <Route path="/data" element={<Navigate to="/datacenter" replace />} />
           <Route path="/audit" element={<AuditLogs />} />
           <Route path="/assistant" element={<AIAssistant />} />

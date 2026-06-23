@@ -56,20 +56,30 @@ export const APIGateway = {
   getTransactions: async (countryFilter?: string): Promise<UniversalTransaction[]> => {
     try {
       let url = `${BACKEND_URL}/api/staging/transactions`;
+      let isClientSideFilter = false;
       if (countryFilter && countryFilter !== 'GLOBAL') {
         const lowerCountry = countryFilter.toLowerCase();
-        let path = lowerCountry;
-        if (lowerCountry === 'kr') path = 'korea';
-        if (lowerCountry === 'it') path = 'italy';
-        if (lowerCountry === 'fr') path = 'france';
-        if (lowerCountry === 'us') path = 'usa';
-        if (lowerCountry === 'co') path = 'colombia';
-        
-        url = `${BACKEND_URL}/api/transactions/${path}`;
+        if (lowerCountry === 'jp') {
+          isClientSideFilter = true;
+          url = `${BACKEND_URL}/api/transactions/committed`;
+        } else {
+          let path = lowerCountry;
+          if (lowerCountry === 'kr') path = 'korea';
+          if (lowerCountry === 'it') path = 'italy';
+          if (lowerCountry === 'fr') path = 'france';
+          if (lowerCountry === 'us') path = 'usa';
+          if (lowerCountry === 'co') path = 'colombia';
+          
+          url = `${BACKEND_URL}/api/transactions/${path}`;
+        }
       }
       const res = await fetch(url);
       if (!res.ok) throw new Error("Database fetch error");
-      return await res.json();
+      const data = await res.json();
+      if (isClientSideFilter) {
+        return data.filter((t: any) => t.countryCode === 'JP');
+      }
+      return data;
     } catch (err) {
       console.error("API Gateway error reading transactions:", err);
       return [];

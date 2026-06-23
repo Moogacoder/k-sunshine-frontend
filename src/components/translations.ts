@@ -1,4 +1,4 @@
-export type Language = 'en' | 'it' | 'ko' | 'es';
+export type Language = 'en' | 'it' | 'ko' | 'es' | 'ja';
 
 export const translations = {
   en: {
@@ -39,16 +39,19 @@ export const translations = {
       italy: 'Italy Sanità Trasparente',
       colombia: 'Colombia RTVSS',
       efpia: 'Europe EFPIA',
+      japan: 'Japan JPMA Guidelines',
       dashboard: 'Dashboard',
       dashboardKorea: 'Dashboard (Korea)',
       dashboardItaly: 'Dashboard (Italy)',
       dashboardColombia: 'Dashboard (Colombia)',
+      dashboardJapan: 'Dashboard (Japan)',
       dataExplorer: 'Data Explorer',
       sourceFiles: 'Source Files',
       remediation: 'Remediation',
       localIngestion: 'Local Ingestion',
       mohwReports: 'MOHW Reports',
       statutoryDisclosures: 'Statutory Disclosures',
+      jpmaDisclosures: 'JPMA Disclosures',
       complianceCalendar: 'Compliance Calendar'
     },
     datacenter: {
@@ -122,16 +125,19 @@ export const translations = {
       italy: 'Italia Sanità Trasparente',
       colombia: 'Colombia RTVSS',
       efpia: 'Europa EFPIA',
+      japan: 'Giappone Linee Guida JPMA',
       dashboard: 'Cruscotto',
       dashboardKorea: 'Cruscotto (Corea)',
       dashboardItaly: 'Cruscotto (Italia)',
       dashboardColombia: 'Cruscotto (Colombia)',
+      dashboardJapan: 'Cruscotto (Giappone)',
       dataExplorer: 'Esploratore Dati',
       sourceFiles: 'File Sorgente',
       remediation: 'Rimedio',
       localIngestion: 'Importazione Locale',
       mohwReports: 'Rapporti MOHW',
       statutoryDisclosures: 'Informativa Statutaria',
+      jpmaDisclosures: 'Informativa JPMA',
       complianceCalendar: 'Calendario Conformità'
     },
     datacenter: {
@@ -155,7 +161,7 @@ export const translations = {
       stagingTitle: 'Registro del Buffer di Staging',
       prodTitle: 'Tabelle Paese Commesse',
       commitBanner: 'Coda di Invio File Importato',
-      commitDesc: 'Questo file sorgente contiene dei record. Una volta approvati e inviati, saranno instradati al database di conformità regionale.',
+      commitDesc: 'Questo file sorgente contiene dei record. Una vez approvati e inviati, saranno instradati al database di conformità regionale.',
       feedBanner: 'Feed del Registro di Produzione Attivo',
       feedDesc: 'Tutti i record sono stati verificati con successo, sigillati crittograficamente e archiviati nei database regionali.'
     },
@@ -205,16 +211,19 @@ export const translations = {
       italy: '이탈리아 투명성 법률',
       colombia: '콜롬비아 RTVSS',
       efpia: '유럽 EFPIA',
+      japan: '일본 JPMA 가이드라인',
       dashboard: '대시보드',
       dashboardKorea: '대시보드 (한국)',
       dashboardItaly: '대시보드 (이탈리아)',
       dashboardColombia: '대시보드 (콜롬비아)',
+      dashboardJapan: '대시보드 (일본)',
       dataExplorer: '데이터 탐색기',
       sourceFiles: '소스 파일',
       remediation: '시정 조치',
       localIngestion: '로컬 수집',
       mohwReports: '보건복지부 보고서',
       statutoryDisclosures: '법정 공시',
+      jpmaDisclosures: 'JPMA 보고서',
       complianceCalendar: '준수 일정표'
     },
     datacenter: {
@@ -288,16 +297,19 @@ export const translations = {
       italy: 'Italia Sanità Trasparente',
       colombia: 'Colombia RTVSS',
       efpia: 'Europa EFPIA',
+      japan: 'Japón Directrices JPMA',
       dashboard: 'Panel',
       dashboardKorea: 'Panel (Corea)',
       dashboardItaly: 'Panel (Italia)',
       dashboardColombia: 'Panel (Colombia)',
+      dashboardJapan: 'Panel (Japón)',
       dataExplorer: 'Explorador de Datos',
       sourceFiles: 'Archivos Fuente',
       remediation: 'Remediación',
       localIngestion: 'Ingesta Local',
       mohwReports: 'Reportes MOHW',
       statutoryDisclosures: 'Divulgaciones Legales',
+      jpmaDisclosures: 'Divulgaciones JPMA',
       complianceCalendar: 'Calendario Cumplimiento'
     },
     datacenter: {
@@ -331,6 +343,92 @@ export const translations = {
       approved: 'Aprobado',
       submitted: 'Enviado',
       statusTitle: 'Estado del Flujo de Trabajo'
+    }
+  },
+  ja: {
+    common: {
+      cancel: 'キャンセル',
+      save: '保存',
+      edit: '編集',
+      delete: '削除',
+      status: 'ステータス',
+      actions: 'アクション',
+      date: '日付',
+      amount: '金額',
+      compliant: '適合',
+      flagged: '要確認',
+      remediation: '是正措置',
+      loading: '読み込み中...',
+      logout: 'ログアウト',
+      version: 'バージョン',
+      project: 'プロジェクト',
+      database: 'データベース',
+      push: '各国データベースへ同期',
+      pushing: '同期中...'
+    },
+    login: {
+      welcome: 'おかえりなさい',
+      subtitle: 'サインインしてインテリジェント・トランスペアレンシーを開始',
+      username: 'ユーザー名',
+      password: 'パスワード',
+      signIn: 'サインイン'
+    },
+    sidebar: {
+      adminHub: '管理ハブ',
+      globalDataCenter: 'グローバルデータセンター',
+      globalDataStatus: 'グローバルデータステータス',
+      auditTrail: '監査証跡',
+      aiAssistant: 'AIアシスタント',
+      southKorea: '韓国サンシャイン法',
+      italy: 'イタリア透明性法',
+      colombia: 'コロンビアRTVSS',
+      efpia: '欧州EFPIA',
+      japan: '日本JPMAガイドライン',
+      dashboard: 'ダッシュボード',
+      dashboardKorea: 'ダッシュボード (韓国)',
+      dashboardItaly: 'ダッシュボード (イタリア)',
+      dashboardColombia: 'ダッシュボード (コロンビア)',
+      dashboardJapan: 'ダッシュボード (日本)',
+      dataExplorer: 'データエクスプローラー',
+      sourceFiles: 'ソースファイル',
+      remediation: '是正措置',
+      localIngestion: 'ローカルデータ取り込み',
+      mohwReports: 'MOHWレポート',
+      statutoryDisclosures: '法定開示',
+      jpmaDisclosures: 'JPMA情報開示',
+      complianceCalendar: 'コンプライアンスカレンダー'
+    },
+    datacenter: {
+      title: 'インテリジェント・トランスペアレンシー・データセンター',
+      incomingReview: 'データ監査',
+      loadData: 'データ取り込み',
+      sourceExplorer: 'ソースファイルアーカイブ',
+      telemetry: '稼働中の医薬品価値透明性登録簿にわたるリアルタイム・コンプライアンス・テレメトリ。',
+      statsStaging: 'ステージング統合支出額',
+      statsFiles: 'ステージングソースファイル数',
+      statsAlerts: '要確認コンプライアンスアラート数',
+      statsEndpoints: '稼働中同期エンドポイント',
+      ingestedFiles: '取り込み済みソースファイル',
+      selectFileDesc: '監査するステージングファイルを選択してください。',
+      selectArchivedDesc: '本番記録を表示するアーカイブファイルを選択してください。',
+      noFiles: '表示可能なファイルがありません',
+      emptyDescStaging: '取り込みタブから新規コンプライアンス記録をアップロードしてください。',
+      emptyDescProd: '本番アジリティデータを表示するには、ステージングのレコードをコミットしてください。',
+      interactiveStaging: '対話型ステージングエディタ：記載漏れやポリシー違反をインラインで即座に是正します。',
+      immutableProd: '不変本番登録アーカイブ：ロックされた法的元帳ログ。',
+      stagingTitle: 'ステージング一時登録簿',
+      prodTitle: 'コミット済み各国テーブル',
+      commitBanner: '取り込みファイルコミット待ち行列',
+      commitDesc: 'このソースファイルにはレコードが含まれています。承認されてコミットされると、各国のコンプライアンスデータベースに同期されます。',
+      feedBanner: '本番登録フィードアクティブ',
+      feedDesc: 'すべてのレコードが監査され、暗号化されて地域データベースにアーカイブされました。'
+    },
+    workflow: {
+      needsReview: '要確認',
+      inProcess: '是正中',
+      approved: '承認済み',
+      submitted: '提出完了',
+      statusTitle: 'ファイル・ワークフロー・ステータス'
     }
   }
 };

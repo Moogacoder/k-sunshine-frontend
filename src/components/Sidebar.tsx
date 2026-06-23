@@ -16,12 +16,14 @@ const Sidebar = () => {
   const isItalyActive = currentPath.startsWith('/italy');
   const isColombiaActive = currentPath.startsWith('/colombia');
   const isEfpiaActive = currentPath.startsWith('/efpia');
+  const isJapanActive = currentPath.startsWith('/japan');
 
   // Accordion toggle states (auto-expand active portal country)
   const [isKoreaExpanded, setIsKoreaExpanded] = useState(isKoreaActive);
   const [isItalyExpanded, setIsItalyExpanded] = useState(isItalyActive);
   const [isColombiaExpanded, setIsColombiaExpanded] = useState(isColombiaActive);
   const [isEfpiaExpanded, setIsEfpiaExpanded] = useState(isEfpiaActive);
+  const [isJapanExpanded, setIsJapanExpanded] = useState(isJapanActive);
 
   // Track the previous path to only auto-expand on actual navigation events
   const prevPathRef = useRef(currentPath);
@@ -34,30 +36,41 @@ const Sidebar = () => {
         setIsItalyExpanded(false);
         setIsColombiaExpanded(false);
         setIsEfpiaExpanded(false);
+        setIsJapanExpanded(false);
       } else if (isItalyActive) {
         setIsKoreaExpanded(false);
         setIsItalyExpanded(true);
         setIsColombiaExpanded(false);
         setIsEfpiaExpanded(false);
+        setIsJapanExpanded(false);
       } else if (isColombiaActive) {
         setIsKoreaExpanded(false);
         setIsItalyExpanded(false);
         setIsColombiaExpanded(true);
         setIsEfpiaExpanded(false);
+        setIsJapanExpanded(false);
       } else if (isEfpiaActive) {
         setIsKoreaExpanded(false);
         setIsItalyExpanded(false);
         setIsColombiaExpanded(false);
         setIsEfpiaExpanded(true);
+        setIsJapanExpanded(false);
+      } else if (isJapanActive) {
+        setIsKoreaExpanded(false);
+        setIsItalyExpanded(false);
+        setIsColombiaExpanded(false);
+        setIsEfpiaExpanded(false);
+        setIsJapanExpanded(true);
       } else {
         setIsKoreaExpanded(false);
         setIsItalyExpanded(false);
         setIsColombiaExpanded(false);
         setIsEfpiaExpanded(false);
+        setIsJapanExpanded(false);
       }
       prevPathRef.current = currentPath;
     }
-  }, [currentPath, isKoreaActive, isItalyActive, isColombiaActive, isEfpiaActive]);
+  }, [currentPath, isKoreaActive, isItalyActive, isColombiaActive, isEfpiaActive, isJapanActive]);
 
   // Unified mutual-exclusion toggle handlers
   const handleKoreaToggle = () => {
@@ -67,6 +80,7 @@ const Sidebar = () => {
       setIsItalyExpanded(false);
       setIsColombiaExpanded(false);
       setIsEfpiaExpanded(false);
+      setIsJapanExpanded(false);
     }
   };
 
@@ -77,6 +91,7 @@ const Sidebar = () => {
       setIsKoreaExpanded(false);
       setIsColombiaExpanded(false);
       setIsEfpiaExpanded(false);
+      setIsJapanExpanded(false);
     }
   };
 
@@ -87,6 +102,7 @@ const Sidebar = () => {
       setIsKoreaExpanded(false);
       setIsItalyExpanded(false);
       setIsEfpiaExpanded(false);
+      setIsJapanExpanded(false);
     }
   };
 
@@ -97,6 +113,18 @@ const Sidebar = () => {
       setIsKoreaExpanded(false);
       setIsItalyExpanded(false);
       setIsColombiaExpanded(false);
+      setIsJapanExpanded(false);
+    }
+  };
+
+  const handleJapanToggle = () => {
+    const nextState = !isJapanExpanded;
+    setIsJapanExpanded(nextState);
+    if (nextState) {
+      setIsKoreaExpanded(false);
+      setIsItalyExpanded(false);
+      setIsColombiaExpanded(false);
+      setIsEfpiaExpanded(false);
     }
   };
 
@@ -132,6 +160,7 @@ const Sidebar = () => {
             <option value="ko" style={{ background: 'var(--bg-surface)' }}>🇰🇷 한국어 (Korean)</option>
             <option value="it" style={{ background: 'var(--bg-surface)' }}>🇮🇹 Italiano (Italian)</option>
             <option value="es" style={{ background: 'var(--bg-surface)' }}>🇨🇴 Español (Spanish)</option>
+            <option value="ja" style={{ background: 'var(--bg-surface)' }}>🇯🇵 日本語 (Japanese)</option>
           </select>
         </div>
       </div>
@@ -413,6 +442,69 @@ const Sidebar = () => {
           <NavLink to="/efpia/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             <FileText size={20} />
             <span>{t('sidebar.statutoryDisclosures')}</span>
+          </NavLink>
+        </div>
+
+        <div style={{ margin: '6px 0', borderTop: '1px solid var(--border-color)', opacity: 0.3 }}></div>
+
+        {/* Japan Portal Accordion */}
+        <button
+          onClick={handleJapanToggle}
+          style={{
+            border: 'none',
+            width: '100%',
+            padding: '10px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            fontSize: '0.72rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            fontWeight: 'bold',
+            transition: 'all 0.2s ease',
+            textAlign: 'left',
+            fontFamily: 'inherit',
+          }}
+          className={`accordion-header ${isJapanActive ? 'active' : ''}`}
+        >
+          <span>🇯🇵 {t('sidebar.japan')}</span>
+          {isJapanExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        </button>
+
+        <div style={{
+          display: isJapanExpanded ? 'flex' : 'none',
+          flexDirection: 'column',
+          paddingLeft: '4px'
+        }}>
+          <NavLink to="/japan/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <LayoutDashboard size={20} />
+            <span>{t('sidebar.dashboardJapan')}</span>
+          </NavLink>
+
+          <NavLink to="/japan/data" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <Database size={20} />
+            <span>{t('sidebar.dataExplorer')}</span>
+          </NavLink>
+
+          <NavLink to="/japan/source-files" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <FileUp size={20} />
+            <span>{t('sidebar.sourceFiles')}</span>
+          </NavLink>
+
+          <NavLink to="/japan/remediation" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <AlertCircle size={20} />
+            <span>{t('sidebar.remediation')}</span>
+          </NavLink>
+
+          <NavLink to="/japan/ingestion" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <UploadCloud size={20} />
+            <span>{t('sidebar.localIngestion')}</span>
+          </NavLink>
+
+          <NavLink to="/japan/reporting" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <FileText size={20} />
+            <span>{t('sidebar.jpmaDisclosures')}</span>
           </NavLink>
         </div>
       </nav>
