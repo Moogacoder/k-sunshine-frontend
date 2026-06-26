@@ -40,8 +40,9 @@ const SourceFiles = () => {
   const isColombia = location.pathname.includes('/colombia');
   const isEFPIA = location.pathname.includes('/efpia');
   const isKorea = location.pathname.includes('/korea');
-  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : (isKorea ? 'KR' : '')));
-  const currencySymbol = isEFPIA ? '€' : (isColombia ? '$' : (isItaly ? '€' : '₩'));
+  const isJapan = location.pathname.includes('/japan');
+  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : (isKorea ? 'KR' : (isJapan ? 'JP' : ''))));
+  const currencySymbol = isEFPIA ? '€' : (isColombia ? '$' : (isItaly ? '€' : (isKorea ? '₩' : (isJapan ? '¥' : ''))));
 
   if (!countryCode) {
     return <Navigate to="/datacenter" replace />;
@@ -255,7 +256,7 @@ const SourceFiles = () => {
                       <th>Institution</th>
                       <th>Category</th>
                       <th>Purpose</th>
-                      <th>Amount ({isColombia ? 'COP' : (isItaly || isEFPIA ? 'EUR' : 'KRW')})</th>
+                      <th>Amount ({isColombia ? 'COP' : (isItaly || isEFPIA ? 'EUR' : (isKorea ? 'KRW' : (isJapan ? 'JPY' : '')))})</th>
                     </tr>
                   </thead>
                   <tbody>

@@ -168,19 +168,14 @@ const Sidebar = () => {
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, overflowY: 'auto', paddingRight: '4px', marginBottom: '20px' }}>
         {/* Administrative Control Hub */}
         <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.05em', margin: '8px 0 4px 12px', fontWeight: 'bold', opacity: 0.8 }}>{t('sidebar.adminHub')}</div>
-        <NavLink to="/datacenter" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ borderLeft: '3px solid var(--secondary-accent)', background: 'rgba(124, 58, 237, 0.05)', fontWeight: 'bold' }}>
-          <Database size={20} color="var(--primary-glow)" />
-          <span style={{ color: 'var(--primary-glow)' }}>{t('sidebar.globalDataCenter')}</span>
-        </NavLink>
-
         <NavLink to="/global-data-status" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <Globe size={20} />
           <span>{t('sidebar.globalDataStatus')}</span>
         </NavLink>
 
-        <NavLink to="/audit" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-          <Shield size={20} />
-          <span>{t('sidebar.auditTrail')}</span>
+        <NavLink to="/calendar" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <Calendar size={20} />
+          <span>{t('sidebar.complianceCalendar')}</span>
         </NavLink>
 
         <NavLink to="/assistant" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
@@ -188,9 +183,14 @@ const Sidebar = () => {
           <span>{t('sidebar.aiAssistant')}</span>
         </NavLink>
 
-        <NavLink to="/calendar" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-          <Calendar size={20} />
-          <span>{t('sidebar.complianceCalendar')}</span>
+        <NavLink to="/datacenter" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} style={{ borderLeft: '3px solid var(--secondary-accent)', background: 'rgba(124, 58, 237, 0.05)', fontWeight: 'bold' }}>
+          <Database size={20} color="var(--primary-glow)" />
+          <span style={{ color: 'var(--primary-glow)' }}>{t('sidebar.globalDataCenter')}</span>
+        </NavLink>
+
+        <NavLink to="/audit" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <Shield size={20} />
+          <span>{t('sidebar.auditTrail')}</span>
         </NavLink>
 
         <div style={{ margin: '6px 0', borderTop: '1px solid var(--border-color)', opacity: 0.3 }}></div>

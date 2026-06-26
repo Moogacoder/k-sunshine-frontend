@@ -27,7 +27,8 @@ const Remediation = () => {
   const isColombia = location.pathname.includes('/colombia');
   const isEFPIA = location.pathname.includes('/efpia');
   const isKorea = location.pathname.includes('/korea');
-  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : (isKorea ? 'KR' : '')));
+  const isJapan = location.pathname.includes('/japan');
+  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : (isKorea ? 'KR' : (isJapan ? 'JP' : ''))));
 
   if (!countryCode) {
     return <Navigate to="/datacenter" replace />;
@@ -62,11 +63,12 @@ const Remediation = () => {
           (t.countryCode === 'KR' && t.amountOriginal > 500000) ||
           ((t.countryCode === 'FR' || t.countryCode === 'IT' || t.countryCode === 'EU') && t.amountOriginal > 150) ||
           (t.countryCode === 'CO' && t.amountOriginal > 1500000) ||
-          (t.countryCode === 'US' && t.amountOriginal > 500);
+          (t.countryCode === 'US' && t.amountOriginal > 500) ||
+          (t.countryCode === 'JP' && t.amountOriginal > 20000);
 
         const issues = [];
         if (limitExceeded) {
-          const limitVal = t.countryCode === 'KR' ? '₩500,000' : t.countryCode === 'CO' ? '$1,500,000 COP' : t.countryCode === 'US' ? '$500' : '€150';
+          const limitVal = t.countryCode === 'KR' ? '₩500,000' : t.countryCode === 'CO' ? '$1,500,000 COP' : t.countryCode === 'US' ? '$500' : t.countryCode === 'JP' ? '¥20,000' : '€150';
           issues.push(`Statutory Policy Threshold Exceeded (${limitVal})`);
         }
         if (!completeness.isComplete) {
@@ -173,8 +175,8 @@ const Remediation = () => {
       
       {/* Flagged Records List */}
       <div style={{ flex: 1 }}>
-        <h1 className="page-title">Data Remediation Workflow ({isEFPIA ? 'Europe (EFPIA)' : (isColombia ? 'Colombia' : (isItaly ? 'Italy' : 'South Korea'))})</h1>
-        <p className="page-subtitle">Review flagged transactions that violate local {isEFPIA ? 'Europe EFPIA Disclosure Code' : (isColombia ? 'Colombia Resolution 2881' : (isItaly ? 'Italy Sanità Trasparente Law 31/2022' : 'K-Sunshine Act'))} compliance thresholds or contain data anomalies.</p>
+        <h1 className="page-title">Data Remediation Workflow ({isEFPIA ? 'Europe (EFPIA)' : (isColombia ? 'Colombia' : (isItaly ? 'Italy' : (isKorea ? 'South Korea' : (isJapan ? 'Japan' : ''))))})</h1>
+        <p className="page-subtitle">Review flagged transactions that violate local {isEFPIA ? 'Europe EFPIA Disclosure Code' : (isColombia ? 'Colombia Resolution 2881' : (isItaly ? 'Italy Sanità Trasparente Law 31/2022' : (isKorea ? 'K-Sunshine Act' : (isJapan ? 'JPMA Transparency Guidelines' : ''))))} compliance thresholds or contain data anomalies.</p>
 
         <div className="card">
           <h3 style={{ marginBottom: '20px' }}>Flagged Records Queue</h3>
@@ -213,7 +215,7 @@ const Remediation = () => {
                         <td style={{ fontWeight: 500 }}>{flag.transaction.entity.recipientName}</td>
                         <td style={{ color: flag.status === 'PENDING' ? 'var(--danger)' : 'inherit' }}>{flag.reason}</td>
                         <td style={{ fontWeight: 500 }}>
-                          {flag.transaction.currency} {flag.transaction.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: flag.transaction.currency === 'KRW' ? 0 : 2 })}
+                          {flag.transaction.currency} {flag.transaction.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: (flag.transaction.currency === 'KRW' || flag.transaction.currency === 'JPY') ? 0 : 2 })}
                         </td>
                         <td onClick={(e) => e.stopPropagation()}>
                           {flag.status === 'PENDING' ? (

@@ -51,7 +51,8 @@ const Calendar: React.FC = () => {
           FR: { staging: 0, committed: 0 },
           US: { staging: 0, committed: 0 },
           CO: { staging: 0, committed: 0 },
-          EU: { staging: 0, committed: 0 }
+          EU: { staging: 0, committed: 0 },
+          JP: { staging: 0, committed: 0 }
         };
 
         staging.forEach(tx => {
@@ -220,6 +221,18 @@ const Calendar: React.FC = () => {
       flag: '🇺🇸',
       threshold: 'All pharmaceutical marketing expenses',
       link: '/datacenter'
+    },
+    {
+      id: 'jp-jpma-2025',
+      countryCode: 'JP',
+      countryName: 'Japan',
+      title: 'JPMA Transparency Disclosure',
+      date: new Date(2026, 7, 31), // August 31, 2026
+      desc: 'Annual transparency disclosure of lecturing fees, research funding, academic donations, promotional materials, and meals/hospitality to HCPs and HCOs under JPMA guidelines.',
+      color: '#ec4899', // Pink branding color matching the Japan portal
+      flag: '🇯🇵',
+      threshold: 'Meals > ¥5,000, Lecture Fees > ¥1, R&D/Donations > ¥1',
+      link: '/japan/reporting'
     }
   ];
 

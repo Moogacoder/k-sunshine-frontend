@@ -31,7 +31,7 @@ export const translations = {
     },
     sidebar: {
       adminHub: 'Administrative Hub',
-      globalDataCenter: 'Global Data Center',
+      globalDataCenter: 'Data Upload',
       globalDataStatus: 'Global Data Status',
       auditTrail: 'Audit Trail',
       aiAssistant: 'AI Assistant',
@@ -117,7 +117,7 @@ export const translations = {
     },
     sidebar: {
       adminHub: 'Hub Amministrativo',
-      globalDataCenter: 'Data Center Globale',
+      globalDataCenter: 'Caricamento Dati',
       globalDataStatus: 'Stato dei Dati Globali',
       auditTrail: 'Tracciabilità di Controllo',
       aiAssistant: 'Assistente AI',
@@ -203,7 +203,7 @@ export const translations = {
     },
     sidebar: {
       adminHub: '관리자 허브',
-      globalDataCenter: '글로벌 데이터 센터',
+      globalDataCenter: '데이터 업로드',
       globalDataStatus: '글로벌 데이터 현황',
       auditTrail: '감사 추적',
       aiAssistant: 'AI 어시스턴트',
@@ -289,7 +289,7 @@ export const translations = {
     },
     sidebar: {
       adminHub: 'Centro Administrativo',
-      globalDataCenter: 'Centro de Datos Global',
+      globalDataCenter: 'Carga de Datos',
       globalDataStatus: 'Estado de Datos Globales',
       auditTrail: 'Pistas de Auditoría',
       aiAssistant: 'Asistente de IA',
@@ -375,7 +375,7 @@ export const translations = {
     },
     sidebar: {
       adminHub: '管理ハブ',
-      globalDataCenter: 'グローバルデータセンター',
+      globalDataCenter: 'データアップロード',
       globalDataStatus: 'グローバルデータステータス',
       auditTrail: '監査証跡',
       aiAssistant: 'AIアシスタント',

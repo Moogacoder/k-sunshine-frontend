@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { DragEvent, ChangeEvent } from 'react';
-import { UploadCloud, FileSpreadsheet, Loader2, CheckCircle, AlertTriangle, Sparkles, ArrowRight, X } from 'lucide-react';
+import { UploadCloud, FileSpreadsheet, Loader2, CheckCircle, AlertTriangle, Sparkles, ArrowRight, X, SlidersHorizontal } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { APIGateway } from '../datacenter/api_gateway';
@@ -12,6 +12,71 @@ interface UploadResult {
   ingested: number;
   flagged: number;
 }
+
+// Synonyms for client-side fuzzy column mapping across English, Italian, Spanish, Korean, and Japanese
+const SCHEMA_SYNONYMS: Record<string, string[]> = {
+  recipientType: [
+    'recipient type', 'type', 'recipienttype', 'tipo', '区分', '対象区分', '対象者区分', '대상 구분', '대상구분', 'tipologia', 'recipient_type'
+  ],
+  recipientName: [
+    'recipient name', 'name', 'nom', 'beneficiario', '医師名', 'お名前', '施設名', '対象者名', '수령인', '수령인명', 'nombre', 'nombre del beneficiario', 'recipient_name', 'recipient institution/hco', 'recipient organization', 'hcp name'
+  ],
+  licenseNumber: [
+    'license', 'tax', 'nit', 'fiscale', 'rpps', 'npi', 'code', '医師免許番号', '登録番号', '免許番号', '識別番号', '면허번호', '등록번호', 'codice fiscale', 'partita iva', 'nit o identificacion', 'tax id / license number', 'registration code', 'hco registration code', 'license number / id'
+  ],
+  workplaceInstitution: [
+    'workplace', 'institution', 'hospital', 'clinic', 'struttura', 'lugar de trabajo', '勤務先', '所属機関', '所属施設', '病院名', '근무지', '소속기관', 'hospital/clinic', 'affiliated institution', 'affiliated healthcare institution', 'workplace institution'
+  ],
+  specialtyDepartment: [
+    'specialty', 'department', '診療科', '所属部局', '専門分野', '部局', '진료과', '전공', 'specialty department', 'specialty/department'
+  ],
+  spendCategory: [
+    'category', 'spend', 'benefit', 'tipologia', 'tipo', 'convenzione', 'donazione', 'desembolso', '資金区分', '費用区分', '区分項目', '지급 항목', '지급항목', 'spend category', 'category of benefit', 'jpma category', 'benefit category'
+  ],
+  dateOfProvision: [
+    'date', 'provision', 'transfer', 'fecha', 'data', '支払年月日', '提供年月日', '日付', '年月日', '제공 일자', '제공일자', 'date of provision', 'date of transfer', 'date of value transfer'
+  ],
+  placeOfProvision: [
+    'place', 'city', 'state', 'location', 'luogo', '提供場所', '実施場所', '場所', '제공 장소', '제공장소', 'place of provision'
+  ],
+  purposeOfBenefit: [
+    'purpose', 'purpose of benefit', 'agreement', 'collaboration', 'event', 'meeting', 'congress', 'reunión', 'viaje', '目的', '使途', '提供目的', '内容', '제공 목적', '제공목적', 'clinical trial / study name', 'purpose of donation', 'consulting / lecture description', 'information dissemination details', 'meeting/event purpose', 'purpose (meeting/congress name)'
+  ],
+  amountOriginal: [
+    'amount', 'valore', 'value', 'importo', 'valor', 'montant', '金額', '支払金額', '支払額', '価格', '금액', '지급액', 'amount original', 'amount (krw)', 'amount (eur)', 'amount (cop)', 'amount (usd)', 'amount (jpy)', 'contribution amount (eur)', 'r&d spend (jpy)', 'lecture fees (jpy)', 'cost (jpy)'
+  ],
+  details: [
+    'details', 'notes', 'description', 'phase', 'project', 'materials', 'spec', '詳細', '備考', '内訳', '製品名', '상세', '비고', 'additional details', 'phase/details', 'project details', 'materials details', 'expense details'
+  ]
+};
+
+const findBestHeaderMatch = (fieldKey: string, headers: string[]): string => {
+  const synonyms = SCHEMA_SYNONYMS[fieldKey] || [];
+  const normalize = (str: string) => 
+    str.toLowerCase().replace(/[^a-z0-9\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\uac00-\ud7a3]/g, '');
+
+  const normalizedSynonyms = synonyms.map(s => normalize(s));
+
+  // 1. Exact normalized match
+  for (const header of headers) {
+    const normHeader = normalize(header);
+    if (normalizedSynonyms.includes(normHeader)) {
+      return header;
+    }
+  }
+
+  // 2. Substring match fallback
+  for (const header of headers) {
+    const normHeader = normalize(header);
+    for (const normSyn of normalizedSynonyms) {
+      if (normSyn.length > 3 && (normHeader.includes(normSyn) || normSyn.includes(normHeader))) {
+        return header;
+      }
+    }
+  }
+
+  return '';
+};
 
 // Universal Schema attributes to map to
 const REQUIRED_SCHEMA_FIELDS = [
@@ -35,8 +100,9 @@ const Ingestion = () => {
   const isColombia = location.pathname.includes('/colombia');
   const isEFPIA = location.pathname.includes('/efpia');
   const isKorea = location.pathname.includes('/korea');
+  const isJapan = location.pathname.includes('/japan');
   
-  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : (isKorea ? 'KR' : '')));
+  const countryCode = isEFPIA ? 'EU' : (isColombia ? 'CO' : (isItaly ? 'IT' : (isKorea ? 'KR' : (isJapan ? 'JP' : ''))));
 
   if (!countryCode) {
     return <Navigate to="/datacenter" replace />;
@@ -53,6 +119,7 @@ const Ingestion = () => {
   const [availableHeaders, setAvailableHeaders] = useState<string[]>([]);
   const [columnMapping, setColumnMapping] = useState<Record<string, string>>({});
   const [isMappingLoading, setIsMappingLoading] = useState(false);
+  const [aiMappedKeys, setAiMappedKeys] = useState<string[]>([]);
 
   // Ingestion Summary & Stats Modal states
   const [showStatsModal, setShowStatsModal] = useState(false);
@@ -109,9 +176,15 @@ const Ingestion = () => {
 
       const hasEFPIAHeaders = json.some((row: any) =>
         row['Company Name'] !== undefined ||
-        row['Recipient Type'] !== undefined ||
         row['Tax ID / License Number'] !== undefined ||
         row['Contribution Amount (EUR)'] !== undefined
+      );
+
+      const hasJapanHeaders = json.some((row: any) => 
+        row['Amount (JPY)'] !== undefined || 
+        row['JPMA Category'] !== undefined || 
+        row['医師免許番号'] !== undefined || 
+        row['Japan Sunshine'] !== undefined
       );
 
       const hasEuropeanIdentifiers = json.some((row: any) =>
@@ -122,26 +195,32 @@ const Ingestion = () => {
         )
       );
 
-      if (countryCode === 'KR' && (hasItalianHeaders || hasColombianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers)) {
-        alert("Contamination Warning: The uploaded dataset contains European or Colombian disclosures, which cannot be loaded into the South Korea Sunshine Act registry. Ingestion rejected to prevent database contamination.");
+      if (countryCode === 'KR' && (hasItalianHeaders || hasColombianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers || hasJapanHeaders)) {
+        alert("Contamination Warning: The uploaded dataset contains European, Colombian or Japanese disclosures, which cannot be loaded into the South Korea Sunshine Act registry. Ingestion rejected to prevent database contamination.");
         setIsUploading(false);
         return;
       }
 
-      if (countryCode === 'IT' && (hasKoreanHeaders || hasColombianHeaders || hasEFPIAHeaders)) {
-        alert("Contamination Warning: The uploaded dataset contains South Korean Won (KRW), EFPIA, or Colombian Peso disclosures, which cannot be loaded into the Italy Sanità Trasparente registry. Ingestion rejected to prevent database contamination.");
+      if (countryCode === 'IT' && (hasKoreanHeaders || hasColombianHeaders || hasEFPIAHeaders || hasJapanHeaders)) {
+        alert("Contamination Warning: The uploaded dataset contains South Korean Won (KRW), EFPIA, Colombian Peso or Japanese disclosures, which cannot be loaded into the Italy Sanità Trasparente registry. Ingestion rejected to prevent database contamination.");
         setIsUploading(false);
         return;
       }
 
-      if (countryCode === 'CO' && (hasKoreanHeaders || hasItalianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers)) {
-        alert("Contamination Warning: The uploaded dataset contains South Korean Won (KRW), European EFPIA, or Italian disclosures, which cannot be loaded into the Colombia RTVSS registry. Ingestion rejected to prevent database contamination.");
+      if (countryCode === 'CO' && (hasKoreanHeaders || hasItalianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers || hasJapanHeaders)) {
+        alert("Contamination Warning: The uploaded dataset contains South Korean Won (KRW), European EFPIA, Italian or Japanese disclosures, which cannot be loaded into the Colombia RTVSS registry. Ingestion rejected to prevent database contamination.");
         setIsUploading(false);
         return;
       }
 
-      if (countryCode === 'EU' && (hasKoreanHeaders || hasColombianHeaders)) {
-        alert("Contamination Warning: The uploaded dataset contains South Korean or Colombian disclosures, which cannot be loaded into the Europe EFPIA registry. Ingestion rejected to prevent database contamination.");
+      if (countryCode === 'EU' && (hasKoreanHeaders || hasColombianHeaders || hasJapanHeaders)) {
+        alert("Contamination Warning: The uploaded dataset contains South Korean, Colombian or Japanese disclosures, which cannot be loaded into the Europe EFPIA registry. Ingestion rejected to prevent database contamination.");
+        setIsUploading(false);
+        return;
+      }
+
+      if (countryCode === 'JP' && (hasKoreanHeaders || hasItalianHeaders || hasColombianHeaders || hasEFPIAHeaders || hasEuropeanIdentifiers)) {
+        alert("Contamination Warning: The uploaded dataset contains other country specific disclosures, which cannot be loaded into the Japan JPMA registry. Ingestion rejected to prevent database contamination.");
         setIsUploading(false);
         return;
       }
@@ -161,26 +240,30 @@ const Ingestion = () => {
         
         // Formulate an initial state with AI recommendations
         const finalMapping: Record<string, string> = {};
+        const mappedByAI: string[] = [];
+
         REQUIRED_SCHEMA_FIELDS.forEach(field => {
           // Find if there's an AI suggested header that maps to this universal key
           const matchedHeader = Object.keys(aiMapping).find(k => aiMapping[k] === field.key);
           if (matchedHeader) {
             finalMapping[field.key] = matchedHeader;
+            mappedByAI.push(field.key);
           } else {
-            // Static fallback heuristics if AI misses it
-            const fallback = headers.find(h => 
-              h.toLowerCase().includes(field.key.toLowerCase()) || 
-              (field.key === 'spendCategory' && (h.toLowerCase().includes('category') || h.toLowerCase().includes('spend') || h.toLowerCase().includes('benefit') || h.toLowerCase().includes('tipologia') || h.toLowerCase().includes('tipo') || h.toLowerCase().includes('convenzione') || h.toLowerCase().includes('donazione') || h.toLowerCase().includes('desembolso'))) ||
-              (field.key === 'recipientName' && (h.toLowerCase().includes('name') || h.toLowerCase().includes('nom') || h.toLowerCase().includes('beneficiario'))) ||
-              (field.key === 'licenseNumber' && (h.toLowerCase().includes('license') || h.toLowerCase().includes('tax') || h.toLowerCase().includes('nit') || h.toLowerCase().includes('fiscale') || h.toLowerCase().includes('rpps') || h.toLowerCase().includes('npi'))) ||
-              (field.key === 'amountOriginal' && (h.toLowerCase().includes('amount') || h.toLowerCase().includes('valore') || h.toLowerCase().includes('value') || h.toLowerCase().includes('importo') || h.toLowerCase().includes('valor')))
-            );
+            // Client-side fallback fuzzy matching
+            const fallback = findBestHeaderMatch(field.key, headers);
             finalMapping[field.key] = fallback || '';
           }
         });
         setColumnMapping(finalMapping);
+        setAiMappedKeys(mappedByAI);
       } catch (err) {
         console.warn("AI Mapping failed, using standard mapping:", err);
+        const finalMapping: Record<string, string> = {};
+        REQUIRED_SCHEMA_FIELDS.forEach(field => {
+          finalMapping[field.key] = findBestHeaderMatch(field.key, headers);
+        });
+        setColumnMapping(finalMapping);
+        setAiMappedKeys([]);
       } finally {
         setIsMappingLoading(false);
       }
@@ -267,10 +350,120 @@ const Ingestion = () => {
     }
   };
 
+  const downloadTemplate = (code: string) => {
+    let headers: string[] = [];
+    let sampleData: Record<string, any>[] = [];
+    let filename = '';
+
+    if (code === 'KR') {
+      headers = [
+        'Recipient Type', 'Recipient Name', 'License Number', 
+        'Workplace', 'Specialty', 'Category of Benefit', 
+        'Date of Provision', 'Place', 'Purpose', 'Details', 'Amount (KRW)'
+      ];
+      sampleData = [{
+        'Recipient Type': 'HCP',
+        'Recipient Name': 'Dr. Min-Seok Kim',
+        'License Number': 'MD-74829',
+        'Workplace': 'Seoul National University Hospital',
+        'Specialty': 'Cardiology',
+        'Category of Benefit': 'CONSULTANCY',
+        'Date of Provision': '2026-04-12',
+        'Place': 'Seoul',
+        'Purpose': 'Advisory Board Meeting',
+        'Details': 'Q2 Cardiology Panel',
+        'Amount (KRW)': 350000
+      }];
+      filename = 'template_south_korea_sunshine.xlsx';
+    } else if (code === 'IT') {
+      headers = [
+        'Recipient Type', 'Recipient Name', 'License Number', 
+        'Workplace', 'Specialty', 'Category of Benefit', 
+        'Date of Provision', 'Place', 'Purpose', 'Details', 'Amount (EUR)'
+      ];
+      sampleData = [{
+        'Recipient Type': 'HCP',
+        'Recipient Name': 'Dr. Giovanni Rossi',
+        'License Number': 'RSSGNN80A01H501Z',
+        'Workplace': 'Ospedale San Raffaele',
+        'Specialty': 'Neurology',
+        'Category of Benefit': 'CONVENZIONI',
+        'Date of Provision': '2026-03-24',
+        'Place': 'Milano',
+        'Purpose': 'Clinical Study Collaboration Agreement',
+        'Details': 'Protocol 4082-A',
+        'Amount (EUR)': 1200
+      }];
+      filename = 'template_italy_sanita_trasparente.xlsx';
+    } else if (code === 'CO') {
+      headers = [
+        'Recipient Type', 'Recipient Name', 'License Number', 
+        'Workplace', 'Specialty', 'Category of Benefit', 
+        'Date of Provision', 'Place', 'Purpose', 'Details', 'Amount (COP)'
+      ];
+      sampleData = [{
+        'Recipient Type': 'HCP',
+        'Recipient Name': 'Dr. Carlos Mendoza',
+        'License Number': '80192834',
+        'Workplace': 'Clinica de Marly',
+        'Specialty': 'Pediatrics',
+        'Category of Benefit': 'SAMPLES',
+        'Date of Provision': '2026-01-20',
+        'Place': 'Bogotá',
+        'Purpose': 'Medical Samples Provision',
+        'Details': 'Infant nutrition formula samples',
+        'Amount (COP)': 320000
+      }];
+      filename = 'template_colombia_rtvss.xlsx';
+    } else if (code === 'EU') {
+      headers = [
+        'Company Name', 'Recipient Name', 'Recipient Type', 
+        'Tax ID / License Number', 'Affiliated Healthcare Institution', 'Date of Value Transfer', 
+        'Purpose (Meeting/Congress Name)', 'Contribution Amount (EUR)'
+      ];
+      sampleData = [{
+        'Company Name': 'Qordata Europe (Demo)',
+        'Recipient Name': 'Dr. Hans Mueller',
+        'Recipient Type': 'HCP',
+        'Tax ID / License Number': 'DE-1928472',
+        'Affiliated Healthcare Institution': 'Charite Berlin',
+        'Date of Value Transfer': '2026-03-15',
+        'Purpose (Meeting/Congress Name)': 'European Cardiology Congress 2026',
+        'Contribution Amount (EUR)': 450
+      }];
+      filename = 'template_europe_efpia.xlsx';
+    } else if (code === 'JP') {
+      headers = [
+        'Recipient Type', 'Recipient Name', 'License Number', 
+        'Workplace', 'Specialty', 'Category of Benefit', 
+        'Date of Provision', 'Place', 'Purpose', 'Details', 'Amount (JPY)'
+      ];
+      sampleData = [{
+        'Recipient Type': 'HCP',
+        'Recipient Name': 'Dr. Taro Yamada (山田 太郎)',
+        'License Number': 'JP-8849201',
+        'Workplace': 'Tokyo University Hospital',
+        'Specialty': 'Oncology',
+        'Category of Benefit': 'LECTURE_FEES',
+        'Date of Provision': '2026-03-22',
+        'Place': 'Tokyo',
+        'Purpose': 'JPMA Oncology Symposium Lecture',
+        'Details': 'Speaker Fee',
+        'Amount (JPY)': 50000
+      }];
+      filename = 'template_japan_jpma.xlsx';
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(sampleData, { header: headers });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporting Template');
+    XLSX.writeFile(workbook, filename);
+  };
+
   return (
     <div>
-      <h1 className="page-title">Local Data Ingestion ({isEFPIA ? 'Europe (EFPIA)' : (isColombia ? 'Colombia' : (isItaly ? 'Italy' : 'South Korea'))})</h1>
-      <p className="page-subtitle">Upload spend records from external sources for {isEFPIA ? 'Europe EFPIA Disclosure Code' : (isColombia ? 'Colombia Resolution 2881' : (isItaly ? 'Italy Sanità Trasparente' : 'K-Sunshine Act'))} validation.</p>
+      <h1 className="page-title">Local Data Ingestion ({isEFPIA ? 'Europe (EFPIA)' : (isColombia ? 'Colombia' : (isItaly ? 'Italy' : (isKorea ? 'South Korea' : (isJapan ? 'Japan' : ''))))})</h1>
+      <p className="page-subtitle">Upload spend records from external sources for {isEFPIA ? 'Europe EFPIA Disclosure Code' : (isColombia ? 'Colombia Resolution 2881' : (isItaly ? 'Italy Sanità Trasparente' : (isKorea ? 'K-Sunshine Act' : (isJapan ? 'JPMA Transparency Guidelines' : ''))))} validation.</p>
 
       {/* Drag & Drop Card */}
       <div 
@@ -313,24 +506,24 @@ const Ingestion = () => {
                 />
               </label>
               
-              <a 
-                href={isEFPIA ? "/eu_efpia_transactions_1000.csv" : (isColombia ? "/colombian_hcp_transactions_1000.csv" : (isItaly ? "/italian_hcp_transactions_1000.csv" : "/K_Sunshine_Upload_Template.csv"))} 
-                download 
+              <button 
+                type="button"
+                onClick={() => downloadTemplate(countryCode)}
                 className="btn btn-secondary" 
                 style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
-                  textDecoration: 'none', 
                   background: 'rgba(255, 255, 255, 0.1)', 
                   border: '1px solid var(--border-color)', 
                   color: 'var(--text-primary)', 
                   padding: '10px 20px', 
                   borderRadius: '6px', 
-                  fontWeight: '600' 
+                  fontWeight: '600',
+                  cursor: 'pointer'
                 }}
               >
-                Download CSV Template
-              </a>
+                Download Excel Template
+              </button>
             </div>
           </>
         )}
@@ -398,9 +591,15 @@ const Ingestion = () => {
                             ))}
                           </select>
                           {mappedValue && (
-                            <span className="badge badge-success" style={{ padding: '6px 10px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <Sparkles size={10} /> AI Mapped
-                            </span>
+                            aiMappedKeys.includes(field.key) ? (
+                              <span className="badge badge-success" style={{ padding: '6px 10px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                                <Sparkles size={10} /> AI Mapped
+                              </span>
+                            ) : (
+                              <span className="badge" style={{ padding: '6px 10px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+                                <SlidersHorizontal size={10} /> Auto-Matched
+                              </span>
+                            )
                           )}
                         </div>
                       </div>
@@ -546,7 +745,7 @@ const Ingestion = () => {
                   className="btn btn-primary" 
                   onClick={() => {
                     setShowStatsModal(false);
-                     navigate(isEFPIA ? '/efpia/remediation' : (isColombia ? '/colombia/remediation' : (isItaly ? '/italy/remediation' : (isKorea ? '/korea/remediation' : '/datacenter'))));
+                     navigate(isEFPIA ? '/efpia/remediation' : (isColombia ? '/colombia/remediation' : (isItaly ? '/italy/remediation' : (isKorea ? '/korea/remediation' : (isJapan ? '/japan/remediation' : '/datacenter')))));
                   }}
                   style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '6px', background: 'var(--warning)', border: '1px solid var(--warning)', color: 'white', fontWeight: 600 }}
                 >

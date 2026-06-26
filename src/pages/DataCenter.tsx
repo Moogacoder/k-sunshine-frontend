@@ -1,12 +1,77 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, X, FileText, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
+import { UploadCloud, Globe, Database, ShieldAlert, CheckCircle, Clock, X, FileText, ArrowRight, Sparkles, Loader2, SlidersHorizontal } from 'lucide-react';
 import { APIGateway, type UniversalTransaction, type IngestionBatch, type AuditLog } from '../datacenter/api_gateway';
 import * as XLSX from 'xlsx';
 import { parseAmount, validateReportingCompleteness } from '../datacenter/validation';
 import { useLanguage } from '../components/LanguageContext';
 
 declare const L: any;
+
+// Synonyms for client-side fuzzy column mapping across English, Italian, Spanish, Korean, and Japanese
+const SCHEMA_SYNONYMS: Record<string, string[]> = {
+  recipientType: [
+    'recipient type', 'type', 'recipienttype', 'tipo', '区分', '対象区分', '対象者区分', '대상 구분', '대상구분', 'tipologia', 'recipient_type'
+  ],
+  recipientName: [
+    'recipient name', 'name', 'nom', 'beneficiario', '医師名', 'お名前', '施設名', '対象者名', '수령인', '수령인명', 'nombre', 'nombre del beneficiario', 'recipient_name', 'recipient institution/hco', 'recipient organization', 'hcp name'
+  ],
+  licenseNumber: [
+    'license', 'tax', 'nit', 'fiscale', 'rpps', 'npi', 'code', '医師免許番号', '登録番号', '免許番号', '識別番号', '면허번호', '등록번호', 'codice fiscale', 'partita iva', 'nit o identificacion', 'tax id / license number', 'registration code', 'hco registration code', 'license number / id'
+  ],
+  workplaceInstitution: [
+    'workplace', 'institution', 'hospital', 'clinic', 'struttura', 'lugar de trabajo', '勤務先', '所属機関', '所属施設', '病院名', '근무지', '소속기관', 'hospital/clinic', 'affiliated institution', 'affiliated healthcare institution', 'workplace institution'
+  ],
+  specialtyDepartment: [
+    'specialty', 'department', '診療科', '所属部局', '専門分野', '部局', '진료과', '전공', 'specialty department', 'specialty/department'
+  ],
+  spendCategory: [
+    'category', 'spend', 'benefit', 'tipologia', 'tipo', 'convenzione', 'donazione', 'desembolso', '資金区分', '費用区分', '区分項目', '지급 항목', '지급항목', 'spend category', 'category of benefit', 'jpma category', 'benefit category'
+  ],
+  dateOfProvision: [
+    'date', 'provision', 'transfer', 'fecha', 'data', '支払年月日', '提供年月日', '日付', '年月日', '제공 일자', '제공일자', 'date of provision', 'date of transfer', 'date of value transfer'
+  ],
+  placeOfProvision: [
+    'place', 'city', 'state', 'location', 'luogo', '提供場所', '実施場所', '場所', '제공 장소', '제공장소', 'place of provision'
+  ],
+  purposeOfBenefit: [
+    'purpose', 'purpose of benefit', 'agreement', 'collaboration', 'event', 'meeting', 'congress', 'reunión', 'viaje', '目的', '使途', '提供目的', '内容', '제공 목적', '제공목적', 'clinical trial / study name', 'purpose of donation', 'consulting / lecture description', 'information dissemination details', 'meeting/event purpose', 'purpose (meeting/congress name)'
+  ],
+  amountOriginal: [
+    'amount', 'valore', 'value', 'importo', 'valor', 'montant', '金額', '支払金額', '支払額', '価格', '금액', '지급액', 'amount original', 'amount (krw)', 'amount (eur)', 'amount (cop)', 'amount (usd)', 'amount (jpy)', 'contribution amount (eur)', 'r&d spend (jpy)', 'lecture fees (jpy)', 'cost (jpy)'
+  ],
+  details: [
+    'details', 'notes', 'description', 'phase', 'project', 'materials', 'spec', '詳細', '備考', '内訳', '製品名', '상세', '비고', 'additional details', 'phase/details', 'project details', 'materials details', 'expense details'
+  ]
+};
+
+const findBestHeaderMatch = (fieldKey: string, headers: string[]): string => {
+  const synonyms = SCHEMA_SYNONYMS[fieldKey] || [];
+  const normalize = (str: string) => 
+    str.toLowerCase().replace(/[^a-z0-9\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\uac00-\ud7a3]/g, '');
+
+  const normalizedSynonyms = synonyms.map(s => normalize(s));
+
+  // 1. Exact normalized match
+  for (const header of headers) {
+    const normHeader = normalize(header);
+    if (normalizedSynonyms.includes(normHeader)) {
+      return header;
+    }
+  }
+
+  // 2. Substring match fallback
+  for (const header of headers) {
+    const normHeader = normalize(header);
+    for (const normSyn of normalizedSynonyms) {
+      if (normSyn.length > 3 && (normHeader.includes(normSyn) || normSyn.includes(normHeader))) {
+        return header;
+      }
+    }
+  }
+
+  return '';
+};
 
 // Universal Schema attributes to map to in global uploader (uses spendCategory)
 const REQUIRED_SCHEMA_FIELDS = [
@@ -65,6 +130,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
   const [availableHeaders, setAvailableHeaders] = useState<string[]>([]);
   const [columnMapping, setColumnMapping] = useState<Record<string, string>>({});
   const [isMappingLoading, setIsMappingLoading] = useState<boolean>(false);
+  const [aiMappedKeys, setAiMappedKeys] = useState<string[]>([]);
 
   // Ingestion Summary & Stats Modal states
   const [showStatsModal, setShowStatsModal] = useState<boolean>(false);
@@ -338,7 +404,6 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
         );
         const hasEFPIAHeaders = json.some((row: any) =>
           row['Company Name'] !== undefined ||
-          row['Recipient Type'] !== undefined ||
           row['Tax ID / License Number'] !== undefined ||
           row['Contribution Amount (EUR)'] !== undefined
         );
@@ -384,23 +449,28 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
           
           // Formulate initial mapping recommendations using Gemini or smart regex fallback rules
           const finalMapping: Record<string, string> = {};
+          const mappedByAI: string[] = [];
+
           REQUIRED_SCHEMA_FIELDS.forEach(field => {
             const matchedHeader = Object.keys(aiMapping).find(k => aiMapping[k] === field.key);
             if (matchedHeader) {
               finalMapping[field.key] = matchedHeader;
+              mappedByAI.push(field.key);
             } else {
-              const fallback = headers.find(h => 
-                h.toLowerCase().includes(field.key.toLowerCase()) || 
-                (field.key === 'recipientName' && (h.toLowerCase().includes('name') || h.toLowerCase().includes('nom') || h.toLowerCase().includes('beneficiario'))) ||
-                (field.key === 'licenseNumber' && (h.toLowerCase().includes('license') || h.toLowerCase().includes('tax') || h.toLowerCase().includes('nit') || h.toLowerCase().includes('fiscale') || h.toLowerCase().includes('rpps') || h.toLowerCase().includes('npi'))) ||
-                (field.key === 'amountOriginal' && (h.toLowerCase().includes('amount') || h.toLowerCase().includes('valore') || h.toLowerCase().includes('value') || h.toLowerCase().includes('importo') || h.toLowerCase().includes('valor') || h.toLowerCase().includes('montant')))
-              );
+              const fallback = findBestHeaderMatch(field.key, headers);
               finalMapping[field.key] = fallback || '';
             }
           });
           setColumnMapping(finalMapping);
+          setAiMappedKeys(mappedByAI);
         } catch (err) {
           console.warn("AI Mapping failed, using standard mapping:", err);
+          const finalMapping: Record<string, string> = {};
+          REQUIRED_SCHEMA_FIELDS.forEach(field => {
+            finalMapping[field.key] = findBestHeaderMatch(field.key, headers);
+          });
+          setColumnMapping(finalMapping);
+          setAiMappedKeys([]);
         } finally {
           setIsMappingLoading(false);
         }
@@ -1310,7 +1380,13 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                       
                       const recordCount = activeRecords.length;
                       const totalOriginalVal = activeRecords.reduce((sum, t) => sum + t.amountOriginal, 0);
-                      const originalCurrency = activeRecords[0]?.currencyOriginal || (batch.countryCode === 'KR' ? 'KRW' : 'EUR');
+                      const originalCurrency = activeRecords[0]?.currencyOriginal || (
+                        batch.countryCode === 'KR' ? 'KRW' :
+                        batch.countryCode === 'JP' ? 'JPY' :
+                        batch.countryCode === 'CO' ? 'COP' :
+                        batch.countryCode === 'US' ? 'USD' :
+                        'EUR'
+                      );
                       
                       const batchAlertsCount = activeRecords.filter(t => t.remediationStatus === 'PENDING_REVIEW').length;
                       
@@ -1337,14 +1413,14 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                               {batch.sourceFileName}
                             </span>
                             <span className="badge" style={{ fontSize: '0.7rem', padding: '2px 6px', background: 'var(--bg-base)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}>
-                              {batch.countryCode === 'KR' ? '🇰🇷 KR' : batch.countryCode === 'IT' ? '🇮🇹 IT' : batch.countryCode === 'FR' ? '🇫🇷 FR' : batch.countryCode === 'CO' ? '🇨🇴 CO' : batch.countryCode === 'EU' ? '🇪🇺 EU' : '🇺🇸 US'}
+                              {batch.countryCode === 'KR' ? '🇰🇷 KR' : batch.countryCode === 'IT' ? '🇮🇹 IT' : batch.countryCode === 'FR' ? '🇫🇷 FR' : batch.countryCode === 'CO' ? '🇨🇴 CO' : batch.countryCode === 'EU' ? '🇪🇺 EU' : batch.countryCode === 'JP' ? '🇯🇵 JP' : '🇺🇸 US'}
                             </span>
                           </div>
                           
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
                             <span>{recordCount} records</span>
                             <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                              {originalCurrency} {totalOriginalVal.toLocaleString(undefined, { maximumFractionDigits: originalCurrency === 'KRW' ? 0 : 2, minimumFractionDigits: originalCurrency === 'KRW' ? 0 : 2 })}
+                              {originalCurrency} {totalOriginalVal.toLocaleString(undefined, { maximumFractionDigits: (originalCurrency === 'KRW' || originalCurrency === 'JPY') ? 0 : 2, minimumFractionDigits: (originalCurrency === 'KRW' || originalCurrency === 'JPY') ? 0 : 2 })}
                             </span>
                           </div>
                           
@@ -1694,6 +1770,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                               <option value="EUR">EUR</option>
                                               <option value="USD">USD</option>
                                               <option value="COP">COP</option>
+                                              <option value="JPY">JPY</option>
                                               <option value="GBP">GBP</option>
                                             </select>
                                             <input 
@@ -1716,7 +1793,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                       ) : (
                                         <div style={{ fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                           <div style={{ fontWeight: 'bold' }}>
-                                            {tx.currencyOriginal} {tx.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2, maximumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2 })}
+                                            {tx.currencyOriginal} {tx.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: (tx.currencyOriginal === 'KRW' || tx.currencyOriginal === 'JPY') ? 0 : 2, maximumFractionDigits: (tx.currencyOriginal === 'KRW' || tx.currencyOriginal === 'JPY') ? 0 : 2 })}
                                           </div>
                                           <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}><strong>Year:</strong> {tx.reportingYear}</div>
                                         </div>
@@ -1908,9 +1985,12 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                 display: 'flex', 
                 flexDirection: 'column', 
                 gap: '16px',
-                justifyContent: 'center'
+                maxHeight: '450px',
+                overflowY: 'auto',
+                paddingRight: '6px',
+                justifyContent: 'flex-start'
               }}>
-                {['KR', 'IT', 'FR', 'US', 'CO'].map(code => {
+                {['KR', 'IT', 'FR', 'US', 'CO', 'EU', 'JP'].map(code => {
                   const stats = getCountryStats(code);
                   const isHovered = hoveredCountry === code;
                   
@@ -2234,7 +2314,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tx.details}</div>
                                 </td>
                                 <td>
-                                  {tx.currencyOriginal} {tx.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: tx.currencyOriginal === 'KRW' ? 0 : 2 })}
+                                  {tx.currencyOriginal} {tx.amountOriginal.toLocaleString(undefined, { minimumFractionDigits: (tx.currencyOriginal === 'KRW' || tx.currencyOriginal === 'JPY') ? 0 : 2 })}
                                 </td>
                                 <td style={{ fontWeight: 'bold', color: 'var(--primary-accent)' }}>
                                   ${tx.amountUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })}
@@ -2382,7 +2462,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {['KR', 'IT', 'FR', 'US', 'CO', 'EU'].map(code => {
+                      {['KR', 'IT', 'FR', 'US', 'CO', 'EU', 'JP'].map(code => {
                         const countryTxs = commitTxs.filter(t => t.countryCode === code);
                         if (countryTxs.length === 0) return null;
 
@@ -2393,7 +2473,7 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                         return (
                           <tr key={code}>
                             <td style={{ fontWeight: 'bold' }}>
-                              {code === 'KR' ? '🇰🇷 South Korea [KR]' : code === 'IT' ? '🇮🇹 Italy [IT]' : code === 'FR' ? '🇫🇷 France [FR]' : code === 'US' ? '🇺🇸 USA [US]' : code === 'CO' ? '🇨🇴 Colombia [CO]' : '🇪🇺 Europe [EU]'}
+                              {code === 'KR' ? '🇰🇷 South Korea [KR]' : code === 'IT' ? '🇮🇹 Italy [IT]' : code === 'FR' ? '🇫🇷 France [FR]' : code === 'US' ? '🇺🇸 USA [US]' : code === 'CO' ? '🇨🇴 Colombia [CO]' : code === 'EU' ? '🇪🇺 Europe [EU]' : code === 'JP' ? '🇯🇵 Japan [JP]' : 'Other'}
                             </td>
                             <td style={{ textAlign: 'center', color: 'var(--success)' }}>{compliantCount} Approved</td>
                             <td style={{ textAlign: 'center', color: flaggedCount > 0 ? 'var(--warning)' : 'var(--text-muted)', fontWeight: flaggedCount > 0 ? 'bold' : 'normal' }}>
@@ -2563,9 +2643,15 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                             ))}
                           </select>
                           {mappedValue && (
-                            <span className="badge badge-success" style={{ padding: '6px 10px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <Sparkles size={10} /> AI Mapped
-                            </span>
+                            aiMappedKeys.includes(field.key) ? (
+                              <span className="badge badge-success" style={{ padding: '6px 10px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                                <Sparkles size={10} /> AI Mapped
+                              </span>
+                            ) : (
+                              <span className="badge" style={{ padding: '6px 10px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+                                <SlidersHorizontal size={10} /> Auto-Matched
+                              </span>
+                            )
                           )}
                         </div>
                       </div>
@@ -2726,7 +2812,13 @@ const DataCenter: React.FC<DataCenterProps> = ({ defaultTab }) => {
                   onClick={() => {
                     setShowStatsModal(false);
                     const code = statsData.countryCode.toLowerCase();
-                    const path = code === 'kr' ? '/korea/remediation' : (code === 'eu' ? '/efpia/remediation' : `/${code}/remediation`);
+                    const path = 
+                      code === 'kr' ? '/korea/remediation' : 
+                      code === 'eu' ? '/efpia/remediation' : 
+                      code === 'it' ? '/italy/remediation' : 
+                      code === 'co' ? '/colombia/remediation' : 
+                      code === 'jp' ? '/japan/remediation' : 
+                      '/datacenter';
                     navigate(path);
                   }}
                   style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '6px', background: 'var(--warning)', border: '1px solid var(--warning)', color: 'white', fontWeight: 600 }}

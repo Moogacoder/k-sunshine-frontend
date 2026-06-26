@@ -490,13 +490,23 @@ const JapanReporting = () => {
     }, 250);
   };
 
-  const templates = [
-    { id: 1, title: 'Template 1: R&D Expenses', desc: 'Joint research funding, clinical trial costs, post-marketing clinical trials, and side-effect reporting support.' },
-    { id: 2, title: 'Template 2: Academic Donations', desc: 'Financial donations for academic promotion, academic society support, and co-sponsored seminars.' },
-    { id: 3, title: 'Template 3: Lecturing & Consulting', desc: 'Lecturing fees, consulting service contracts, authoring/writing fees, and advisory panels.' },
-    { id: 4, title: 'Template 4: Promotional Information', desc: 'Costs of promotional materials, printing/distributing medical information, and educational briefings.' },
-    { id: 5, title: 'Template 5: Other Expenses & Meals', desc: 'Meetings, food & beverage support, hospitality, and taxi/transport support for HCPs.' }
-  ];
+
+
+  // Categorized Aggregations for JPMA Categories A–E
+  const getCategoryStats = (categoryKey: string) => {
+    const filtered = transactions.filter(t => (t.categoryOfBenefit || '').toLowerCase() === categoryKey.toLowerCase());
+    const totalJPY = filtered.reduce((sum, t) => sum + t.amountJPY, 0);
+    return {
+      totalJPY,
+      count: filtered.length
+    };
+  };
+
+  const catA = getCategoryStats('research_dev');
+  const catB = getCategoryStats('academic_donation');
+  const catC = getCategoryStats('lecture_fees');
+  const catD = getCategoryStats('promotional_info');
+  const catE = getCategoryStats('other_meals');
 
   return (
     <div style={{ paddingBottom: '40px' }}>
@@ -548,24 +558,99 @@ const JapanReporting = () => {
         <p style={{ color: 'var(--text-secondary)' }}>Loading transactions data...</p>
       ) : (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '40px' }}>
-            {templates.map(tpl => (
-              <div key={tpl.id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          {/* Executive Master Summary Table */}
+          <div className="card" style={{ marginBottom: '40px', padding: '24px' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '6px', color: 'var(--text-primary)' }}>
+              FY2026 Master Transparency Summary
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '20px' }}>
+              Executive overview of total monetary volumes and case counts for JPMA Category A through E disclosures.
+            </p>
+            <div className="table-container" style={{ margin: 0, overflowX: 'auto' }}>
+              <table style={{ minWidth: '600px' }}>
+                <thead>
+                  <tr>
+                    <th style={{ width: '120px' }}>Category Code</th>
+                    <th>JPMA Disclosure Category</th>
+                    <th style={{ textAlign: 'right', width: '180px' }}>Total Spend (JPY)</th>
+                    <th style={{ textAlign: 'right', width: '140px' }}>Total Cases</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ fontWeight: 'bold', color: '#ec4899' }}>Category A</td>
+                    <td>Research & Development (R&D) Expenses</td>
+                    <td style={{ textAlign: 'right', fontWeight: 600 }}>¥{catA.totalJPY.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right' }}>{catA.count} cases</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 'bold', color: '#ec4899' }}>Category B</td>
+                    <td>Scientific Support (Academic Donations)</td>
+                    <td style={{ textAlign: 'right', fontWeight: 600 }}>¥{catB.totalJPY.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right' }}>{catB.count} cases</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 'bold', color: '#ec4899' }}>Category C</td>
+                    <td>HCP Honorariums (Lecturing & Consulting)</td>
+                    <td style={{ textAlign: 'right', fontWeight: 600 }}>¥{catC.totalJPY.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right' }}>{catC.count} cases</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 'bold', color: '#ec4899' }}>Category D</td>
+                    <td>Information Provision (Promotional Info)</td>
+                    <td style={{ textAlign: 'right', fontWeight: 600 }}>¥{catD.totalJPY.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right' }}>{catD.count} cases</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 'bold', color: '#ec4899' }}>Category E</td>
+                    <td>Other Expenses (Hospitality & Meals)</td>
+                    <td style={{ textAlign: 'right', fontWeight: 600 }}>¥{catE.totalJPY.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right' }}>{catE.count} cases</td>
+                  </tr>
+                  <tr style={{ background: 'rgba(236, 72, 153, 0.05)', fontWeight: 'bold', borderTop: '2px solid var(--border-color)' }}>
+                    <td>Total</td>
+                    <td>Consolidated FY2026 Disclosures</td>
+                    <td style={{ textAlign: 'right', color: '#ec4899' }}>¥{(catA.totalJPY + catB.totalJPY + catC.totalJPY + catD.totalJPY + catE.totalJPY).toLocaleString()}</td>
+                    <td style={{ textAlign: 'right' }}>{(catA.count + catB.count + catC.count + catD.count + catE.count)} cases</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Detailed Appendices Section */}
+          <div style={{ marginBottom: '40px' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '6px', color: 'var(--text-primary)' }}>
+              Detailed Appendices
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '20px' }}>
+              Itemized line-item disclosures for Categories A, B, and C containing specific HCP/HCO identifiers. Categories D and E stop at the summary aggregate level.
+            </p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+              {/* Category A Card */}
+              <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <h3 style={{ marginBottom: '12px' }}>{tpl.title}</h3>
-                  <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.9rem' }}>{tpl.desc}</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <span className="badge" style={{ backgroundColor: 'rgba(236, 72, 153, 0.1)', color: '#ec4899', border: '1px solid rgba(236, 72, 153, 0.3)', fontWeight: 'bold' }}>Category A</span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{catA.count} records</span>
+                  </div>
+                  <h3 style={{ marginBottom: '8px', fontSize: '1.05rem' }}>R&D Expenses Appendix</h3>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.85rem', lineHeight: '1.5' }}>
+                    Joint research funding, clinical trial costs, post-marketing clinical trials, and side-effect reporting support.
+                  </p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
                   <button 
                     className="btn btn-primary" 
-                    onClick={() => exportTemplate(tpl.id, tpl.title)} 
+                    onClick={() => exportTemplate(1, 'Category A: R&D Expenses')} 
                     style={{ flex: 1, justifyContent: 'center', backgroundColor: '#ec4899', borderColor: '#ec4899' }}
                   >
                     <FileSpreadsheet size={18} /> CSV
                   </button>
                   <button 
                     className="btn" 
-                    onClick={() => previewPDF(tpl.id, tpl.title)}
+                    onClick={() => previewPDF(1, 'Category A: R&D Expenses')}
                     disabled={isGeneratingPdf}
                     style={{ 
                       flex: 1, 
@@ -575,7 +660,7 @@ const JapanReporting = () => {
                       color: 'var(--text-primary)'
                     }}
                   >
-                    {isGeneratingPdf && activeTemplateTitle === tpl.title ? (
+                    {isGeneratingPdf && activeTemplateTitle === 'Category A: R&D Expenses' ? (
                       <>
                         <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
                         ...
@@ -588,7 +673,99 @@ const JapanReporting = () => {
                   </button>
                 </div>
               </div>
-            ))}
+
+              {/* Category B Card */}
+              <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <span className="badge" style={{ backgroundColor: 'rgba(236, 72, 153, 0.1)', color: '#ec4899', border: '1px solid rgba(236, 72, 153, 0.3)', fontWeight: 'bold' }}>Category B</span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{catB.count} records</span>
+                  </div>
+                  <h3 style={{ marginBottom: '8px', fontSize: '1.05rem' }}>Scientific Support Appendix</h3>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.85rem', lineHeight: '1.5' }}>
+                    Financial donations for academic promotion, academic society support, and co-sponsored seminars.
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={() => exportTemplate(2, 'Category B: Scientific Support')} 
+                    style={{ flex: 1, justifyContent: 'center', backgroundColor: '#ec4899', borderColor: '#ec4899' }}
+                  >
+                    <FileSpreadsheet size={18} /> CSV
+                  </button>
+                  <button 
+                    className="btn" 
+                    onClick={() => previewPDF(2, 'Category B: Scientific Support')}
+                    disabled={isGeneratingPdf}
+                    style={{ 
+                      flex: 1, 
+                      justifyContent: 'center', 
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    {isGeneratingPdf && activeTemplateTitle === 'Category B: Scientific Support' ? (
+                      <>
+                        <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                        ...
+                      </>
+                    ) : (
+                      <>
+                        <Eye size={18} /> PDF
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Category C Card */}
+              <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <span className="badge" style={{ backgroundColor: 'rgba(236, 72, 153, 0.1)', color: '#ec4899', border: '1px solid rgba(236, 72, 153, 0.3)', fontWeight: 'bold' }}>Category C</span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{catC.count} records</span>
+                  </div>
+                  <h3 style={{ marginBottom: '8px', fontSize: '1.05rem' }}>HCP Honorariums Appendix</h3>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.85rem', lineHeight: '1.5' }}>
+                    Lecturing fees, consulting service contracts, authoring/writing fees, and advisory panels.
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={() => exportTemplate(3, 'Category C: HCP Honorariums')} 
+                    style={{ flex: 1, justifyContent: 'center', backgroundColor: '#ec4899', borderColor: '#ec4899' }}
+                  >
+                    <FileSpreadsheet size={18} /> CSV
+                  </button>
+                  <button 
+                    className="btn" 
+                    onClick={() => previewPDF(3, 'Category C: HCP Honorariums')}
+                    disabled={isGeneratingPdf}
+                    style={{ 
+                      flex: 1, 
+                      justifyContent: 'center', 
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    {isGeneratingPdf && activeTemplateTitle === 'Category C: HCP Honorariums' ? (
+                      <>
+                        <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                        ...
+                      </>
+                    ) : (
+                      <>
+                        <Eye size={18} /> PDF
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: '40px 0' }} />
